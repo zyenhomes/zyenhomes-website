@@ -358,3 +358,26 @@ section.ski.ski-house .ski-intro {
     height: 520px !important;
   }
 }
+/* Ski House final desktop proportions */
+@media (min-width: 1001px) {
+
+  section.ski.ski-house {
+    padding: 85px 4% !important;
+  }
+
+  section.ski.ski-house .ski-house-layout {
+    max-width: 1500px !important;
+    grid-template-columns: 38% 62% !important;
+    gap: 45px !important;
+  }
+
+  section.ski.ski-house .ski-gallery {
+    width: 100% !important;
+    height: 540px !important;
+    grid-template-columns: 1.35fr 1fr 1fr !important;
+  }
+
+  section.ski.ski-house .ski-house-content h2 {
+    font-size: clamp(52px, 4.2vw, 70px) !important;
+  }
+}
