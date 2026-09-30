@@ -114,3 +114,20 @@
     grid-template-rows: 228px 228px;
   }
 }
+/* Stronger photo emphasis */
+@media (min-width: 901px) {
+  .why-layout {
+    max-width: 1450px;
+    grid-template-columns: 1.55fr .85fr;
+    gap: 55px;
+  }
+
+  .why-gallery {
+    height: 520px;
+    grid-template-rows: 256px 256px;
+  }
+
+  .why-content h2 {
+    font-size: 48px;
+  }
+}
