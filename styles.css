@@ -102,3 +102,15 @@
     grid-row: 1;
   }
 }
+/* Make Why Stay photo collage slightly larger */
+@media (min-width: 901px) {
+  .why-layout {
+    grid-template-columns: 1.3fr .8fr;
+    gap: 60px;
+  }
+
+  .why-gallery {
+    height: 465px;
+    grid-template-rows: 228px 228px;
+  }
+}
