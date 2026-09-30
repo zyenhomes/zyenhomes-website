@@ -381,3 +381,124 @@ section.ski.ski-house .ski-intro {
     font-size: clamp(52px, 4.2vw, 70px) !important;
   }
 }
+
+/* PROPERTY MANAGEMENT SECTION */
+
+section.management {
+  background: #f5f1e8;
+  padding: 110px 6%;
+}
+
+.management-layout {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 56% 44%;
+  gap: 70px;
+  align-items: center;
+}
+
+/* Photo collage */
+
+.management-gallery {
+  height: 610px;
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+}
+
+.management-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.management-gallery .management-main {
+  grid-row: 1 / 3;
+}
+
+/* Content */
+
+.management-content {
+  max-width: 590px;
+}
+
+.management-content h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(46px, 4vw, 66px);
+  line-height: 1.02;
+  margin: 15px 0 25px;
+  color: #18201d;
+}
+
+.management-intro {
+  font-size: 16px;
+  line-height: 1.75;
+  margin-bottom: 28px;
+  color: #343b38;
+}
+
+.management-benefits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 30px;
+  margin-bottom: 28px;
+}
+
+.management-benefits span {
+  padding: 11px 0;
+  border-bottom: 1px solid #d8d2c6;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.management-tagline {
+  margin: 28px 0 30px;
+  color: #173f35;
+}
+
+/* Tablet */
+
+@media (max-width: 1000px) {
+  .management-layout {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
+
+  .management-gallery {
+    height: 520px;
+  }
+
+  .management-content {
+    max-width: 750px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  section.management {
+    padding: 75px 24px;
+  }
+
+  .management-gallery {
+    height: 470px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 280px 180px;
+  }
+
+  .management-gallery .management-main {
+    grid-column: 1 / 3;
+    grid-row: 1;
+  }
+
+  .management-content h2 {
+    font-size: 44px;
+  }
+
+  .management-benefits {
+    grid-template-columns: 1fr;
+  }
+}
