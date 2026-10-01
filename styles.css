@@ -996,3 +996,55 @@ section.management {
     margin-top: 8px !important;
   }
 }
+
+/* FORCE 2-COLUMN FEATURED RENTALS ON MOBILE */
+
+@media screen and (max-width: 600px) {
+
+  section.featured-rentals .property-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  section.featured-rentals .property-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  section.featured-rentals .property-card img {
+    width: 100% !important;
+    height: 145px !important;
+    object-fit: cover !important;
+  }
+
+  section.featured-rentals .property-info {
+    padding: 15px 11px 17px !important;
+  }
+
+  section.featured-rentals .property-location {
+    font-size: 9px !important;
+    line-height: 1.3 !important;
+    letter-spacing: 1px !important;
+  }
+
+  section.featured-rentals .property-info h3 {
+    font-size: 19px !important;
+    line-height: 1.08 !important;
+    margin: 7px 0 9px !important;
+  }
+
+  section.featured-rentals .property-info p {
+    font-size: 11.5px !important;
+    line-height: 1.4 !important;
+  }
+
+  section.featured-rentals .property-feature {
+    font-size: 11.5px !important;
+    line-height: 1.35 !important;
+    margin-top: 8px !important;
+  }
+}
