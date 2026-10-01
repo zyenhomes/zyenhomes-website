@@ -1380,3 +1380,11 @@ section.management {
     font-size: 13px !important;
   }
 }
+
+
+/* EXPLORE ONTARIO - USE REAL WATERFRONT COTTAGE PHOTO */
+.destinations .muskoka {
+  background-image: url('20230722_123147.jpg') !important;
+  background-position: center !important;
+  background-size: cover !important;
+}
