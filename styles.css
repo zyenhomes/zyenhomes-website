@@ -1432,3 +1432,29 @@ section.management {
     gap: 28px !important;
   }
 }
+
+
+/* MOBILE SKI HOUSE - COMPACT PHOTO GALLERY */
+@media screen and (max-width: 600px) {
+  section.ski.ski-house .ski-gallery {
+    width: 100% !important;
+    height: 430px !important;
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: 1.25fr 1fr 1fr !important;
+    grid-template-rows: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  section.ski.ski-house .ski-gallery img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    object-fit: cover !important;
+  }
+
+  section.ski.ski-house .ski-gallery .ski-main {
+    grid-column: 1 !important;
+    grid-row: 1 / 3 !important;
+  }
+}
