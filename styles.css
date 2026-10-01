@@ -738,3 +738,62 @@ section.management {
     font-size: 17px;
   }
 }
+
+/* INVESTMENT STRATEGY - 3 PILLARS */
+
+.investment-pillars {
+  max-width: 1150px;
+  margin: 48px auto 46px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid rgba(255,255,255,0.25);
+  border-bottom: 1px solid rgba(255,255,255,0.25);
+}
+
+.investment-pillar {
+  padding: 42px 30px 38px;
+  text-align: center;
+}
+
+.investment-pillar + .investment-pillar {
+  border-left: 1px solid rgba(255,255,255,0.25);
+}
+
+.pillar-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 22px;
+  border: 1px solid rgba(255,255,255,0.55);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23px;
+  color: #d7c7a3;
+}
+
+.investment-pillar h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  color: #ffffff;
+  font-size: 25px;
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+
+.investment-pillar p {
+  margin: 0 !important;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.78);
+}
+
+@media (max-width: 750px) {
+  .investment-pillars {
+    grid-template-columns: 1fr;
+  }
+
+  .investment-pillar + .investment-pillar {
+    border-left: 0;
+    border-top: 1px solid rgba(255,255,255,0.25);
+  }
+}
