@@ -1571,3 +1571,17 @@ section.management {
     border-radius: 3px !important;
   }
 }
+
+
+/* SKI HOUSE MOBILE GALLERY COUNTER */
+.ski-gallery-counter { display: none; }
+@media screen and (max-width: 600px) {
+  .ski-gallery-counter {
+    display: block;
+    text-align: center;
+    margin-top: 6px;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,.78);
+  }
+}
