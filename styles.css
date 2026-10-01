@@ -1396,3 +1396,17 @@ section.management {
   background-position: center center !important;
   background-size: cover !important;
 }
+
+
+/* EXPLORE ONTARIO - FINAL DESTINATION IMAGES */
+.destinations .mountain {
+  background-image: url('Year-Round Mountain Resort Escape.png') !important;
+  background-position: center center !important;
+  background-size: cover !important;
+}
+.destinations .muskoka {
+  background-image: url('Serene Lakeside Retreat with Red Chairs.png') !important;
+  background-position: center center !important;
+  background-size: cover !important;
+}
+/* Other Ontario Cottages keeps the existing sunset image */
