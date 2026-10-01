@@ -1410,3 +1410,11 @@ section.management {
   background-size: cover !important;
 }
 /* Other Ontario Cottages keeps the existing sunset image */
+
+
+/* EXPLORE ONTARIO - OTHER ONTARIO COTTAGES IMAGE */
+.destinations .harbour {
+  background-image: url('Vibrant Woodland House Pool Retreat.png') !important;
+  background-position: center center !important;
+  background-size: cover !important;
+}
