@@ -1487,3 +1487,48 @@ section.management {
     max-height: 390px !important;
   }
 }
+
+
+/* MOBILE SKI HOUSE - SWIPEABLE PHOTO GALLERY */
+@media screen and (max-width: 600px) {
+  html body section.ski.ski-house .ski-house-inner .ski-gallery {
+    display: flex !important;
+    width: calc(100vw - 42px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    gap: 12px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-padding-left: 0 !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding: 0 22% 12px 0 !important;
+    margin: 0 !important;
+  }
+
+  html body section.ski.ski-house .ski-house-inner .ski-gallery::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  html body section.ski.ski-house .ski-house-inner .ski-gallery > img,
+  html body section.ski.ski-house .ski-house-inner .ski-gallery > .ski-main {
+    display: block !important;
+    flex: 0 0 84% !important;
+    width: 84% !important;
+    height: 330px !important;
+    min-height: 330px !important;
+    max-height: 330px !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+    object-fit: cover !important;
+    scroll-snap-align: start !important;
+    border-radius: 3px !important;
+  }
+
+  html body section.ski.ski-house .ski-house-inner .ski-gallery::after {
+    content: "" !important;
+    flex: 0 0 1px !important;
+  }
+}
