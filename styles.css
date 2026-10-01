@@ -1418,3 +1418,17 @@ section.management {
   background-position: center center !important;
   background-size: cover !important;
 }
+
+
+/* MOBILE WHY STAY - TIGHTEN COLLAGE TO HEADING SPACING */
+@media screen and (max-width: 600px) {
+  section.why-stay {
+    padding-top: 45px !important;
+  }
+
+  section.why-stay .why-grid,
+  section.why-stay .why-inner {
+    row-gap: 28px !important;
+    gap: 28px !important;
+  }
+}
