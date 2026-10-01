@@ -1206,3 +1206,45 @@ section.management {
     margin: 0 !important;
   }
 }
+/* MOBILE DESTINATION CARDS - HORIZONTAL LAYOUT */
+@media (max-width: 600px) {
+
+  .destination-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .destination-card {
+    display: grid !important;
+    grid-template-columns: 42% 58% !important;
+    min-height: 180px !important;
+    overflow: hidden !important;
+  }
+
+  .destination-card img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 180px !important;
+    object-fit: cover !important;
+  }
+
+  .destination-card .destination-content {
+    padding: 22px 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+
+  .destination-card h3 {
+    font-size: 27px !important;
+    line-height: 1.05 !important;
+    margin: 0 0 12px !important;
+  }
+
+  .destination-card p {
+    font-size: 15px !important;
+    line-height: 1.45 !important;
+    margin: 0 !important;
+  }
+}
