@@ -1388,3 +1388,11 @@ section.management {
   background-position: center !important;
   background-size: cover !important;
 }
+
+
+/* EXPLORE ONTARIO - ENHANCED WATERFRONT IMAGE */
+.destinations .muskoka {
+  background-image: url('Serene Lakeside Retreat with Red Chairs.png') !important;
+  background-position: center center !important;
+  background-size: cover !important;
+}
