@@ -1103,3 +1103,41 @@ section.management {
     line-height: 1.5 !important;
   }
 }
+/* MOBILE DESTINATIONS - 2 COLUMN LAYOUT */
+
+@media (max-width: 600px) {
+
+  .destination-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+  }
+
+  .destination-card {
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  .destination-card img {
+    width: 100% !important;
+    height: 170px !important;
+    object-fit: cover !important;
+  }
+
+  .destination-card .destination-content {
+    padding: 20px 16px 24px !important;
+    min-height: 150px !important;
+  }
+
+  .destination-card h3 {
+    font-size: 24px !important;
+    line-height: 1.08 !important;
+    margin: 0 0 14px !important;
+  }
+
+  .destination-card p {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+  }
+}
