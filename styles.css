@@ -1141,3 +1141,30 @@ section.management {
     margin: 0 !important;
   }
 }
+/* EXPLORE ONTARIO - MOBILE LAYOUT */
+
+@media (max-width: 600px) {
+  .destinations .cards {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+  }
+
+  .destinations .cards article {
+    min-width: 0 !important;
+  }
+
+  .destinations .photo {
+    height: 180px !important;
+  }
+
+  .destinations .cards h3 {
+    font-size: 25px !important;
+    line-height: 1.05 !important;
+  }
+
+  .destinations .cards p {
+    font-size: 15px !important;
+    line-height: 1.45 !important;
+  }
+}
