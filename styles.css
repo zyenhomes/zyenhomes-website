@@ -1828,3 +1828,47 @@ section.management {
     margin: 0 !important;
   }
 }
+
+
+/* FINAL MOBILE HOMEPAGE POLISH */
+@media screen and (max-width: 600px) {
+  section.hero .hero-copy h1 {
+    font-size: 50px !important;
+    line-height: .98 !important;
+  }
+
+  section.hero .hero-copy .eyebrow {
+    font-size: 13px !important;
+    line-height: 1.35 !important;
+    letter-spacing: 2px !important;
+  }
+
+  section.featured-rentals {
+    padding-bottom: 54px !important;
+  }
+
+  section.destinations {
+    padding-top: 54px !important;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  section.about-new .about-stat {
+    min-width: 0 !important;
+    overflow: hidden !important;
+    padding: 22px 14px !important;
+  }
+
+  section.about-new .about-stat strong {
+    font-size: 31px !important;
+    line-height: 1.05 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  section.about-new .about-stat span {
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+    letter-spacing: .45px !important;
+    overflow-wrap: anywhere !important;
+  }
+}
