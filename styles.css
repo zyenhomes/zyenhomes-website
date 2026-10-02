@@ -2115,3 +2115,78 @@ section.management {
     background-color: #173f35;
   }
 }
+
+
+/* MOBILE FIRST-SCREEN BOOKING + BRANDED HEADER */
+@media screen and (max-width: 560px) {
+  .site-header {
+    position: absolute;
+    height: 70px;
+    padding: 0 20px;
+    background: #fff;
+    color: var(--green);
+    border-bottom: 1px solid #e8e5de;
+  }
+
+  .site-header .brand,
+  .site-header .menu {
+    color: var(--green);
+  }
+
+  .site-header .mark {
+    border-color: var(--green);
+  }
+
+  .hero {
+    height: 600px;
+    min-height: 600px;
+    padding-top: 70px;
+  }
+
+  .hero-copy {
+    padding: 45px 20px 135px;
+  }
+
+  .hero-copy h1 {
+    font-size: 36px;
+    line-height: 1.03;
+  }
+
+  .hero-copy > p:not(.eyebrow) {
+    font-size: 16px;
+    line-height: 1.45;
+  }
+
+  .hero-copy .actions {
+    margin-top: 20px;
+    gap: 8px;
+  }
+
+  .hero-copy .btn {
+    padding: 13px 18px;
+  }
+
+  #stays.search {
+    margin: -116px 14px 0;
+    padding: 14px;
+    box-shadow: 0 12px 32px #0003;
+  }
+
+  .booking-search {
+    gap: 9px 8px;
+  }
+
+  .booking-search label {
+    margin-bottom: 4px;
+  }
+
+  .booking-search input,
+  .booking-search button {
+    height: 43px;
+  }
+
+  .booking-search button {
+    font-size: 11px;
+    padding: 0 8px;
+  }
+}
