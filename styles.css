@@ -1645,3 +1645,47 @@ section.management {
     margin: 0 0 26px !important;
   }
 }
+
+
+/* ABOUT ZYEN HOMES - MOBILE POLISH ONLY */
+@media screen and (max-width: 560px) {
+  section.about-new {
+    padding: 58px 22px 64px !important;
+  }
+
+  section.about-new .about-inner {
+    gap: 42px !important;
+  }
+
+  section.about-new .about-story h2 {
+    font-size: 38px !important;
+    line-height: 1.03 !important;
+    margin: 14px 0 22px !important;
+  }
+
+  section.about-new .about-lead {
+    font-size: 16px !important;
+    line-height: 1.7 !important;
+    margin-bottom: 28px !important;
+  }
+
+  section.about-new .about-stats {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  section.about-new .about-stat {
+    min-height: 138px !important;
+    padding: 24px 18px !important;
+  }
+
+  section.about-new .about-stat strong {
+    font-size: 36px !important;
+    margin-bottom: 11px !important;
+  }
+
+  section.about-new .about-stat span {
+    font-size: 11px !important;
+    line-height: 1.45 !important;
+    letter-spacing: .7px !important;
+  }
+}
