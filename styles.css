@@ -2220,3 +2220,30 @@ section.management {
     padding-bottom: 16px;
   }
 }
+
+
+/* OFFICIAL ZYEN HOMES HEADER LOGO */
+.site-header .brand-logo {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+.site-header .brand-logo img {
+  display: block;
+  width: auto;
+  height: 82px;
+  max-width: 360px;
+  object-fit: contain;
+}
+@media screen and (max-width: 900px) {
+  .site-header .brand-logo img {
+    height: 70px;
+    max-width: 300px;
+  }
+}
+@media screen and (max-width: 560px) {
+  .site-header .brand-logo img {
+    height: 58px;
+    max-width: 250px;
+  }
+}
