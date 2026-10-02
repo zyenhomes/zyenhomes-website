@@ -2087,3 +2087,31 @@ section.management {
     margin-top: 2px;
   }
 }
+
+
+/* MOBILE HERO + TWO-ROW BOOKING BAR POLISH */
+@media screen and (max-width: 560px) {
+  .booking-search > div:nth-child(3),
+  .booking-search button {
+    grid-column: auto;
+  }
+
+  .booking-search {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 10px;
+  }
+
+  .booking-search button {
+    margin-top: 0;
+    align-self: end;
+  }
+
+  /* Show more of the hero artwork on phones while preserving the luxury full-bleed look */
+  .hero {
+    min-height: 82vh;
+    background-size: auto 92%;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-color: #173f35;
+  }
+}
