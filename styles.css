@@ -1937,3 +1937,26 @@ section.management {
     overflow-wrap: anywhere !important;
   }
 }
+
+
+/* GUESTY BOOKING SEARCH */
+.guesty-search-section {
+  position: relative;
+  z-index: 5;
+  background: #fff;
+  padding: 34px 28px;
+  box-shadow: 0 16px 45px rgba(20,32,28,.08);
+}
+.guesty-search-inner {
+  max-width: 1380px;
+  margin: 0 auto;
+}
+#search-widget_IO312PWQ {
+  width: 100%;
+}
+
+@media screen and (max-width: 600px) {
+  .guesty-search-section {
+    padding: 28px 22px 32px;
+  }
+}
