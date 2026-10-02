@@ -2190,3 +2190,33 @@ section.management {
     padding: 0 8px;
   }
 }
+
+
+/* SIMPLIFIED MOBILE HERO */
+.mobile-copy { display: none; }
+@media screen and (max-width: 560px) {
+  .hero-managed { display: none; }
+  .hero-copy h1 {
+    font-size: 38px;
+    line-height: 1.02;
+    margin-bottom: 18px;
+  }
+  .hero-copy .desktop-copy { display: none; }
+  .hero-copy .mobile-copy { display: inline; }
+  .hero-copy .hero-support {
+    font-size: 17px;
+    line-height: 1.45;
+    max-width: 340px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-copy .owner-hero-btn { display: none; }
+  .hero-copy .actions {
+    margin-top: 22px;
+  }
+  .hero-copy .actions .btn {
+    min-height: 54px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+}
