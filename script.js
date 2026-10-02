@@ -91,3 +91,37 @@ if(skiGallery){
     });
   }
 }
+
+
+// Send the custom Zyen Homes search form to Guesty's live property results.
+const bookingSearch=document.querySelector('#booking-search');
+if(bookingSearch){
+  const checkin=bookingSearch.querySelector('#booking-checkin');
+  const checkout=bookingSearch.querySelector('#booking-checkout');
+  const guests=bookingSearch.querySelector('#booking-guests');
+
+  const today=new Date();
+  const localToday=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  checkin.min=localToday;
+
+  checkin.addEventListener('change',()=>{
+    checkout.min=checkin.value;
+    if(checkout.value && checkout.value<=checkin.value) checkout.value='';
+  });
+
+  bookingSearch.addEventListener('submit',(event)=>{
+    event.preventDefault();
+    if(!checkin.value || !checkout.value || checkout.value<=checkin.value){
+      checkout.focus();
+      return;
+    }
+    const adults=Math.max(1,parseInt(guests.value,10)||1);
+    const params=new URLSearchParams({
+      minOccupancy:String(adults),
+      checkIn:checkin.value,
+      checkOut:checkout.value,
+      adults:String(adults)
+    });
+    window.location.href='https://zyenhomes.guestybookings.com/en/properties?'+params.toString();
+  });
+}
