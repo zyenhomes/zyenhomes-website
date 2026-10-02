@@ -1,80 +1,92 @@
 const menu=document.querySelector('.menu'),nav=document.querySelector('.site-header nav');menu.addEventListener('click',()=>nav.classList.toggle('open'));document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
 
 
+
 const skiGallery=document.querySelector('.ski-gallery');
 
 if(skiGallery){
-  const originalSlides=[...skiGallery.querySelectorAll('img')];
-  const total=originalSlides.length;
+  const originals=[...skiGallery.querySelectorAll('img')];
+  const total=originals.length;
 
   if(total>1){
-    const firstClone=originalSlides[0].cloneNode(true);
-    const lastClone=originalSlides[total-1].cloneNode(true);
-    firstClone.setAttribute('aria-hidden','true');
-    lastClone.setAttribute('aria-hidden','true');
-    skiGallery.insertBefore(lastClone,originalSlides[0]);
-    skiGallery.appendChild(firstClone);
+    // Repeat the full set before and after the originals so mobile swiping
+    // feels continuous in either direction, without a visible end/reset.
+    const before=document.createDocumentFragment();
+    const after=document.createDocumentFragment();
+
+    originals.forEach(img=>{
+      const clone=img.cloneNode(true);
+      clone.setAttribute('aria-hidden','true');
+      before.appendChild(clone);
+    });
+    originals.forEach(img=>{
+      const clone=img.cloneNode(true);
+      clone.setAttribute('aria-hidden','true');
+      after.appendChild(clone);
+    });
+
+    skiGallery.insertBefore(before,originals[0]);
+    skiGallery.appendChild(after);
 
     const slides=[...skiGallery.querySelectorAll('img')];
-    let current=1;
-    let jumping=false;
+    let recentering=false;
+    let scrollTimer;
 
-    const goTo=(index,behavior='auto')=>{
-      skiGallery.scrollTo({
-        left:slides[index].offsetLeft-skiGallery.offsetLeft,
-        behavior
-      });
+    const positionAt=(index)=>{
+      const slide=slides[index];
+      if(!slide) return;
+      skiGallery.scrollLeft=slide.offsetLeft-skiGallery.offsetLeft;
     };
 
-    const settle=()=>{
-      if(jumping) return;
+    const nearestIndex=()=>{
       const left=skiGallery.scrollLeft;
       let nearest=0;
-      let distance=Infinity;
-
+      let best=Infinity;
       slides.forEach((slide,index)=>{
         const d=Math.abs((slide.offsetLeft-skiGallery.offsetLeft)-left);
-        if(d<distance){
-          distance=d;
-          nearest=index;
-        }
+        if(d<best){best=d;nearest=index;}
       });
-
-      current=nearest;
-
-      if(current===0 || current===total+1){
-        jumping=true;
-        const target=current===0 ? total : 1;
-        requestAnimationFrame(()=>{
-          goTo(target,'auto');
-          current=target;
-          requestAnimationFrame(()=>{jumping=false;});
-        });
-      }
+      return nearest;
     };
 
-    let timer;
+    const recenter=()=>{
+      if(recentering || !window.matchMedia('(max-width: 600px)').matches) return;
+      const index=nearestIndex();
+
+      // The middle copy is indices total..(2*total-1). Move to the
+      // identical slide in that middle copy only after scrolling settles.
+      let target=index;
+      if(index<total) target=index+total;
+      else if(index>=2*total) target=index-total;
+      else return;
+
+      recentering=true;
+      requestAnimationFrame(()=>{
+        positionAt(target);
+        requestAnimationFrame(()=>{recentering=false;});
+      });
+    };
+
     skiGallery.addEventListener('scroll',()=>{
-      clearTimeout(timer);
-      timer=setTimeout(settle,80);
+      if(recentering) return;
+      clearTimeout(scrollTimer);
+      scrollTimer=setTimeout(recenter,140);
     },{passive:true});
 
     const initialize=()=>{
       if(window.matchMedia('(max-width: 600px)').matches){
-        goTo(1,'auto');
-        current=1;
+        positionAt(total);
       }
     };
 
-    if(document.readyState==='complete'){
-      initialize();
-    } else {
-      window.addEventListener('load',initialize,{once:true});
-    }
+    if(document.readyState==='complete') initialize();
+    else window.addEventListener('load',initialize,{once:true});
 
     window.addEventListener('resize',()=>{
       if(window.matchMedia('(max-width: 600px)').matches){
-        goTo(current,'auto');
+        const index=nearestIndex();
+        const logical=((index%total)+total)%total;
+        positionAt(total+logical);
       }
     });
   }
