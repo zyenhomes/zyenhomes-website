@@ -1960,3 +1960,30 @@ section.management {
     padding: 28px 22px 32px;
   }
 }
+
+
+/* Guesty embedded search - compact placement under hero */
+.guesty-search-section {
+  padding: 0 !important;
+  min-height: 0 !important;
+  box-shadow: 0 12px 32px rgba(20,32,28,.10);
+}
+.guesty-search-inner {
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+}
+#search-widget_IO312PWQ {
+  min-height: 0 !important;
+}
+.guesty-search-section + .featured-rentals {
+  padding-top: 72px !important;
+}
+@media screen and (max-width: 600px) {
+  .guesty-search-section {
+    padding: 0 !important;
+  }
+  .guesty-search-section + .featured-rentals {
+    padding-top: 58px !important;
+  }
+}
