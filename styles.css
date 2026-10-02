@@ -1778,3 +1778,53 @@ section.management {
     padding-right: 16px !important;
   }
 }
+
+
+/* FOOTER - MOBILE POLISH ONLY */
+@media screen and (max-width: 600px) {
+  footer.site-footer .footer-main {
+    padding: 48px 22px 38px !important;
+    gap: 0 !important;
+  }
+
+  footer.site-footer .footer-brand {
+    margin-bottom: 34px !important;
+  }
+
+  footer.site-footer .footer-brand p {
+    margin-top: 16px !important;
+    line-height: 1.55 !important;
+  }
+
+  footer.site-footer .footer-column {
+    padding: 22px 0 !important;
+    border-top: 1px solid rgba(255,255,255,.16) !important;
+  }
+
+  footer.site-footer .footer-column h4 {
+    margin: 0 0 14px !important;
+    font-size: 12px !important;
+    letter-spacing: 1.5px !important;
+  }
+
+  footer.site-footer .footer-column a,
+  footer.site-footer .footer-column p {
+    margin: 0 0 9px !important;
+    line-height: 1.45 !important;
+  }
+
+  footer.site-footer .footer-column a:last-child,
+  footer.site-footer .footer-column p:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  footer.site-footer .footer-bottom {
+    padding: 20px 22px 24px !important;
+  }
+
+  footer.site-footer .footer-bottom p {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+  }
+}
