@@ -2932,3 +2932,11 @@ section.management {
     display:block !important;
   }
 }
+
+
+/* Mobile Ski House headline: add breathing room at right edge */
+@media (max-width:600px){
+  section.ski.ski-house .ski-house-content h2{
+    font-size:clamp(37px,10vw,42px) !important;
+  }
+}
