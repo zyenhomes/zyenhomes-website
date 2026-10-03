@@ -2276,3 +2276,77 @@ section.management {
     background-position: center center;
   }
 }
+
+
+/* MOBILE RHYTHM + FEATURED CARD POLISH */
+@media screen and (max-width: 560px) {
+  /* Reduce excess whitespace between the booking search and featured homes */
+  #stays.search {
+    margin-bottom: 0;
+  }
+  .featured-rentals {
+    padding-top: 52px;
+    padding-bottom: 58px;
+  }
+  .featured-rentals .lead {
+    margin-bottom: 38px;
+  }
+
+  /* More compact, consistent two-column property cards */
+  .featured-rentals .property-grid {
+    gap: 14px;
+  }
+  .featured-rentals .property-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .featured-rentals .property-card img {
+    aspect-ratio: 1 / .88;
+    height: auto;
+    object-fit: cover;
+  }
+  .featured-rentals .property-info {
+    padding: 18px 14px 20px;
+    flex: 1;
+  }
+  .featured-rentals .property-info h3 {
+    margin-top: 8px;
+    margin-bottom: 12px;
+    line-height: 1.03;
+  }
+  .featured-rentals .property-info p {
+    margin-top: 0;
+  }
+  .featured-rentals .property-feature {
+    margin-top: 14px;
+  }
+
+  /* Tighten major section transitions without making content feel crowded */
+  .destinations {
+    padding-top: 58px;
+    padding-bottom: 58px;
+  }
+  .destinations .lead {
+    margin-bottom: 38px;
+  }
+  .why-stay {
+    padding-top: 58px;
+    padding-bottom: 58px;
+  }
+  .why-gallery {
+    margin-bottom: 42px;
+  }
+  .ski-house {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+  #management {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+  #about {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+}
