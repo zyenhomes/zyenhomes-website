@@ -2781,3 +2781,11 @@ section.management {
  .footer .footer-brand img,
  .site-footer .footer-brand img{width:160px !important;height:160px !important;}
 }
+
+
+/* Tighten desktop gap between Featured Rentals and Explore Ontario */
+@media (min-width:561px){
+ .featured-rentals{padding-bottom:54px !important;}
+ .destinations{padding-top:0 !important;}
+ .destinations::before{margin-top:0 !important;}
+}
