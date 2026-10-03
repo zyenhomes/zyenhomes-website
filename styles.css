@@ -2959,3 +2959,11 @@ section.management {
     height:auto !important;
   }
 }
+
+
+/* Mobile footer final spacing polish */
+@media screen and (max-width:600px){
+  footer.site-footer .footer-brand{margin-bottom:24px !important;}
+  footer.site-footer .footer-col{padding-top:24px !important;padding-bottom:24px !important;}
+  footer.site-footer .footer-bottom{margin-top:30px !important;padding-top:26px !important;padding-bottom:28px !important;}
+}
