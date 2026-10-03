@@ -2262,3 +2262,17 @@ section.management {
     transform-origin: left center;
   }
 }
+
+
+/* MOBILE HERO - SHOW MORE OF THE SEASON IMAGE */
+@media screen and (max-width: 560px) {
+  .hero .season {
+    background-size: auto 100%;
+  }
+  .hero .season.winter {
+    background-position: center center;
+  }
+  .hero .season.summer {
+    background-position: center center;
+  }
+}
