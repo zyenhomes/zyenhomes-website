@@ -2774,3 +2774,10 @@ section.management {
  footer.site-footer .footer-logo img{width:210px !important;max-width:58vw !important;height:auto !important;}
  footer.site-footer .footer-brand p{margin-top:14px !important;}
 }
+
+
+/* Slightly smaller desktop footer logo */
+@media (min-width:761px){
+ .footer .footer-brand img,
+ .site-footer .footer-brand img{width:160px !important;height:160px !important;}
+}
