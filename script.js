@@ -192,3 +192,30 @@ if(skiArrowGallery && skiPrev && skiNext){
   skiPrev.addEventListener('click',()=>moveSkiGallery(-1));
   skiNext.addEventListener('click',()=>moveSkiGallery(1));
 }
+
+
+// Property owner inquiry popup.
+const ownerPopup=document.querySelector('#owner-popup');
+const ownerTrigger=document.querySelector('.owner-inquiry-trigger');
+const ownerForm=document.querySelector('#owner-popup-form');
+if(ownerPopup && ownerTrigger && ownerForm){
+  const ownerClose=ownerPopup.querySelector('.owner-popup-close');
+  const ownerStatus=ownerPopup.querySelector('.owner-popup-status');
+  const openOwnerPopup=()=>{
+    ownerPopup.classList.add('is-open');
+    ownerPopup.setAttribute('aria-hidden','false');
+    setTimeout(()=>ownerPopup.querySelector('#owner-name')?.focus(),100);
+  };
+  const closeOwnerPopup=()=>{
+    ownerPopup.classList.remove('is-open');
+    ownerPopup.setAttribute('aria-hidden','true');
+  };
+  ownerTrigger.addEventListener('click',openOwnerPopup);
+  ownerClose.addEventListener('click',closeOwnerPopup);
+  ownerPopup.addEventListener('click',(e)=>{if(e.target===ownerPopup) closeOwnerPopup();});
+  document.addEventListener('keydown',(e)=>{if(e.key==='Escape' && ownerPopup.classList.contains('is-open')) closeOwnerPopup();});
+  ownerForm.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    ownerStatus.textContent='Thank you. Your property details are ready to be submitted once we connect the inquiry form.';
+  });
+}
