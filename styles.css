@@ -2754,3 +2754,11 @@ section.management {
   .ski-gallery-prev,.ski-prev{left:14px !important;}
   .ski-gallery-next,.ski-next{right:14px !important;}
 }
+
+
+/* Ski House headline: keep Ski Community on one line */
+@media (min-width: 901px){
+  .ski-house-content{max-width:600px;}
+  .ski-house h2{font-size:clamp(44px,4.15vw,62px);line-height:1.02;}
+  .ski-house h2 br{display:block;}
+}
