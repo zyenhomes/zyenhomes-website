@@ -2411,3 +2411,19 @@ section.management {
     border: 0 !important;
   }
 }
+
+
+/* MOBILE HERO FINAL BALANCE */
+@media screen and (max-width: 600px) {
+  .hero h1 {
+    font-size: 39px !important;
+  }
+
+  #stays.search {
+    margin-top: -24px !important;
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+}
