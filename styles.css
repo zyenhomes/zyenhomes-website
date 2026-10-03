@@ -2879,3 +2879,18 @@ section.management {
     padding-top:48px !important;
   }
 }
+
+
+/* Mobile Why Stay spacing refinement */
+@media (max-width:560px){
+  .why-stay{
+    padding-top:34px !important;
+    padding-bottom:40px !important;
+  }
+  .why-stay .why-gallery{
+    margin-bottom:34px !important;
+  }
+  .why-stay .why-content .btn{
+    margin-bottom:0 !important;
+  }
+}
