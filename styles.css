@@ -2572,3 +2572,13 @@ section.management {
  #rentals{padding-top:34px;}
  #rentals::before{width:88%;margin:0 auto 34px;}
 }
+
+
+/* Consistent subtle dividers between major light homepage sections */
+@media screen and (max-width:560px){
+ .destinations,.why-stay,.about-new{position:relative;}
+ .destinations::before,.why-stay::before,.about-new::before{content:"";display:block;width:88%;height:1px;background:rgba(23,63,53,.18);margin:0 auto 34px;}
+ .destinations{padding-top:34px;}
+ .why-stay{padding-top:34px;}
+ .about-new{padding-top:34px;}
+}
