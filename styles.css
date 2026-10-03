@@ -2507,3 +2507,16 @@ section.management {
     letter-spacing: 1px;
   }
 }
+
+
+/* MOBILE BOOKING SEARCH: keep the full Guests + Search Stays row visible */
+@media screen and (max-width: 600px) {
+  #stays.search {
+    padding-bottom: 22px !important;
+    margin-bottom: 28px !important;
+    overflow: visible !important;
+  }
+  .booking-search {
+    padding-bottom: 0 !important;
+  }
+}
