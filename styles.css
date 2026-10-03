@@ -2789,3 +2789,30 @@ section.management {
  .destinations{padding-top:0 !important;}
  .destinations::before{margin-top:0 !important;}
 }
+
+
+/* Mobile booking search: ensure the full form and Search Stays button are visible */
+@media (max-width:560px){
+  #stays.search{
+    margin-top:-54px !important;
+    padding:0 18px 28px !important;
+    position:relative;
+    z-index:6;
+    overflow:visible !important;
+  }
+  #stays .booking-search{
+    grid-template-columns:1fr 1fr !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+    padding:18px !important;
+    gap:12px !important;
+  }
+  #stays .booking-search > div:nth-of-type(3){grid-column:1 / 2;}
+  #stays .booking-search button{
+    grid-column:2 / 3;
+    width:100%;
+    min-height:54px;
+    align-self:end;
+  }
+}
