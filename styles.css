@@ -2651,3 +2651,17 @@ section.management {
    to{transform:translateX(calc(-300% - 30px));}
  }
 }
+
+
+/* Desktop divider between Featured Rentals and Explore Ontario */
+@media (min-width:561px){
+ .destinations{position:relative;}
+ .destinations::before{
+   content:"";
+   display:block;
+   width:min(88%,1180px);
+   height:1px;
+   background:rgba(23,63,53,.18);
+   margin:0 auto 54px;
+ }
+}
