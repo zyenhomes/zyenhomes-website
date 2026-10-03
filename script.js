@@ -125,3 +125,53 @@ if(bookingSearch){
     window.location.href='https://zyenhomes.guestybookings.com/en/properties?'+params.toString();
   });
 }
+
+
+// Email signup popup. Mailchimp connection will be added separately.
+const emailPopup=document.querySelector('#email-popup');
+const emailPopupForm=document.querySelector('#email-popup-form');
+if(emailPopup && emailPopupForm){
+  const closeButton=emailPopup.querySelector('.email-popup-close');
+  const status=emailPopup.querySelector('.email-popup-status');
+  const storageKey='zyenEmailPopupDismissedAt';
+  const subscribedKey='zyenEmailPopupSubscribed';
+  const cooldown=14*24*60*60*1000;
+  let shown=false;
+
+  const recentlyDismissed=()=>{
+    const dismissed=Number(localStorage.getItem(storageKey)||0);
+    return dismissed && (Date.now()-dismissed)<cooldown;
+  };
+  const eligible=()=>!shown && !localStorage.getItem(subscribedKey) && !recentlyDismissed();
+  const openPopup=()=>{
+    if(!eligible()) return;
+    shown=true;
+    emailPopup.classList.add('is-open');
+    emailPopup.setAttribute('aria-hidden','false');
+  };
+  const closePopup=()=>{
+    emailPopup.classList.remove('is-open');
+    emailPopup.setAttribute('aria-hidden','true');
+    localStorage.setItem(storageKey,String(Date.now()));
+  };
+
+  const timer=setTimeout(openPopup,20000);
+  const onScroll=()=>{
+    const doc=document.documentElement;
+    const scrollable=doc.scrollHeight-window.innerHeight;
+    if(scrollable>0 && window.scrollY/scrollable>=0.35){
+      clearTimeout(timer);
+      openPopup();
+      window.removeEventListener('scroll',onScroll);
+    }
+  };
+  window.addEventListener('scroll',onScroll,{passive:true});
+  closeButton.addEventListener('click',closePopup);
+  emailPopup.addEventListener('click',(e)=>{if(e.target===emailPopup) closePopup();});
+  document.addEventListener('keydown',(e)=>{if(e.key==='Escape' && emailPopup.classList.contains('is-open')) closePopup();});
+
+  emailPopupForm.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    status.textContent='Thanks! Mailing-list signup will be activated when we connect Mailchimp.';
+  });
+}
