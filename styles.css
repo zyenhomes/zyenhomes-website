@@ -2525,3 +2525,17 @@ section.management {
 /* Featured rental card booking link */
 .property-view{display:inline-block;margin-top:12px;color:var(--green);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
 @media screen and (max-width:560px){.property-view{margin-top:9px;font-size:10px;letter-spacing:.7px;}}
+
+
+/* Explore Ontario destination links */
+.destination-card{display:block;color:inherit;text-decoration:none;cursor:pointer;}
+.destination-card .photo{transition:transform .3s ease;}
+.destination-card:hover .photo{transform:scale(1.015);}
+.destination-link{display:inline-block;margin-top:10px;color:var(--green);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+@media screen and (max-width:560px){
+ .destination-card{display:grid;grid-template-columns:42% 58%;align-items:stretch;}
+ .destination-card .photo{height:100%;min-height:145px;}
+ .destination-copy{padding:18px 16px;}
+ .destination-copy h3{margin-top:0;}
+ .destination-link{font-size:9px;letter-spacing:.65px;margin-top:7px;}
+}
