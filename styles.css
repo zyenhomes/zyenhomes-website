@@ -2816,3 +2816,12 @@ section.management {
     align-self:end;
   }
 }
+
+
+/* Mobile booking search: lift the complete card slightly higher */
+@media (max-width:560px){
+  #stays.search{
+    margin-top:-105px !important;
+    padding-bottom:36px !important;
+  }
+}
