@@ -2427,3 +2427,19 @@ section.management {
     max-width: none !important;
   }
 }
+
+
+/* MOBILE HERO + BOOKING SEARCH FINAL BALANCE */
+@media screen and (max-width: 600px) {
+  .hero h1 {
+    font-size: 39px !important;
+    line-height: .98 !important;
+  }
+
+  #stays.search {
+    width: calc(100% - 36px) !important;
+    margin: -24px auto 0 !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+}
