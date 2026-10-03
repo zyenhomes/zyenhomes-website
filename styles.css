@@ -2350,3 +2350,14 @@ section.management {
     padding-bottom: 64px;
   }
 }
+
+
+/* MOBILE HERO -> SEARCH SPACING: reveal more of the hero image */
+@media screen and (max-width: 560px) {
+  .hero {
+    padding-bottom: 105px;
+  }
+  #stays.search {
+    margin-top: -38px;
+  }
+}
