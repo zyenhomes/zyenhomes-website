@@ -2665,3 +2665,18 @@ section.management {
    margin:0 auto 54px;
  }
 }
+
+
+/* Balance desktop footer logo with footer text columns */
+@media (min-width:761px){
+  .footer .footer-brand img,
+  .site-footer .footer-brand img{
+    width:180px !important;
+    height:180px !important;
+    object-fit:cover;
+  }
+  .footer .footer-brand,
+  .site-footer .footer-brand{
+    align-self:start;
+  }
+}
