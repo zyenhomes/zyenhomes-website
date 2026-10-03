@@ -2469,3 +2469,41 @@ section.management {
     margin-bottom: 22px !important;
   }
 }
+
+
+/* FINAL SKI HOUSE + COMPACT WHY STAY */
+@media screen and (max-width: 600px) {
+  .ski-house {
+    padding-bottom: 54px !important;
+  }
+  .ski-house-layout,
+  .ski-gallery {
+    margin-bottom: 0 !important;
+  }
+
+  .why-stay .why-content > p:not(.eyebrow) {
+    max-width: 34rem;
+  }
+  .why-benefits-compact {
+    margin: 28px 0 32px !important;
+  }
+  .why-benefits-compact span {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding: 16px 0 !important;
+  }
+  .why-benefits-compact span strong {
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--green);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green);
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+}
