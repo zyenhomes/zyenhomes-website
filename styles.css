@@ -2598,3 +2598,16 @@ section.management {
  .footer-bottom{padding:18px 24px 22px;text-align:center;}
  .footer-bottom p{margin:0;font-size:10px;line-height:1.5;opacity:.72;}
 }
+
+
+/* Mobile navigation final polish */
+@media screen and (max-width:900px){
+ .site-header nav{top:100%;padding:28px 24px 30px;gap:0;background:#0d2f27;box-shadow:0 16px 30px rgba(0,0,0,.16);}
+ .site-header nav a{width:min(360px,100%);padding:15px 12px;color:#fff;text-align:center;font-size:17px;line-height:1.25;border-bottom:1px solid rgba(255,255,255,.12);}
+ .site-header nav a:last-child{width:auto;margin-top:18px;padding:15px 30px;border:1px solid rgba(255,255,255,.22);background:#174c40;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+}
+@media screen and (max-width:560px){
+ .site-header nav{padding-top:20px;padding-bottom:24px;}
+ .site-header nav a{padding:13px 10px;font-size:16px;}
+ .site-header nav a:last-child{margin-top:14px;padding:14px 28px;font-size:12px;}
+}
