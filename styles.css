@@ -2539,3 +2539,25 @@ section.management {
  .destination-copy h3{margin-top:0;}
  .destination-link{font-size:9px;letter-spacing:.65px;margin-top:7px;}
 }
+
+
+/* Email signup popup */
+.email-popup-backdrop{position:fixed;inset:0;background:rgba(13,28,24,.58);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;}
+.email-popup-backdrop.is-open{opacity:1;visibility:visible;}
+.email-popup{position:relative;width:min(520px,100%);background:var(--cream);padding:42px 40px 34px;box-shadow:0 24px 70px rgba(0,0,0,.25);}
+.email-popup-close{position:absolute;top:10px;right:12px;width:44px;height:44px;border:0;background:transparent;color:var(--green);font-size:32px;line-height:1;cursor:pointer;}
+.email-popup h2{font-size:46px;line-height:1;margin:8px 0 14px;}
+.email-popup-copy{font-size:17px;line-height:1.55;margin:0 0 24px;}
+.email-popup-form label{display:block;margin:13px 0 6px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.email-popup-form input{width:100%;height:48px;border:1px solid #d7d2c8;background:#fff;padding:0 14px;font:inherit;box-sizing:border-box;}
+.email-popup-form .btn{width:100%;margin-top:18px;border:0;height:50px;cursor:pointer;}
+.email-popup-note{font-size:10px;line-height:1.45;color:#666;margin:12px 0 0;}
+.email-popup-status{font-size:12px;margin:10px 0 0;color:var(--green);font-weight:700;}
+@media screen and (max-width:560px){
+ .email-popup-backdrop{align-items:flex-end;padding:0;}
+ .email-popup{width:100%;padding:28px 24px 22px;max-height:72vh;overflow:auto;border-radius:14px 14px 0 0;}
+ .email-popup h2{font-size:34px;}
+ .email-popup-copy{font-size:15px;margin-bottom:16px;}
+ .email-popup-form input{height:45px;}
+ .email-popup-form .btn{height:47px;}
+}
