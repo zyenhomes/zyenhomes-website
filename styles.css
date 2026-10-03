@@ -2443,3 +2443,29 @@ section.management {
     padding-right: 18px !important;
   }
 }
+
+
+/* COMPACT SKI HOUSE HOMEPAGE SUMMARY */
+.ski-features-compact span::before {
+  content: "•";
+  margin-right: 10px;
+  color: #d8c69c;
+}
+.ski-pricing-compact {
+  margin-bottom: 24px;
+}
+@media screen and (max-width: 600px) {
+  .ski-house .ski-intro {
+    max-width: 34rem;
+    margin-bottom: 24px !important;
+  }
+  .ski-house .ski-features-compact {
+    margin-bottom: 26px !important;
+  }
+  .ski-house .ski-features-compact span {
+    padding: 12px 0 !important;
+  }
+  .ski-house .ski-pricing-compact {
+    margin-bottom: 22px !important;
+  }
+}
