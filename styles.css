@@ -2611,3 +2611,14 @@ section.management {
  .site-header nav a{padding:13px 10px;font-size:16px;}
  .site-header nav a:last-child{margin-top:14px;padding:14px 28px;font-size:12px;}
 }
+
+
+/* Correct footer logo scale and CTA-to-footer transition on mobile */
+@media screen and (max-width:600px){
+ section.investment-cta{padding-bottom:42px !important;}
+ footer.site-footer{padding-top:0 !important;}
+ footer.site-footer .footer-main{padding-top:34px !important;}
+ footer.site-footer .footer-logo img{width:230px !important;max-width:70vw !important;margin:0 auto !important;}
+ footer.site-footer .footer-brand{margin-bottom:28px !important;}
+ footer.site-footer .footer-brand p{margin-top:18px !important;}
+}
