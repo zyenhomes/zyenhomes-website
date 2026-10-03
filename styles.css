@@ -2894,3 +2894,27 @@ section.management {
     margin-bottom:0 !important;
   }
 }
+
+
+/* Mobile Ski House final refinements */
+@media (max-width:600px){
+  section.ski.ski-house .ski-house-content h2{
+    font-size:46px !important;
+    line-height:1.02 !important;
+    white-space:nowrap !important;
+  }
+  section.ski.ski-house .ski-arrow{
+    width:34px !important;
+    height:34px !important;
+    font-size:24px !important;
+    line-height:1 !important;
+    background:rgba(13,47,39,.52) !important;
+    border-color:rgba(255,255,255,.55) !important;
+    box-shadow:0 3px 12px rgba(0,0,0,.14) !important;
+  }
+  section.ski.ski-house .ski-arrow-left{left:7px !important;}
+  section.ski.ski-house .ski-arrow-right{right:7px !important;}
+  section.ski.ski-house{
+    padding-bottom:34px !important;
+  }
+}
