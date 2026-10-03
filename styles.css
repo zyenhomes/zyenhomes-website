@@ -2847,3 +2847,17 @@ section.management {
     margin:0 !important;
   }
 }
+
+
+/* Mobile booking card: balanced vertical spacing */
+@media (max-width:560px){
+  #stays.search{
+    padding-bottom:0 !important;
+  }
+  #stays .booking-search{
+    padding:22px 20px !important;
+    row-gap:14px !important;
+    min-height:0 !important;
+    height:auto !important;
+  }
+}
