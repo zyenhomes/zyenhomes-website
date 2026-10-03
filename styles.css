@@ -2861,3 +2861,21 @@ section.management {
     height:auto !important;
   }
 }
+
+
+/* Section transition: place divider directly on the white/cream boundary */
+.destinations{
+  position:relative;
+  border-bottom:1px solid rgba(23,63,53,.18);
+}
+.destinations + section::before{
+  display:none !important;
+}
+@media (max-width:560px){
+  .destinations{
+    padding-bottom:48px !important;
+  }
+  .destinations + section{
+    padding-top:48px !important;
+  }
+}
