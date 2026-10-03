@@ -2582,3 +2582,19 @@ section.management {
  .why-stay{padding-top:34px;}
  .about-new{padding-top:34px;}
 }
+
+
+/* Footer final polish */
+.footer-logo{display:inline-block;line-height:0;}
+.footer-logo img{display:block;width:250px;max-width:100%;height:auto;object-fit:contain;}
+@media screen and (max-width:560px){
+ .footer-main{padding-top:46px;padding-bottom:36px;}
+ .footer-brand{margin-bottom:28px;}
+ .footer-logo img{width:285px;margin:0 auto;}
+ .footer-brand p{margin-top:22px;}
+ .footer-column{padding-top:28px;padding-bottom:28px;}
+ .footer-column h4{margin-bottom:20px;}
+ .footer-column a,.footer-column p{margin-top:12px;margin-bottom:12px;}
+ .footer-bottom{padding:18px 24px 22px;text-align:center;}
+ .footer-bottom p{margin:0;font-size:10px;line-height:1.5;opacity:.72;}
+}
