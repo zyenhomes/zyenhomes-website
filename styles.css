@@ -2825,3 +2825,25 @@ section.management {
     padding-bottom:36px !important;
   }
 }
+
+
+/* Mobile booking search: align both columns and keep all fields inside card */
+@media (max-width:560px){
+  #stays .booking-search{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    box-sizing:border-box !important;
+  }
+  #stays .booking-search > div{
+    min-width:0 !important;
+    width:100% !important;
+  }
+  #stays .booking-search input,
+  #stays .booking-search button{
+    width:100% !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+  }
+  #stays .booking-search button{
+    margin:0 !important;
+  }
+}
