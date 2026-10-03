@@ -2940,3 +2940,12 @@ section.management {
     font-size:clamp(37px,10vw,42px) !important;
   }
 }
+
+
+/* Mobile Ski House headline: comfortable right-side margin */
+@media (max-width:600px){
+  section.ski.ski-house .ski-house-content h2{
+    font-size:clamp(35px,9.4vw,40px) !important;
+    letter-spacing:-.6px !important;
+  }
+}
