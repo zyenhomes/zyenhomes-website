@@ -175,3 +175,20 @@ if(emailPopup && emailPopupForm){
     status.textContent='Thanks! Mailing-list signup will be activated when we connect Mailchimp.';
   });
 }
+
+
+// Ski House manual previous/next controls.
+const skiPrev=document.querySelector('.ski-arrow-left');
+const skiNext=document.querySelector('.ski-arrow-right');
+const skiArrowGallery=document.querySelector('.ski-gallery');
+if(skiArrowGallery && skiPrev && skiNext){
+  const moveSkiGallery=(direction)=>{
+    const first=skiArrowGallery.querySelector('img');
+    if(!first) return;
+    const gap=parseFloat(getComputedStyle(skiArrowGallery).gap)||10;
+    const amount=first.getBoundingClientRect().width+gap;
+    skiArrowGallery.scrollBy({left:direction*amount,behavior:'smooth'});
+  };
+  skiPrev.addEventListener('click',()=>moveSkiGallery(-1));
+  skiNext.addEventListener('click',()=>moveSkiGallery(1));
+}
