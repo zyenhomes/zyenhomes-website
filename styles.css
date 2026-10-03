@@ -2561,3 +2561,14 @@ section.management {
  .email-popup-form input{height:45px;}
  .email-popup-form .btn{height:47px;}
 }
+
+
+/* Refined section transition below booking search */
+#stays.search{margin-bottom:0;}
+#rentals{position:relative;}
+#rentals::before{content:"";display:block;width:min(88%,1180px);height:1px;background:rgba(23,63,53,.18);margin:0 auto 54px;}
+@media screen and (max-width:560px){
+ #stays.search{padding-bottom:22px;}
+ #rentals{padding-top:34px;}
+ #rentals::before{width:88%;margin:0 auto 34px;}
+}
