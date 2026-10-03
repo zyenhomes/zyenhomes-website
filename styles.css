@@ -2622,3 +2622,32 @@ section.management {
  footer.site-footer .footer-brand{margin-bottom:28px !important;}
  footer.site-footer .footer-brand p{margin-top:18px !important;}
 }
+
+
+/* DESKTOP SKI HOUSE - SLIDING PHOTO STRIPS */
+@media (min-width:1001px){
+ section.ski.ski-house .ski-gallery{
+   height:500px !important;
+   display:flex !important;
+   gap:10px !important;
+   overflow:hidden !important;
+   align-items:stretch !important;
+ }
+ section.ski.ski-house .ski-gallery img,
+ section.ski.ski-house .ski-gallery .ski-main{
+   grid-column:auto !important;
+   grid-row:auto !important;
+   flex:0 0 34% !important;
+   width:34% !important;
+   height:100% !important;
+   object-fit:cover !important;
+   animation:skiDesktopSlide 32s linear infinite;
+ }
+ section.ski.ski-house .ski-gallery:hover img{
+   animation-play-state:paused;
+ }
+ @keyframes skiDesktopSlide{
+   from{transform:translateX(0);}
+   to{transform:translateX(calc(-300% - 30px));}
+ }
+}
