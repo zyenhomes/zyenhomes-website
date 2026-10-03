@@ -2680,3 +2680,22 @@ section.management {
     align-self:start;
   }
 }
+
+
+/* Ski House slider navigation arrows */
+.ski-gallery-wrap{position:relative;min-width:0;}
+.ski-gallery-wrap .ski-gallery{width:100%;}
+.ski-arrow{
+ position:absolute;top:50%;z-index:8;transform:translateY(-50%);
+ width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.7);
+ background:rgba(13,47,39,.72);color:#fff;font-size:34px;line-height:42px;
+ display:flex;align-items:center;justify-content:center;cursor:pointer;
+ box-shadow:0 4px 18px rgba(0,0,0,.18);transition:background .2s ease,transform .2s ease;
+}
+.ski-arrow:hover{background:rgba(13,47,39,.95);transform:translateY(-50%) scale(1.05);}
+.ski-arrow-left{left:14px;}
+.ski-arrow-right{right:14px;}
+@media(max-width:600px){
+ .ski-arrow{width:40px;height:40px;font-size:29px;line-height:36px;}
+ .ski-arrow-left{left:8px}.ski-arrow-right{right:8px}
+}
