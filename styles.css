@@ -2949,3 +2949,13 @@ section.management {
     letter-spacing:-.6px !important;
   }
 }
+
+
+/* Mobile footer logo: smaller, cleaner scale */
+@media screen and (max-width:600px){
+  footer.site-footer .footer-logo img{
+    width:170px !important;
+    max-width:48vw !important;
+    height:auto !important;
+  }
+}
