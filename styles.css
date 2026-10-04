@@ -3612,3 +3612,33 @@ section.management {
     font-size:13px !important;
   }
 }
+
+/* Property management page: separate header and tighten hero */
+.owner-info-page .custom-page-header{
+  background:#f5f1e8 !important;
+  color:#173f35 !important;
+  border-bottom:1px solid rgba(23,63,53,.14) !important;
+}
+.owner-info-page .custom-page-header .custom-back{
+  color:#173f35 !important;
+}
+.owner-info-page .owner-hero{
+  padding:68px 6vw 72px !important;
+}
+.owner-info-page .owner-hero h1{
+  font-size:clamp(44px,5.2vw,68px) !important;
+  max-width:900px !important;
+  margin-bottom:20px !important;
+}
+.owner-info-page .owner-lead{
+  font-size:18px !important;
+  line-height:1.65 !important;
+}
+@media screen and (max-width:760px){
+  .owner-info-page .owner-hero{
+    padding:48px 24px 52px !important;
+  }
+  .owner-info-page .owner-hero h1{
+    font-size:38px !important;
+  }
+}
