@@ -3032,3 +3032,14 @@ section.management {
     box-shadow:0 1px 0 rgba(23,63,53,.10);
   }
 }
+
+
+/* Refined mobile sticky header: translucent luxury treatment */
+@media screen and (max-width:600px){
+  .site-header{
+    background:rgba(245,241,232,.91) !important;
+    -webkit-backdrop-filter:blur(12px);
+    backdrop-filter:blur(12px);
+    box-shadow:0 1px 0 rgba(23,63,53,.08);
+  }
+}
