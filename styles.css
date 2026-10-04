@@ -3020,3 +3020,11 @@ section.management {
     margin-top:0 !important;
   }
 }
+
+
+/* Mobile homepage: raise booking card so the full search starts immediately after hero */
+@media screen and (max-width:560px){
+  #stays.search{
+    margin-top:-150px !important;
+  }
+}
