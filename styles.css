@@ -3231,3 +3231,50 @@ section.management {
 
 /* Keep the detailed custom-stay form off the homepage until opened */
 #custom-stay[hidden]{display:none !important;}
+
+
+/* Dedicated custom group stay page */
+.custom-stay-page{background:var(--cream);}
+.custom-stay-page .custom-page-header{
+  position:relative;
+  height:110px;
+  min-height:110px;
+  background:var(--cream);
+  color:var(--green);
+  border-bottom:1px solid rgba(23,63,53,.12);
+}
+.custom-page-header .brand img{width:88px;height:88px;object-fit:contain;}
+.custom-back{
+  color:var(--green);
+  text-decoration:none;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.5px;
+}
+.custom-stay-standalone{padding-top:70px;min-height:calc(100vh - 110px);}
+.custom-stay-standalone h1{
+  font-family:Georgia,serif;
+  font-size:clamp(44px,6vw,68px);
+  line-height:1.02;
+  letter-spacing:-1.5px;
+  max-width:850px;
+  margin:0 auto 22px;
+}
+@media screen and (max-width:600px){
+  .custom-stay-page .custom-page-header{
+    height:80px !important;
+    min-height:80px !important;
+    padding:6px 18px !important;
+    display:flex !important;
+  }
+  .custom-page-header .brand img{
+    width:66px !important;
+    height:66px !important;
+  }
+  .custom-back{font-size:11px;}
+  .custom-stay-standalone{padding-top:42px;}
+  .custom-stay-standalone h1{
+    font-size:38px;
+    letter-spacing:-.7px;
+  }
+}
