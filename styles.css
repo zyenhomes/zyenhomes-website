@@ -3075,3 +3075,21 @@ section.management {
     padding-bottom:10px !important;
   }
 }
+
+
+/* Mobile header: smaller logo box */
+@media screen and (max-width:600px){
+  .site-header{
+    height:100px !important;
+    min-height:100px !important;
+    padding:8px 24px !important;
+  }
+  .site-header .brand img{
+    width:78px !important;
+    height:78px !important;
+    max-width:78px !important;
+  }
+  .site-header nav{
+    top:100px !important;
+  }
+}
