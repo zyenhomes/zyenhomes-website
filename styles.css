@@ -3575,3 +3575,40 @@ section.management {
     opacity:1 !important;
   }
 }
+
+/* Mobile Contact dropdown alignment + visibility */
+@media screen and (max-width:600px){
+  .site-header nav .nav-contact{
+    width:100% !important;
+    text-align:center !important;
+  }
+  .site-header nav .nav-contact-toggle{
+    width:auto !important;
+    margin:0 auto !important;
+    padding:12px 0 !important;
+    display:inline-flex !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:7px !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+  }
+  .site-header nav .nav-contact-toggle span{
+    position:static !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+    opacity:1 !important;
+  }
+  .site-header nav .nav-contact-menu{
+    width:100% !important;
+    padding:0 !important;
+    text-align:center !important;
+  }
+  .site-header nav .nav-contact-menu a{
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+    opacity:1 !important;
+    padding:12px 0 !important;
+    font-size:13px !important;
+  }
+}
