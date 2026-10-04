@@ -3102,3 +3102,15 @@ section.management {
     min-height:76px !important;
   }
 }
+
+
+/* Mobile anchor targets: account for full sticky header height */
+@media screen and (max-width:600px){
+  html{scroll-padding-top:205px !important;}
+  #management,#stays,#about,#contact{
+    scroll-margin-top:205px !important;
+  }
+  #contact{
+    padding-top:18px !important;
+  }
+}
