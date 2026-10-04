@@ -3051,3 +3051,27 @@ section.management {
     top:118px !important;
   }
 }
+
+
+/* Mobile booking card refinement: smaller and slightly lower */
+@media screen and (max-width:560px){
+  #stays.search{
+    margin-top:-118px !important;
+    padding-left:38px !important;
+    padding-right:38px !important;
+  }
+  #stays .booking-search{
+    padding:16px !important;
+    row-gap:10px !important;
+    column-gap:10px !important;
+  }
+  #stays .booking-search label{
+    margin-bottom:6px !important;
+  }
+  #stays .booking-search input,
+  #stays .booking-search button{
+    min-height:50px !important;
+    padding-top:10px !important;
+    padding-bottom:10px !important;
+  }
+}
