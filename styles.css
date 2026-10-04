@@ -3681,3 +3681,9 @@ section.management {
  .about-stats{grid-template-columns:1fr 1fr;}
  .about-stats div{padding:28px 12px;}
 }
+
+/* About hero headline line control */
+.about-nowrap{white-space:nowrap;}
+@media screen and (max-width:760px){
+  .about-nowrap{white-space:normal;}
+}
