@@ -258,3 +258,37 @@ if(customStayForm){
     window.location.href='mailto:info@zyenhomes.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
   });
 }
+
+
+// Contact page guest and property-owner inquiry forms
+document.querySelectorAll('.contact-form-toggle').forEach((button)=>{
+  button.addEventListener('click',()=>{
+    const target=document.getElementById(button.dataset.target);
+    document.querySelectorAll('.contact-inline-form').forEach((form)=>{ if(form!==target) form.hidden=true; });
+    if(target){
+      target.hidden=false;
+      target.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  });
+});
+document.querySelectorAll('.contact-form-close').forEach((button)=>{
+  button.addEventListener('click',()=>{
+    const panel=button.closest('.contact-inline-form');
+    if(panel) panel.hidden=true;
+  });
+});
+document.querySelectorAll('.contact-request-form').forEach((form)=>{
+  form.addEventListener('submit',(event)=>{
+    event.preventDefault();
+    if(!form.reportValidity()) return;
+    const d=new FormData(form);
+    const type=form.dataset.inquiry || 'Zyen Homes Inquiry';
+    const lines=[type,'','Name: '+(d.get('name')||''),'Email: '+(d.get('email')||''),'Phone: '+(d.get('phone')||'Not provided')];
+    for(const [key,value] of d.entries()){
+      if(['name','email','phone'].includes(key) || !value) continue;
+      const label=key.replace(/([A-Z])/g,' $1').replace(/^./,s=>s.toUpperCase());
+      lines.push(label+': '+value);
+    }
+    window.location.href='mailto:info@zyenhomes.com?subject='+encodeURIComponent(type)+'&body='+encodeURIComponent(lines.join('\n'));
+  });
+});
