@@ -3726,3 +3726,16 @@ section.management {
     padding-bottom:48px !important;
   }
 }
+
+/* Featured rentals: view all properties CTA */
+.all-properties-link{
+  text-align:center;
+  margin-top:42px;
+}
+.all-properties-link .btn{
+  margin-top:0;
+}
+@media screen and (max-width:600px){
+  .all-properties-link{margin-top:28px;}
+  .all-properties-link .btn{width:100%;max-width:320px;}
+}
