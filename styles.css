@@ -3070,3 +3070,35 @@ section.management {
     align-self:stretch;
   }
 }
+
+
+/* Mobile search card definitive clipping fix */
+@media screen and (max-width:600px){
+  #stays.search{
+    box-sizing:border-box !important;
+    height:auto !important;
+    min-height:0 !important;
+    overflow:visible !important;
+    margin-bottom:0 !important;
+    padding-bottom:48px !important;
+  }
+  #stays .booking-search{
+    box-sizing:border-box !important;
+    height:auto !important;
+    min-height:max-content !important;
+    overflow:visible !important;
+    padding-bottom:28px !important;
+  }
+  #stays .booking-search > div,
+  #stays .booking-search button{
+    position:relative !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+  #stays .booking-search button{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    min-height:76px !important;
+  }
+}
