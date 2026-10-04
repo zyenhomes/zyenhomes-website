@@ -3227,3 +3227,7 @@ section.management {
   .custom-full,.custom-submit,.custom-form-note{grid-column:1;}
   .custom-submit{width:100%;max-width:none !important;}
 }
+
+
+/* Keep the detailed custom-stay form off the homepage until opened */
+#custom-stay[hidden]{display:none !important;}
