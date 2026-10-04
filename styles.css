@@ -3739,3 +3739,11 @@ section.management {
   .all-properties-link{margin-top:28px;}
   .all-properties-link .btn{width:100%;max-width:320px;}
 }
+
+/* Ski Community headline + navigation target */
+.ski-community-line{white-space:nowrap;}
+#ski-community{scroll-margin-top:20px;}
+@media screen and (max-width:600px){
+  .ski-community-line{white-space:normal;}
+  #ski-community{scroll-margin-top:0;}
+}
