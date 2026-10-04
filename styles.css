@@ -3422,3 +3422,22 @@ section.management {
   .contact-form-full,.contact-form-submit{grid-column:1;}
   .contact-form-submit{width:100%;justify-self:stretch;}
 }
+
+
+/* Contact cards: align primary inquiry buttons */
+.contact-choice-card{
+  display:flex;
+  flex-direction:column;
+}
+.contact-choice-card .contact-form-toggle{
+  margin-top:auto !important;
+  align-self:flex-start;
+}
+.contact-choice-card .contact-secondary{
+  flex:0 0 auto;
+}
+@media screen and (min-width:601px){
+  .contact-choice-card{
+    min-height:420px;
+  }
+}
