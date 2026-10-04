@@ -3706,3 +3706,23 @@ section.management {
     gap:22px !important;
   }
 }
+
+/* About page: tighten stats + approach vertical spacing */
+.about-info-page .about-page-section:has(.about-stats){
+  padding-top:58px !important;
+  padding-bottom:48px !important;
+}
+.about-info-page .about-page-section:has(.about-stats) + .about-page-section{
+  padding-top:52px !important;
+  padding-bottom:58px !important;
+}
+@media screen and (max-width:760px){
+  .about-info-page .about-page-section:has(.about-stats){
+    padding-top:42px !important;
+    padding-bottom:36px !important;
+  }
+  .about-info-page .about-page-section:has(.about-stats) + .about-page-section{
+    padding-top:40px !important;
+    padding-bottom:48px !important;
+  }
+}
