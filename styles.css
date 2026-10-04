@@ -3020,3 +3020,15 @@ section.management {
     margin-top:0 !important;
   }
 }
+
+
+/* Mobile sticky navigation: keep logo + menu accessible while scrolling */
+@media screen and (max-width:600px){
+  .site-header{
+    position:sticky !important;
+    top:0 !important;
+    z-index:1000 !important;
+    background:var(--cream) !important;
+    box-shadow:0 1px 0 rgba(23,63,53,.10);
+  }
+}
