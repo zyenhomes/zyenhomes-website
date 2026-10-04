@@ -3642,3 +3642,42 @@ section.management {
     font-size:38px !important;
   }
 }
+
+/* About Zyen Homes page */
+.about-info-page{background:#fff;}
+.about-info-page .custom-page-header{
+  background:#f5f1e8 !important;color:#173f35 !important;
+  border-bottom:1px solid rgba(23,63,53,.14) !important;
+}
+.about-info-page .custom-page-header .custom-back{color:#173f35 !important;}
+.about-page-wrap{max-width:1120px;margin:0 auto;}
+.about-page-hero{background:#173f35;color:#fff;padding:76px 6vw 82px;}
+.about-page-hero h1{font-size:clamp(48px,6vw,76px);max-width:900px;margin-bottom:24px;}
+.about-page-lead{max-width:760px;font-size:19px;line-height:1.7;color:rgba(255,255,255,.85);}
+.about-page-section{padding:90px 6vw;}
+.about-page-split{display:grid;grid-template-columns:.9fr 1.1fr;gap:85px;align-items:start;}
+.about-page-split p:not(.eyebrow){font-size:17px;line-height:1.75;color:#5d625f;}
+.about-page-values{background:#f5f1e8;padding:90px 6vw;}
+.about-page-values>div>h2{max-width:650px;}
+.about-value-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:45px;}
+.about-value-grid article{background:#fff;padding:34px 30px;}
+.about-value-grid span{font-size:11px;font-weight:700;letter-spacing:2px;color:#285c4d;}
+.about-value-grid h3{margin:20px 0 12px;}
+.about-value-grid p{line-height:1.65;color:#626965;}
+.about-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#ddd8ce;border:1px solid #ddd8ce;}
+.about-stats div{background:#fff;text-align:center;padding:38px 18px;}
+.about-stats strong{display:block;font-family:Georgia,serif;color:#173f35;font-size:34px;margin-bottom:8px;}
+.about-stats span{font-size:12px;color:#626965;}
+.about-page-cta{background:#173f35;color:#fff;text-align:center;padding:85px 6vw;}
+.about-page-cta p:not(.eyebrow){max-width:650px;margin:0 auto 24px;color:rgba(255,255,255,.82);line-height:1.7;}
+.about-page-cta .btn{background:#fff;color:#173f35;border-color:#fff;}
+@media screen and (max-width:760px){
+ .about-page-hero{padding:52px 24px 58px;}
+ .about-page-hero h1{font-size:40px;letter-spacing:-1px;}
+ .about-page-lead{font-size:17px;}
+ .about-page-section,.about-page-values,.about-page-cta{padding:60px 24px;}
+ .about-page-split{grid-template-columns:1fr;gap:22px;}
+ .about-value-grid{grid-template-columns:1fr;gap:12px;margin-top:32px;}
+ .about-stats{grid-template-columns:1fr 1fr;}
+ .about-stats div{padding:28px 12px;}
+}
