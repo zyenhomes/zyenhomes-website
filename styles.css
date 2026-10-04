@@ -3028,3 +3028,26 @@ section.management {
     margin-top:-150px !important;
   }
 }
+
+
+/* Compact mobile header */
+@media screen and (max-width:600px){
+  .site-header{
+    height:118px !important;
+    min-height:118px !important;
+    padding:10px 24px !important;
+  }
+  .site-header .brand img{
+    width:96px !important;
+    height:96px !important;
+    max-width:96px !important;
+    object-fit:contain !important;
+  }
+  .site-header .menu{
+    font-size:32px !important;
+    line-height:1 !important;
+  }
+  .site-header nav{
+    top:118px !important;
+  }
+}
