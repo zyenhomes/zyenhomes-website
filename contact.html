@@ -19,21 +19,52 @@
     <p class="contact-choice-lead">Choose the option that best describes what you need and we'll direct your inquiry to the right place.</p>
     <div class="contact-choice-grid">
       <article class="contact-choice-card">
-        <span class="contact-choice-number">01</span>
+        
         <p class="contact-choice-kicker">FOR GUESTS</p>
         <h2>Planning a Stay?</h2>
         <p>Questions about availability, an existing reservation, amenities, destinations or one of our vacation homes.</p>
-        <a class="btn dark" href="mailto:info@zyenhomes.com?subject=Guest%20%26%20Booking%20Inquiry">Guest &amp; Booking Support</a>
+        <button class="btn dark contact-form-toggle" type="button" data-target="guest-contact-form">Guest &amp; Booking Support</button>
         <a class="contact-secondary" href="custom-stay.html">More than 20 guests? Custom Group Stay →</a>
       </article>
       <article class="contact-choice-card">
-        <span class="contact-choice-number">02</span>
+        
         <p class="contact-choice-kicker">FOR PROPERTY OWNERS</p>
         <h2>Looking for Property Management?</h2>
         <p>Interested in professional management, design, setup, revenue management or improving your vacation rental.</p>
-        <a class="btn dark" href="mailto:info@zyenhomes.com?subject=Property%20Management%20Inquiry">Property Management Inquiry</a>
-        <a class="contact-secondary" href="index.html#management">Explore Property Management →</a>
+        <button class="btn dark contact-form-toggle" type="button" data-target="owner-contact-form">Property Management Inquiry</button>
+        
       </article>
+    </div>
+    <div class="contact-inline-form" id="guest-contact-form" hidden>
+      <button class="contact-form-close" type="button" aria-label="Close guest inquiry form">×</button>
+      <p class="eyebrow green">GUEST &amp; BOOKING SUPPORT</p><h2>Tell Us About Your Stay</h2>
+      <form class="contact-request-form" data-inquiry="Guest & Booking Inquiry">
+        <div><label>Name</label><input name="name" type="text" autocomplete="name" required></div>
+        <div><label>Email</label><input name="email" type="email" autocomplete="email" required></div>
+        <div><label>Phone</label><input name="phone" type="tel" autocomplete="tel"></div>
+        <div><label>Property / Destination</label><input name="property" type="text" placeholder="e.g. Blue Mountains"></div>
+        <div><label>Check-in</label><input name="checkin" type="date"></div>
+        <div><label>Check-out</label><input name="checkout" type="date"></div>
+        <div><label>Number of Guests</label><input name="guests" type="number" min="1"></div>
+        <div class="contact-form-full"><label>Your Question</label><textarea name="message" rows="5" required></textarea></div>
+        <button class="btn dark contact-form-submit" type="submit">Send Guest Inquiry</button>
+      </form>
+    </div>
+    <div class="contact-inline-form" id="owner-contact-form" hidden>
+      <button class="contact-form-close" type="button" aria-label="Close property management inquiry form">×</button>
+      <p class="eyebrow green">PROPERTY MANAGEMENT INQUIRY</p><h2>Tell Us About Your Property</h2>
+      <form class="contact-request-form" data-inquiry="Property Management Inquiry">
+        <div><label>Name</label><input name="name" type="text" autocomplete="name" required></div>
+        <div><label>Email</label><input name="email" type="email" autocomplete="email" required></div>
+        <div><label>Phone</label><input name="phone" type="tel" autocomplete="tel"></div>
+        <div><label>Property Location</label><input name="location" type="text" required></div>
+        <div><label>Property Type</label><select name="propertyType"><option>Chalet / Vacation Home</option><option>Waterfront Cottage</option><option>Condo</option><option>Other</option></select></div>
+        <div><label>Bedrooms</label><input name="bedrooms" type="number" min="1"></div>
+        <div><label>Currently a Vacation Rental?</label><select name="operating"><option>Yes</option><option>No</option><option>Preparing to launch</option></select></div>
+        <div><label>What Help Are You Looking For?</label><select name="service"><option>Full-Service Property Management</option><option>Professional Design & Setup</option><option>Revenue Management</option><option>Property Setup + Management</option><option>Other</option></select></div>
+        <div class="contact-form-full"><label>Tell Us About Your Property</label><textarea name="message" rows="5"></textarea></div>
+        <button class="btn dark contact-form-submit" type="submit">Send Management Inquiry</button>
+      </form>
     </div>
     <p class="contact-direct">Prefer to email us directly? <a href="mailto:info@zyenhomes.com">info@zyenhomes.com</a></p>
   </div>
