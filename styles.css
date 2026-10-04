@@ -3050,3 +3050,23 @@ section.management {
   html{scroll-padding-top:190px;}
   #management,#stays,#about,#contact{scroll-margin-top:190px;}
 }
+
+
+/* Mobile booking search: keep full card and Search Stays button visible */
+@media screen and (max-width:600px){
+  #stays.search{
+    margin-top:-28px !important;
+    padding-bottom:28px !important;
+    overflow:visible !important;
+  }
+  .booking-search{
+    position:relative;
+    z-index:5;
+    margin-bottom:0 !important;
+    padding-bottom:24px !important;
+  }
+  .booking-search button{
+    min-height:74px;
+    align-self:stretch;
+  }
+}
