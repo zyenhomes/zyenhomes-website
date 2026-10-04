@@ -3441,3 +3441,36 @@ section.management {
     min-height:420px;
   }
 }
+
+
+/* Contact page reliability + exact button alignment */
+.contact-choice-grid{align-items:stretch !important;}
+.contact-choice-card{
+  min-height:0 !important;
+  display:grid !important;
+  grid-template-rows:auto auto 1fr auto auto !important;
+}
+.contact-choice-card .contact-form-toggle{
+  align-self:end !important;
+  justify-self:start !important;
+  margin-top:28px !important;
+}
+.contact-choice-card .contact-secondary{
+  min-height:18px;
+  margin-top:18px !important;
+}
+.contact-choice-card:nth-child(2)::after{
+  content:"";
+  display:block;
+  min-height:18px;
+  margin-top:18px;
+}
+.contact-inline-form{
+  scroll-margin-top:24px;
+}
+.contact-inline-form[hidden]{display:block !important;}
+@media screen and (max-width:600px){
+  .contact-choice-card{display:flex !important;min-height:0 !important;}
+  .contact-choice-card:nth-child(2)::after{display:none;}
+  .contact-choice-card .contact-form-toggle{align-self:stretch !important;}
+}
