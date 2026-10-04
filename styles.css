@@ -3043,3 +3043,10 @@ section.management {
     box-shadow:0 1px 0 rgba(23,63,53,.08);
   }
 }
+
+
+/* Offset in-page navigation targets below sticky mobile header */
+@media screen and (max-width:600px){
+  html{scroll-padding-top:190px;}
+  #management,#stays,#about,#contact{scroll-margin-top:190px;}
+}
