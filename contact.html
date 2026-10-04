@@ -23,7 +23,7 @@
         <p class="contact-choice-kicker">FOR GUESTS</p>
         <h2>Planning a Stay?</h2>
         <p>Questions about availability, an existing reservation, amenities, destinations or one of our vacation homes.</p>
-        <button class="btn dark contact-form-toggle" type="button" data-target="guest-contact-form">Guest &amp; Booking Support</button>
+        <a class="btn dark contact-form-toggle" href="#guest-contact-form">Guest &amp; Booking Support</a>
         <a class="contact-secondary" href="custom-stay.html">More than 20 guests? Custom Group Stay →</a>
       </article>
       <article class="contact-choice-card">
@@ -31,12 +31,11 @@
         <p class="contact-choice-kicker">FOR PROPERTY OWNERS</p>
         <h2>Looking for Property Management?</h2>
         <p>Interested in professional management, design, setup, revenue management or improving your vacation rental.</p>
-        <button class="btn dark contact-form-toggle" type="button" data-target="owner-contact-form">Property Management Inquiry</button>
+        <a class="btn dark contact-form-toggle" href="#owner-contact-form">Property Management Inquiry</a>
         
       </article>
     </div>
-    <div class="contact-inline-form" id="guest-contact-form" hidden>
-      <button class="contact-form-close" type="button" aria-label="Close guest inquiry form">×</button>
+    <div class="contact-inline-form" id="guest-contact-form">
       <p class="eyebrow green">GUEST &amp; BOOKING SUPPORT</p><h2>Tell Us About Your Stay</h2>
       <form class="contact-request-form" data-inquiry="Guest & Booking Inquiry">
         <div><label>Name</label><input name="name" type="text" autocomplete="name" required></div>
@@ -50,8 +49,7 @@
         <button class="btn dark contact-form-submit" type="submit">Send Guest Inquiry</button>
       </form>
     </div>
-    <div class="contact-inline-form" id="owner-contact-form" hidden>
-      <button class="contact-form-close" type="button" aria-label="Close property management inquiry form">×</button>
+    <div class="contact-inline-form" id="owner-contact-form">
       <p class="eyebrow green">PROPERTY MANAGEMENT INQUIRY</p><h2>Tell Us About Your Property</h2>
       <form class="contact-request-form" data-inquiry="Property Management Inquiry">
         <div><label>Name</label><input name="name" type="text" autocomplete="name" required></div>
