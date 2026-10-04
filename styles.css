@@ -3114,3 +3114,11 @@ section.management {
     padding-top:18px !important;
   }
 }
+
+
+/* Booking anchor: show the entire search card directly below sticky mobile header */
+@media screen and (max-width:600px){
+  #stays.search{
+    scroll-margin-top:190px !important;
+  }
+}
