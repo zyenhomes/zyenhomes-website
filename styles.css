@@ -3518,3 +3518,16 @@ section.management {
     padding:10px 0 !important;font-size:12px !important;
   }
 }
+
+
+/* Standalone inquiry pages: branded Zyen green header */
+.custom-stay-page .custom-page-header{
+  background:#173f35 !important;
+  border-bottom-color:#173f35 !important;
+}
+.custom-stay-page .custom-page-header .custom-back{
+  color:#fff !important;
+}
+.custom-stay-page .custom-page-header .brand-logo img{
+  display:block;
+}
