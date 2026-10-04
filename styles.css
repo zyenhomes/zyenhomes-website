@@ -3687,3 +3687,22 @@ section.management {
 @media screen and (max-width:760px){
   .about-nowrap{white-space:normal;}
 }
+
+/* About page: fix Our Approach alignment */
+.about-info-page .about-page-section .about-page-wrap.about-page-split{
+  grid-template-columns:minmax(360px,.85fr) minmax(520px,1.15fr) !important;
+  gap:80px !important;
+}
+.about-info-page .about-page-section .about-page-wrap.about-page-split > div:last-child{
+  max-width:650px !important;
+  width:100% !important;
+}
+.about-info-page .about-page-section .about-page-wrap.about-page-split > div:last-child p{
+  max-width:650px !important;
+}
+@media screen and (max-width:760px){
+  .about-info-page .about-page-section .about-page-wrap.about-page-split{
+    grid-template-columns:1fr !important;
+    gap:22px !important;
+  }
+}
