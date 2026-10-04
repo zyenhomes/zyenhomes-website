@@ -3562,3 +3562,16 @@ section.management {
  .owner-grid article{min-height:0;padding:30px 26px;}
  .owner-two{grid-template-columns:1fr;gap:20px;}
 }
+
+/* Mobile menu: keep Contact dropdown trigger fully visible */
+@media screen and (max-width:600px){
+  .site-header nav .nav-contact-toggle{
+    color:#fff !important;
+    opacity:1 !important;
+    -webkit-text-fill-color:#fff !important;
+  }
+  .site-header nav .nav-contact-toggle span{
+    color:#fff !important;
+    opacity:1 !important;
+  }
+}
