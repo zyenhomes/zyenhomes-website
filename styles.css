@@ -3474,3 +3474,47 @@ section.management {
   .contact-choice-card:nth-child(2)::after{display:none;}
   .contact-choice-card .contact-form-toggle{align-self:stretch !important;}
 }
+
+
+/* Contact navigation dropdown */
+.nav-contact{position:relative;display:flex;align-items:center;}
+.nav-contact-toggle{
+  appearance:none;border:0;background:transparent;color:inherit;font:inherit;
+  cursor:pointer;padding:10px 0;display:flex;align-items:center;gap:5px;
+}
+.nav-contact-toggle span{font-size:14px;transition:transform .2s ease;}
+.nav-contact-menu{
+  position:absolute;top:100%;right:0;z-index:1200;
+  min-width:250px;padding:9px;background:#fff;
+  border:1px solid rgba(23,63,53,.12);
+  box-shadow:0 12px 30px rgba(20,40,34,.12);
+  opacity:0;visibility:hidden;transform:translateY(6px);
+  transition:.18s ease;
+}
+.nav-contact-menu a{
+  display:block !important;padding:13px 14px !important;
+  color:var(--green) !important;text-decoration:none;font-size:13px;
+  white-space:nowrap;
+}
+.nav-contact-menu a:hover{background:var(--cream);}
+.nav-contact:hover .nav-contact-menu,
+.nav-contact:focus-within .nav-contact-menu,
+.nav-contact.is-open .nav-contact-menu{
+  opacity:1;visibility:visible;transform:translateY(0);
+}
+.nav-contact.is-open .nav-contact-toggle span{transform:rotate(180deg);}
+@media screen and (max-width:600px){
+  .nav-contact{display:block;width:100%;}
+  .nav-contact-toggle{
+    width:100%;justify-content:space-between;padding:12px 0;
+  }
+  .nav-contact-menu{
+    position:static;min-width:0;width:100%;padding:0 0 4px 14px;
+    border:0;box-shadow:none;background:transparent;
+    opacity:1;visibility:visible;transform:none;display:none;
+  }
+  .nav-contact.is-open .nav-contact-menu{display:block;}
+  .nav-contact-menu a{
+    padding:10px 0 !important;font-size:12px !important;
+  }
+}
