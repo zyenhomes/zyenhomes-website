@@ -3138,3 +3138,44 @@ section.management {
     padding:2px !important;
   }
 }
+
+
+/* Large-group custom stay */
+.large-group-search-link{
+  margin:12px 0 0;
+  text-align:center;
+  font-size:12px;
+  font-weight:700;
+}
+.large-group-search-link a{color:var(--green);text-decoration:none;}
+.custom-stay{
+  padding:58px 6vw 64px;
+  background:var(--cream);
+  text-align:center;
+}
+.custom-stay-inner{max-width:780px;margin:0 auto;}
+.custom-stay h2{margin-bottom:18px;}
+.custom-stay-inner > p:not(.eyebrow){
+  max-width:690px;
+  margin:0 auto;
+  color:#5d625f;
+  font-size:17px;
+  line-height:1.65;
+}
+.custom-stay .btn{margin-top:26px;}
+@media screen and (max-width:560px){
+  .large-group-search-link{
+    font-size:11px;
+    padding:0 12px 14px;
+  }
+  .custom-stay{padding:44px 24px 48px;}
+  .custom-stay h2{
+    font-size:36px !important;
+    line-height:1.02 !important;
+  }
+  .custom-stay-inner > p:not(.eyebrow){
+    font-size:15px;
+    line-height:1.55;
+  }
+  .custom-stay .btn{width:100%;max-width:330px;}
+}
