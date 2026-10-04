@@ -219,3 +219,42 @@ if(ownerPopup && ownerTrigger && ownerForm){
     ownerStatus.textContent='Thank you. Your property details are ready to be submitted once we connect the inquiry form.';
   });
 }
+
+
+// Custom group stay request
+const customStayForm=document.querySelector('#custom-stay-form');
+if(customStayForm){
+  const ci=customStayForm.querySelector('#custom-checkin');
+  const co=customStayForm.querySelector('#custom-checkout');
+  const now=new Date();
+  const localToday=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  ci.min=localToday;
+  ci.addEventListener('change',()=>{
+    co.min=ci.value || localToday;
+    if(co.value && ci.value && co.value<=ci.value) co.value='';
+  });
+  customStayForm.addEventListener('submit',(event)=>{
+    event.preventDefault();
+    if(!customStayForm.reportValidity()) return;
+    const data=new FormData(customStayForm);
+    const subject='Custom Group Stay Request - '+data.get('guests')+' Guests';
+    const body=[
+      'CUSTOM GROUP STAY REQUEST',
+      '',
+      'Name: '+data.get('name'),
+      'Email: '+data.get('email'),
+      'Phone: '+(data.get('phone')||'Not provided'),
+      '',
+      'Check-in: '+data.get('checkin'),
+      'Check-out: '+data.get('checkout'),
+      'Guests: '+data.get('guests'),
+      'Group type: '+data.get('group'),
+      'Preferred area: '+data.get('area'),
+      'Approx. budget: '+(data.get('budget')||'Not provided'),
+      '',
+      'Additional details:',
+      data.get('notes')||'None provided'
+    ].join('\n');
+    window.location.href='mailto:info@zyenhomes.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  });
+}
