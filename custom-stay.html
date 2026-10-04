@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Custom Group Stay | Zyen Homes</title>
+<meta name="description" content="Request a customized Zyen Homes stay for groups of more than 20 guests in Blue Mountains and across Ontario.">
+<link rel="stylesheet" href="styles.css?v=20261004-custom1">
+</head>
+<body class="custom-stay-page">
+<header class="site-header custom-page-header">
+  <a class="brand brand-logo" href="index.html" aria-label="Zyen Homes Property Management"><img src="Zyen Homes Logo(2).jpg" alt="Zyen Homes Property Management"></a>
+  <a class="custom-back" href="index.html">← Back to Zyen Homes</a>
+</header>
+<main>
+<section class="custom-stay custom-stay-standalone">
+  <div class="custom-stay-inner">
+    <p class="eyebrow green">LARGE GROUP STAYS</p>
+    <h1>Planning a Stay for More Than 20 Guests?</h1>
+    <p>Travelling with a large group, family gathering, corporate retreat or special celebration? Tell us what you need and Zyen Homes can help create a customized stay using one or multiple nearby vacation homes.</p>
+    <form class="custom-stay-form" id="custom-stay-form">
+      <div class="custom-field"><label for="custom-checkin">Check-in</label><input id="custom-checkin" name="checkin" type="date" required></div>
+      <div class="custom-field"><label for="custom-checkout">Check-out</label><input id="custom-checkout" name="checkout" type="date" required></div>
+      <div class="custom-field"><label for="custom-guests">Number of guests</label><input id="custom-guests" name="guests" type="number" min="21" value="21" required></div>
+      <div class="custom-field"><label for="custom-group">Group type</label><select id="custom-group" name="group"><option>Family &amp; Friends</option><option>Corporate Retreat</option><option>Wedding / Celebration</option><option>Sports Group</option><option>Other</option></select></div>
+      <div class="custom-field"><label for="custom-area">Preferred area</label><select id="custom-area" name="area"><option>Blue Mountains</option><option>Waterfront Cottage</option><option>Other Ontario</option><option>Flexible</option></select></div>
+      <div class="custom-field"><label for="custom-budget">Approx. budget</label><input id="custom-budget" name="budget" type="text" inputmode="decimal" placeholder="e.g. $5,000"></div>
+      <div class="custom-field"><label for="custom-name">Name</label><input id="custom-name" name="name" type="text" autocomplete="name" required></div>
+      <div class="custom-field"><label for="custom-email">Email</label><input id="custom-email" name="email" type="email" autocomplete="email" required></div>
+      <div class="custom-field custom-full"><label for="custom-phone">Phone</label><input id="custom-phone" name="phone" type="tel" autocomplete="tel"></div>
+      <div class="custom-field custom-full"><label for="custom-notes">Tell us about your stay</label><textarea id="custom-notes" name="notes" rows="4" placeholder="Anything else we should know?"></textarea></div>
+      <button class="btn dark custom-submit" type="submit">Send Custom Stay Request</button>
+      <p class="custom-form-note">Your request will be prepared for Zyen Homes and opened in your email app for you to send.</p>
+    </form>
+  </div>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
