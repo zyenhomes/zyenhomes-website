@@ -2967,3 +2967,42 @@ section.management {
   footer.site-footer .footer-col{padding-top:24px !important;padding-bottom:24px !important;}
   footer.site-footer .footer-bottom{margin-top:30px !important;padding-top:26px !important;padding-bottom:28px !important;}
 }
+
+
+/* Mobile featured rental cards: balanced row heights and tighter copy */
+@media screen and (max-width:560px){
+  .featured-rentals .property-grid{
+    align-items:stretch;
+  }
+  .featured-rentals .property-card{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+  }
+  .featured-rentals .property-card > img{
+    flex:0 0 auto;
+  }
+  .featured-rentals .property-info{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding-bottom:16px !important;
+  }
+  .featured-rentals .property-info h3{
+    line-height:1.02 !important;
+    margin-bottom:10px !important;
+  }
+  .featured-rentals .property-info > p:not(.property-location):not(.property-feature){
+    line-height:1.35 !important;
+    margin-bottom:10px !important;
+  }
+  .featured-rentals .property-feature{
+    line-height:1.3 !important;
+    margin-top:2px !important;
+    margin-bottom:0 !important;
+  }
+  .featured-rentals .property-view{
+    margin-top:auto !important;
+    padding-top:10px;
+  }
+}
