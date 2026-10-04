@@ -3006,3 +3006,17 @@ section.management {
     padding-top:10px;
   }
 }
+
+
+/* Mobile property-management intro: tighter, more elegant heading */
+@media screen and (max-width:560px){
+  .management h2{
+    font-size:clamp(43px,10.8vw,50px) !important;
+    line-height:.98 !important;
+    letter-spacing:-1.2px;
+    margin-bottom:22px !important;
+  }
+  .management .management-copy > p{
+    margin-top:0 !important;
+  }
+}
