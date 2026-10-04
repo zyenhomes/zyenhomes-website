@@ -3118,3 +3118,23 @@ section.management {
     top:80px !important;
   }
 }
+
+
+/* Mobile date fields: preserve two-column layout while showing full date */
+@media screen and (max-width:560px){
+  #stays.search{
+    padding-left:24px !important;
+    padding-right:24px !important;
+  }
+  #stays .booking-search input[type="date"]{
+    font-size:16px !important;
+    padding-left:10px !important;
+    padding-right:6px !important;
+    min-width:0 !important;
+    -webkit-min-logical-width:0 !important;
+  }
+  #stays .booking-search input[type="date"]::-webkit-calendar-picker-indicator{
+    margin-left:2px !important;
+    padding:2px !important;
+  }
+}
