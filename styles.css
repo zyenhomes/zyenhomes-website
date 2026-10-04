@@ -3378,3 +3378,47 @@ section.management {
   .contact-choice-card > p:not(.contact-choice-kicker){min-height:0;}
   .contact-choice-card .btn{width:100%;}
 }
+
+
+/* Contact inquiry forms */
+.contact-choice-card .contact-form-toggle{border:0;cursor:pointer;}
+.contact-inline-form{
+  position:relative;
+  max-width:900px;
+  margin:28px auto 0;
+  padding:42px;
+  background:var(--cream);
+  border:1px solid rgba(23,63,53,.12);
+  text-align:left;
+}
+.contact-inline-form[hidden]{display:none !important;}
+.contact-inline-form h2{font-size:40px;margin-bottom:28px;}
+.contact-form-close{
+  position:absolute;right:18px;top:14px;
+  border:0;background:transparent;color:var(--green);
+  font-size:30px;line-height:1;cursor:pointer;
+}
+.contact-request-form{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.contact-request-form > div{min-width:0;}
+.contact-request-form label{
+  display:block;margin:0 0 7px;color:var(--green);
+  font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+}
+.contact-request-form input,.contact-request-form select,.contact-request-form textarea{
+  width:100%;min-width:0;border:1px solid #d7d2c8;background:#fff;color:var(--ink);
+  font:inherit;font-size:16px;padding:14px 13px;border-radius:0;
+}
+.contact-request-form textarea{resize:vertical;}
+.contact-form-full,.contact-form-submit{grid-column:1 / -1;}
+.contact-form-submit{border:0;cursor:pointer;justify-self:start;margin-top:4px !important;}
+@media screen and (max-width:600px){
+  .contact-inline-form{padding:30px 20px;margin-top:18px;}
+  .contact-inline-form h2{font-size:32px;padding-right:20px;}
+  .contact-request-form{grid-template-columns:1fr;gap:13px;}
+  .contact-form-full,.contact-form-submit{grid-column:1;}
+  .contact-form-submit{width:100%;justify-self:stretch;}
+}
