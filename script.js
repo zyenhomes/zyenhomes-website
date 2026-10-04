@@ -292,3 +292,23 @@ document.querySelectorAll('.contact-request-form').forEach((form)=>{
     window.location.href='mailto:info@zyenhomes.com?subject='+encodeURIComponent(type)+'&body='+encodeURIComponent(lines.join('\n'));
   });
 });
+
+
+// Contact dropdown navigation
+document.querySelectorAll('.nav-contact-toggle').forEach((button)=>{
+  button.addEventListener('click',(event)=>{
+    event.stopPropagation();
+    const wrap=button.closest('.nav-contact');
+    if(!wrap) return;
+    const open=wrap.classList.toggle('is-open');
+    button.setAttribute('aria-expanded',String(open));
+  });
+});
+document.addEventListener('click',(event)=>{
+  document.querySelectorAll('.nav-contact.is-open').forEach((wrap)=>{
+    if(!wrap.contains(event.target)){
+      wrap.classList.remove('is-open');
+      wrap.querySelector('.nav-contact-toggle')?.setAttribute('aria-expanded','false');
+    }
+  });
+});
