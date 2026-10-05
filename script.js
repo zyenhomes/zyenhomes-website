@@ -295,8 +295,13 @@ document.querySelectorAll('.contact-request-form').forEach((form)=>{
       const confirmation=document.createElement('div');
       confirmation.className='form-success-panel';
       confirmation.setAttribute('role','status');
+      confirmation.setAttribute('tabindex','-1');
       confirmation.innerHTML='<div class="form-success-check">✓</div><h2>Thank You!</h2><p><strong>Your inquiry has been successfully sent to Zyen Homes.</strong></p><p>Our team will review your request and get back to you shortly.</p><a class="btn" href="index.html">Return to Zyen Homes</a>';
       form.replaceWith(confirmation);
+      requestAnimationFrame(()=>{
+        confirmation.scrollIntoView({behavior:'smooth',block:'center'});
+        confirmation.focus({preventScroll:true});
+      });
     }catch(error){
       status.textContent='We could not send your inquiry. Please try again or email info@zyenhomes.com.';
       status.classList.add('error');
