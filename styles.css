@@ -3747,3 +3747,16 @@ section.management {
   .ski-community-line{white-space:normal;}
   #ski-community{scroll-margin-top:0;}
 }
+
+/* Direct website form submission feedback */
+.form-submit-status{
+  grid-column:1 / -1;
+  margin:10px 0 0 !important;
+  padding:14px 16px;
+  text-align:center;
+  font-size:13px !important;
+  line-height:1.5 !important;
+}
+.form-submit-status.success{background:#e8f1ed;color:#173f35 !important;}
+.form-submit-status.error{background:#f8e8e6;color:#7b2f27 !important;}
+.contact-request-form button[disabled]{opacity:.65;cursor:wait;}
