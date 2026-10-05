@@ -292,9 +292,11 @@ document.querySelectorAll('.contact-request-form').forEach((form)=>{
       });
       if(!response.ok) throw new Error('Submission failed');
       form.reset();
-      status.textContent='Thank you. Your inquiry has been sent to Zyen Homes. We will be in touch shortly.';
-      status.classList.add('success');
-      status.classList.remove('error');
+      const confirmation=document.createElement('div');
+      confirmation.className='form-success-panel';
+      confirmation.setAttribute('role','status');
+      confirmation.innerHTML='<div class="form-success-check">✓</div><h2>Thank You!</h2><p><strong>Your inquiry has been successfully sent to Zyen Homes.</strong></p><p>Our team will review your request and get back to you shortly.</p><a class="btn" href="index.html">Return to Zyen Homes</a>';
+      form.replaceWith(confirmation);
     }catch(error){
       status.textContent='We could not send your inquiry. Please try again or email info@zyenhomes.com.';
       status.classList.add('error');
