@@ -269,6 +269,8 @@ document.querySelectorAll('.contact-request-form').forEach((form)=>{
     const data=new FormData(form);
     data.append('_subject',type);
     data.append('inquiryType',type);
+    const guestEmail=String(data.get('email')||'').trim();
+    if(guestEmail) data.append('_replyto',guestEmail);
 
     if(button){
       button.disabled=true;
