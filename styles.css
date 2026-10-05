@@ -3760,3 +3760,25 @@ section.management {
 .form-submit-status.success{background:#e8f1ed;color:#173f35 !important;}
 .form-submit-status.error{background:#f8e8e6;color:#7b2f27 !important;}
 .contact-request-form button[disabled]{opacity:.65;cursor:wait;}
+
+/* Ensure direct form submission confirmation is always visible */
+.custom-stay-form .form-submit-status{
+  display:block !important;
+  grid-column:1 / -1 !important;
+  width:100% !important;
+  margin:14px 0 0 !important;
+  padding:16px !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  line-height:1.5 !important;
+  text-align:center !important;
+}
+.custom-stay-form .form-submit-status.success{
+  background:#e4efe9 !important;
+  color:#173f35 !important;
+  border:1px solid rgba(23,63,53,.22) !important;
+}
+.custom-stay-form .form-submit-status.error{
+  background:#f8e8e6 !important;
+  color:#7b2f27 !important;
+}
