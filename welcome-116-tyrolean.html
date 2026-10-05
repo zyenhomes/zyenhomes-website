@@ -28,9 +28,9 @@ button{width:100%;border:0;border-radius:10px;padding:15px;background:var(--gree
 <section class="hero"><div class="hero-copy"><div>GUEST WELCOME GUIDE</div><h1>116 Tyrolean Lane</h1><p>Everything you need for a comfortable Blue Mountains stay.</p></div></section>
 <main class="wrap">
 <section class="card access" id="access"><h2>Welcome to Your Stay</h2><p>Enter your name and email to open your guest guide.</p>
-<form id="welcomeForm"><label for="name">First Name</label><input id="name" name="name" type="text" autocomplete="given-name" required>
+<form id="welcomeForm" action="https://formspree.io/f/xaeqykbv" method="POST"><label for="name">First Name</label><input id="name" name="name" type="text" autocomplete="given-name" required>
 <label for="email">Email Address</label><input id="email" name="email" type="email" autocomplete="email" required>
-<label class="consent"><input id="marketing" type="checkbox"><span>Yes, I would like to receive exclusive offers, special discounts and promotional emails from Zyen Homes Property Management. I understand that I can unsubscribe at any time.</span></label>
+<label class="consent"><input id="marketing" name="marketingConsent" type="checkbox" value="Yes"><span>Yes, I would like to receive exclusive offers, special discounts and promotional emails from Zyen Homes Property Management. I understand that I can unsubscribe at any time.</span></label>
 <button type="submit">OPEN WELCOME GUIDE →</button>
 <p class="note">Your name and email are used to provide access to this guest guide. Promotional emails will only be sent if you select the consent box above.</p></form></section>
 <section class="guide" id="guide">
@@ -43,14 +43,33 @@ button{width:100%;border:0;border-radius:10px;padding:15px;background:var(--gree
 <div class="footer"><a href="https://www.zyenhomes.com/">Zyen Homes Property Management</a><br>Exceptional stays. Professionally managed.</div>
 </main>
 <script>
-document.getElementById('welcomeForm').addEventListener('submit',function(e){
+document.getElementById('welcomeForm').addEventListener('submit',async function(e){
 e.preventDefault();
+const form=this;
 const n=document.getElementById('name').value.trim(), em=document.getElementById('email').value.trim();
-if(!n||!em)return;
+if(!n||!em||!form.reportValidity())return;
+const button=form.querySelector('button[type="submit"]');
+const originalText=button.textContent;
+button.disabled=true; button.textContent='OPENING GUIDE...';
+const data=new FormData(form);
+data.append('_subject','116 Tyrolean Lane Welcome Guide Registration');
+data.append('inquiryType','116 Tyrolean Welcome Guide');
+data.append('property','116 Tyrolean Lane');
+data.append('marketingConsent',document.getElementById('marketing').checked?'Yes':'No');
+data.append('_replyto',em);
+data.append('accessedAt',new Date().toISOString());
+try{
+const response=await fetch('https://formspree.io/f/xaeqykbv',{method:'POST',body:data,headers:{'Accept':'application/json'}});
+if(!response.ok)throw new Error('Submission failed');
 localStorage.setItem('zyen116Guest',JSON.stringify({name:n,email:em,marketing:document.getElementById('marketing').checked,accessedAt:new Date().toISOString()}));
 document.getElementById('access').style.display='none';
 document.getElementById('guide').classList.add('open');
 window.scrollTo({top:document.getElementById('guide').offsetTop-16,behavior:'smooth'});
+}catch(error){
+let status=form.querySelector('.welcome-error');
+if(!status){status=document.createElement('p');status.className='note welcome-error';status.style.color='#9b2c2c';form.appendChild(status);}
+status.textContent='We could not open the guide right now. Please check your connection and try again.';
+}finally{button.disabled=false;button.textContent=originalText;}
 });
 </script>
 </body></html>
