@@ -278,18 +278,52 @@ document.querySelectorAll('.contact-form-close').forEach((button)=>{
   });
 });
 document.querySelectorAll('.contact-request-form').forEach((form)=>{
-  form.addEventListener('submit',(event)=>{
+  form.addEventListener('submit',async (event)=>{
     event.preventDefault();
     if(!form.reportValidity()) return;
-    const d=new FormData(form);
+
+    const button=form.querySelector('button[type="submit"]');
+    const originalText=button ? button.textContent : '';
     const type=form.dataset.inquiry || 'Zyen Homes Inquiry';
-    const lines=[type,'','Name: '+(d.get('name')||''),'Email: '+(d.get('email')||''),'Phone: '+(d.get('phone')||'Not provided')];
-    for(const [key,value] of d.entries()){
-      if(['name','email','phone'].includes(key) || !value) continue;
-      const label=key.replace(/([A-Z])/g,' $1').replace(/^./,s=>s.toUpperCase());
-      lines.push(label+': '+value);
+    const data=new FormData(form);
+    data.append('_subject',type);
+    data.append('inquiryType',type);
+
+    if(button){
+      button.disabled=true;
+      button.textContent='Sending...';
     }
-    window.location.href='mailto:info@zyenhomes.com?subject='+encodeURIComponent(type)+'&body='+encodeURIComponent(lines.join('\n'));
+
+    let status=form.querySelector('.form-submit-status');
+    if(!status){
+      status=document.createElement('p');
+      status.className='form-submit-status';
+      status.setAttribute('role','status');
+      form.appendChild(status);
+    }
+    status.textContent='';
+
+    try{
+      const response=await fetch('https://formspree.io/f/xaeqykbv',{
+        method:'POST',
+        body:data,
+        headers:{'Accept':'application/json'}
+      });
+      if(!response.ok) throw new Error('Submission failed');
+      form.reset();
+      status.textContent='Thank you. Your inquiry has been sent to Zyen Homes. We will be in touch shortly.';
+      status.classList.add('success');
+      status.classList.remove('error');
+    }catch(error){
+      status.textContent='We could not send your inquiry. Please try again or email info@zyenhomes.com.';
+      status.classList.add('error');
+      status.classList.remove('success');
+    }finally{
+      if(button){
+        button.disabled=false;
+        button.textContent=originalText;
+      }
+    }
   });
 });
 
