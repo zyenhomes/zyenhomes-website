@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>116 Tyrolean Lane Guest Welcome Guide | Zyen Homes</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{--green:#183f32;--cream:#f7f5ef;--ink:#1f2925;--muted:#65716b;--line:#dce3df}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--cream);color:var(--ink);line-height:1.55}
+.top{background:white;padding:12px 20px;text-align:center;border-bottom:1px solid var(--line)}.top img{width:150px;max-height:68px;object-fit:contain}
+.hero{height:42vh;min-height:320px;position:relative;background:url('116%20Tyrolean%20Lane%20Print%20(7).jpg') center/cover no-repeat;display:flex;align-items:flex-end}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 25%,rgba(0,0,0,.72))}
+.hero-copy{position:relative;z-index:1;color:#fff;padding:28px 22px;width:min(760px,100%);margin:auto}.hero h1{font-size:clamp(34px,8vw,58px);line-height:1.02;margin:4px 0 8px}.hero p{margin:0;font-size:17px}
+.wrap{width:min(760px,calc(100% - 28px));margin:24px auto 60px}
+.card{background:white;border-radius:18px;padding:22px;margin:16px 0;box-shadow:0 5px 24px rgba(21,47,38,.08);border:1px solid #e7ebe8}
+.access h2,.card h2{margin:0 0 8px;color:var(--green)}label{display:block;font-weight:700;margin:14px 0 6px}
+input[type=text],input[type=email]{width:100%;padding:14px;border:1px solid #cbd5d0;border-radius:10px;font-size:16px}
+.consent{display:flex;gap:10px;align-items:flex-start;margin:16px 0;font-size:13px;color:#4f5d56}.consent input{margin-top:4px;transform:scale(1.2)}
+button{width:100%;border:0;border-radius:10px;padding:15px;background:var(--green);color:white;font-weight:800;font-size:15px;letter-spacing:.04em}
+.note{font-size:12px;color:#718078;margin-top:12px}.guide{display:none}.guide.open{display:block}.pill{display:inline-block;background:#eaf1ed;color:var(--green);font-size:12px;font-weight:800;padding:5px 9px;border-radius:99px;margin-bottom:8px}
+.value{font-size:20px;font-weight:800;color:var(--green);margin:4px 0}.warning{background:#fff4e8;border-left:4px solid #b96a20;padding:12px 14px;border-radius:8px;font-weight:700}
+.steps{padding-left:20px}.footer{text-align:center;color:#6a756f;font-size:13px;margin-top:30px}.footer a{color:var(--green);font-weight:700}
+@media(max-width:520px){.hero{height:38vh;min-height:280px}.hero-copy{padding:22px 18px}.card{padding:19px}.wrap{width:min(100% - 20px,760px)}}
+</style>
+</head>
+<body>
+<header class="top"><a href="https://www.zyenhomes.com/" aria-label="Visit Zyen Homes"><img src="Zyen%20Homes%20Logo(2).jpg" alt="Zyen Homes Property Management"></a></header>
+<section class="hero"><div class="hero-copy"><div>GUEST WELCOME GUIDE</div><h1>116 Tyrolean Lane</h1><p>Everything you need for a comfortable Blue Mountains stay.</p></div></section>
+<main class="wrap">
+<section class="card access" id="access"><h2>Welcome to Your Stay</h2><p>Enter your name and email to open your guest guide.</p>
+<form id="welcomeForm"><label for="name">First Name</label><input id="name" name="name" type="text" autocomplete="given-name" required>
+<label for="email">Email Address</label><input id="email" name="email" type="email" autocomplete="email" required>
+<label class="consent"><input id="marketing" type="checkbox"><span>Yes, I would like to receive exclusive offers, special discounts and promotional emails from Zyen Homes Property Management. I understand that I can unsubscribe at any time.</span></label>
+<button type="submit">OPEN WELCOME GUIDE →</button>
+<p class="note">Your name and email are used to provide access to this guest guide. Promotional emails will only be sent if you select the consent box above.</p></form></section>
+<section class="guide" id="guide">
+<div class="card"><span class="pill">WI-FI</span><h2>📶 Connect to Wi-Fi</h2><p>Network</p><div class="value">116bluemountains</div><p>Password</p><div class="value">skichalet116</div></div>
+<div class="card"><span class="pill">PARKING</span><h2>🚗 Parking</h2><div class="value">Maximum 7 vehicles</div><p>Please park only within the designated parking area for 116 Tyrolean Lane.</p><div class="warning">Please do not park on the neighbouring property.</div></div>
+<div class="card"><span class="pill">GARBAGE & RECYCLING</span><h2>🗑️ Waste</h2><p>Please leave all garbage and recycling bags inside the wooden bins located outside at the front of the house.</p><p>Please make sure the bin lids are completely closed.</p></div>
+<div class="card"><span class="pill">SWIMSPA / HOT TUB</span><h2>♨️ Swimspa & Hot Tub</h2><p>Please rinse off before entering to help us keep the water clean and comfortable for everyone.</p><div class="warning">Do not adjust the temperature or any system settings.</div><p>Please replace the cover after every use. Do not sit, stand or place objects on the cover.</p></div>
+<div class="card"><span class="pill">NATURAL GAS BBQ</span><h2>🔥 BBQ</h2><p>The BBQ is connected directly to natural gas. The gas shut-off lever is located on top of the deck beside the BBQ.</p><ol class="steps"><li><strong>Before using:</strong> Turn the gas lever ON.</li><li>Use the BBQ normally.</li><li><strong>After using:</strong> Turn the BBQ burners OFF, then turn the gas lever OFF.</li></ol></div>
+</section>
+<div class="footer"><a href="https://www.zyenhomes.com/">Zyen Homes Property Management</a><br>Exceptional stays. Professionally managed.</div>
+</main>
+<script>
+document.getElementById('welcomeForm').addEventListener('submit',function(e){
+e.preventDefault();
+const n=document.getElementById('name').value.trim(), em=document.getElementById('email').value.trim();
+if(!n||!em)return;
+localStorage.setItem('zyen116Guest',JSON.stringify({name:n,email:em,marketing:document.getElementById('marketing').checked,accessedAt:new Date().toISOString()}));
+document.getElementById('access').style.display='none';
+document.getElementById('guide').classList.add('open');
+window.scrollTo({top:document.getElementById('guide').offsetTop-16,behavior:'smooth'});
+});
+</script>
+</body></html>
