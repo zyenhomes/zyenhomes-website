@@ -237,30 +237,7 @@ if(customStayForm){
     co.min=ci.value || localToday;
     if(co.value && ci.value && co.value<=ci.value) co.value='';
   });
-  customStayForm.addEventListener('submit',(event)=>{
-    event.preventDefault();
-    if(!customStayForm.reportValidity()) return;
-    const data=new FormData(customStayForm);
-    const subject='Custom Group Stay Request - '+data.get('guests')+' Guests';
-    const body=[
-      'CUSTOM GROUP STAY REQUEST',
-      '',
-      'Name: '+data.get('name'),
-      'Email: '+data.get('email'),
-      'Phone: '+(data.get('phone')||'Not provided'),
-      '',
-      'Check-in: '+data.get('checkin'),
-      'Check-out: '+data.get('checkout'),
-      'Guests: '+data.get('guests'),
-      'Group type: '+data.get('group'),
-      'Preferred area: '+data.get('area'),
-      'Approx. budget: '+(data.get('budget')||'Not provided'),
-      '',
-      'Additional details:',
-      data.get('notes')||'None provided'
-    ].join('\n');
-    window.location.href='mailto:info@zyenhomes.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-  });
+
 }
 
 
