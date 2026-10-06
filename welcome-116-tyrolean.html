@@ -158,7 +158,14 @@ document.getElementById('welcomeForm').addEventListener('submit',async function(
 e.preventDefault();
 const form=this;
 const n=document.getElementById('name').value.trim(), em=document.getElementById('email').value.trim();
-if(!n||!em||!form.reportValidity())return;
+// Testing phase: allow guide access without completing name/email.
+if(!n || !em){
+  document.getElementById('access').style.display='none';
+  document.getElementById('guide').classList.add('open');
+  window.scrollTo({top:document.getElementById('guide').offsetTop-16,behavior:'smooth'});
+  return;
+}
+if(!form.reportValidity())return;
 const button=form.querySelector('button[type="submit"]');
 const originalText=button.textContent;
 button.disabled=true; button.textContent='OPENING GUIDE...';
