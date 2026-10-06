@@ -97,7 +97,7 @@ html{scroll-behavior:smooth}
 <section class="guide" id="guide">
 <div class="welcome-book">
 <aside class="book-nav" aria-label="Welcome guide sections">
-<div class="book-nav-title">WELCOME GUIDE</div>
+<div class="book-nav-title">WELCOME GUIDE</div><div class="field property-setup-field"><label for="propertySelector">Property Address <span style="font-size:11px;font-weight:600;color:#8a948f">(SETUP ONLY)</span></label><select id="propertySelector" name="propertySelector"><option value="">Choose a property to customize</option><option value="welcome-116-tyrolean.html">116 Tyrolean Lane</option><option value="welcome-102-patricia.html">102 Patricia</option><option value="welcome-147-campbell.html">147 Campbell</option><option value="welcome-109-plater.html">109 Plater</option><option value="welcome-37-171-snowbridge.html">37-171 Snowbridge</option><option value="welcome-35-171-snowbridge.html">35-171 Snowbridge</option><option value="welcome-39-171-snowbridge.html">39-171 Snowbridge</option><option value="welcome-100-pilsen.html">100 Pilsen</option><option value="welcome-105-pilsen.html">105 Pilsen</option><option value="welcome-145-tyrolean.html">145 Tyrolean</option><option value="welcome-147-tyrolean.html">147 Tyrolean</option><option value="welcome-149-tyrolean.html">149 Tyrolean</option><option value="welcome-151-tyrolean.html">151 Tyrolean</option><option value="welcome-106-birch-view-trail.html">106 Birch View Trail</option><option value="welcome-197-arlberg.html">197 Arlberg</option></select></div>
 <button class="book-tab active" data-panel="welcome">Welcome</button>
 <button class="book-tab" data-panel="host">Meet Your Host</button>
 <button class="book-tab" data-panel="times">Check-In & Check-Out</button>
@@ -311,5 +311,14 @@ status.textContent='We could not open the guide right now. Please check your con
 });
 const feedbackForm=document.getElementById('feedbackForm');
 if(feedbackForm){feedbackForm.addEventListener('submit',async function(e){e.preventDefault();if(!this.reportValidity())return;const btn=this.querySelector('.feedback-submit');const status=this.querySelector('.feedback-status');btn.disabled=true;btn.textContent='SENDING...';const data=new FormData(this);data.append('submittedAt',new Date().toISOString());try{const res=await fetch(this.action,{method:'POST',body:data,headers:{'Accept':'application/json'}});if(!res.ok)throw new Error();this.innerHTML='<div class="feedback-thanks"><h3>Thank You</h3><p>We truly appreciate you taking the time to share your experience with us. Your feedback helps Zyen Homes continue improving every stay.</p></div>';}catch(err){status.textContent='We could not send your feedback right now. Please try again.';status.style.color='#9b2c2c';btn.disabled=false;btn.textContent='SUBMIT FEEDBACK →';}});}
+</script>
+<script>
+(function(){
+ var s=document.getElementById('propertySelector');
+ if(!s)return;
+ var current=location.pathname.split('/').pop();
+ for(var i=0;i<s.options.length;i++){if(s.options[i].value===current){s.selectedIndex=i;break;}}
+ s.addEventListener('change',function(){if(this.value && this.value!==current){window.location.href=this.value;}});
+})();
 </script>
 </body></html>
