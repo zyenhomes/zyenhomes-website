@@ -60,6 +60,25 @@ body{background:#f3f0e8;color:#24332d}
 html{scroll-behavior:smooth}
 @media(max-width:520px){.guide-menu{padding:25px 18px}.guide-menu h2{font-size:26px}.guide-menu-grid{grid-template-columns:repeat(2,1fr)}.guide-menu-grid a{min-height:86px}}
 .contact-lines{margin-top:18px}.contact-lines p{margin:8px 0}.contact-lines a{color:var(--green);font-weight:700;text-decoration:none}.contact-lines a:hover{text-decoration:underline}
+
+.welcome-book{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:620px;background:#fff;border:1px solid #e2ded4;box-shadow:0 18px 50px rgba(20,43,35,.07)}
+.book-nav{background:#f0ece3;padding:28px 0;display:flex;flex-direction:column}
+.book-nav-title{padding:0 24px 18px;font-size:10px;letter-spacing:.2em;font-weight:800;color:#7a807c}
+.book-tab{width:100%;border:0;border-radius:0;padding:10px 24px;background:transparent;color:#384740;text-align:left;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:600;letter-spacing:0;cursor:pointer}
+.book-tab:hover{background:rgba(24,63,50,.06)}.book-tab.active{background:var(--green);color:#fff}
+.book-content{padding:56px 62px;min-width:0}.book-panel{display:none;animation:bookfade .2s ease}.book-panel.active{display:block}
+.book-eyebrow{font-size:10px;letter-spacing:.19em;font-weight:800;color:#78857e}
+.book-panel h2{font-family:Georgia,'Times New Roman',serif;color:var(--green);font-size:38px;font-weight:500;line-height:1.15;margin:9px 0 24px}
+.book-panel p,.book-panel li{font-size:15px;line-height:1.75;color:#46534d}.book-panel a{color:var(--green);text-decoration:none}
+.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:26px 0}
+.detail-grid>div{border:1px solid #e3e4df;background:#faf9f5;padding:20px}.detail-grid small{display:block;font-size:9px;letter-spacing:.15em;color:#7c8882;margin-bottom:8px}.detail-grid strong{font-family:Georgia,'Times New Roman',serif;color:var(--green);font-size:20px}
+.feature-line{font-family:Georgia,'Times New Roman',serif!important;color:var(--green)!important;font-size:25px!important}
+.book-alert{border-left:2px solid var(--green);background:#f5f2e9;padding:14px 16px;margin:20px 0;color:#34463e;font-weight:600}
+.book-photo.hero-mini{height:260px;margin-top:30px;background:url('116%20Tyrolean%20Lane%20Print%20(7).jpg') center/cover no-repeat}
+@keyframes bookfade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(max-width:760px){
+ .welcome-book{display:block;min-height:0}.book-nav{position:sticky;top:0;z-index:5;display:flex;flex-direction:row;overflow-x:auto;padding:0;background:#f0ece3;border-bottom:1px solid #ded9ce;scrollbar-width:none}.book-nav::-webkit-scrollbar{display:none}.book-nav-title{display:none}.book-tab{width:auto;flex:0 0 auto;padding:14px 16px;white-space:nowrap;font-size:12px}.book-content{padding:34px 24px 42px}.book-panel h2{font-size:31px}.detail-grid{grid-template-columns:1fr}.book-photo.hero-mini{height:190px}
+}
 </style>
 </head>
 <body>
@@ -73,26 +92,56 @@ html{scroll-behavior:smooth}
 <button type="submit">OPEN WELCOME GUIDE →</button>
 <p class="note">Your name and email are used to provide access to this guest guide. Promotional emails will only be sent if you select the consent box above.</p></form></section>
 <section class="guide" id="guide">
-<nav class="guide-menu" id="guide-menu" aria-label="Welcome guide menu">
-<div class="guide-menu-kicker">QUICK ACCESS</div><h2>Your Stay at a Glance</h2>
-<div class="guide-menu-grid">
-<a href="#wifi"><span>📶</span><strong>Wi-Fi</strong></a>
-<a href="#parking"><span>🚗</span><strong>Parking</strong></a>
-<a href="#waste"><span>🗑️</span><strong>Garbage</strong></a>
-<a href="#swimspa"><span>♨️</span><strong>Swimspa</strong></a>
-<a href="#bbq"><span>🔥</span><strong>BBQ</strong></a>
-<a href="#contact"><span>☎️</span><strong>Contact</strong></a>
-</div></nav>
-<div class="card guide-section" id="wifi"><span class="pill">WI-FI</span><h2>📶 Connect to Wi-Fi</h2><p>Network</p><div class="value">116bluemountains</div><p>Password</p><div class="value">skichalet116</div></div>
-<div class="card guide-section" id="parking"><span class="pill">PARKING</span><h2>🚗 Parking</h2><div class="value">Maximum 7 vehicles</div><p>Please park only within the designated parking area for 116 Tyrolean Lane.</p><div class="warning">Please do not park on the neighbouring property.</div></div>
-<div class="card guide-section" id="waste"><span class="pill">GARBAGE & RECYCLING</span><h2>🗑️ Waste</h2><p>Please leave all garbage and recycling bags inside the wooden bins located outside at the front of the house.</p><p>Please make sure the bin lids are completely closed.</p></div>
-<div class="card guide-section" id="swimspa"><span class="pill">SWIMSPA / HOT TUB</span><h2>♨️ Swimspa & Hot Tub</h2><p>Please rinse off before entering to help us keep the water clean and comfortable for everyone.</p><div class="warning">Do not adjust the temperature or any system settings.</div><p>Please replace the cover after every use. Do not sit, stand or place objects on the cover.</p></div>
-<div class="card guide-section" id="bbq"><span class="pill">NATURAL GAS BBQ</span><h2>🔥 BBQ</h2><p>The BBQ is connected directly to natural gas. The gas shut-off lever is located on top of the deck beside the BBQ.</p><ol class="steps"><li><strong>Before using:</strong> Turn the gas lever ON.</li><li>Use the BBQ normally.</li><li><strong>After using:</strong> Turn the BBQ burners OFF, then turn the gas lever OFF.</li></ol></div>
-<div class="card guide-section contact-card" id="contact"><span class="pill">GUEST SUPPORT</span><h2>☎️ Contact Zyen Homes</h2><p>Need assistance during your stay? Our team is here to help.</p><div class="contact-lines"><p><strong>Email:</strong> <a href="mailto:Info@zyenhomes.com">Info@zyenhomes.com</a></p><p><strong>Text/Phone:</strong> <a href="tel:+16475888580">647-588-8580</a></p></div></div>
+<div class="welcome-book">
+<aside class="book-nav" aria-label="Welcome guide sections">
+<div class="book-nav-title">WELCOME GUIDE</div>
+<button class="book-tab active" data-panel="welcome">Welcome</button>
+<button class="book-tab" data-panel="host">Meet Your Host</button>
+<button class="book-tab" data-panel="times">Check-In & Check-Out</button>
+<button class="book-tab" data-panel="checkin">Check-In Details</button>
+<button class="book-tab" data-panel="checkout">Check-Out Details</button>
+<button class="book-tab" data-panel="wifi">Wi-Fi</button>
+<button class="book-tab" data-panel="parking">Parking</button>
+<button class="book-tab" data-panel="rules">House Rules</button>
+<button class="book-tab" data-panel="swimspa">Swimspa / Hot Tub</button>
+<button class="book-tab" data-panel="bbq">BBQ</button>
+<button class="book-tab" data-panel="waste">Garbage & Recycling</button>
+<button class="book-tab" data-panel="kitchen">Kitchen Guide</button>
+<button class="book-tab" data-panel="winter">Winter in Blue Mountains</button>
+<button class="book-tab" data-panel="summer">Summer in Blue Mountains</button>
+<button class="book-tab" data-panel="map">Area Map</button>
+<button class="book-tab" data-panel="kids">Places for Kids</button>
+<button class="book-tab" data-panel="delivery">Home Delivery</button>
+<button class="book-tab" data-panel="contact">Contact Zyen Homes</button>
+<button class="book-tab" data-panel="feedback">Feedback</button>
+</aside>
+<div class="book-content">
+<section class="book-panel active" id="panel-welcome"><span class="book-eyebrow">WELCOME TO 116 TYROLEAN LANE</span><h2>Welcome to Your Blue Mountains Stay</h2><p>We're delighted to host you. This digital guide is designed to make your stay simple, comfortable and memorable. Use the menu to quickly find everything you need during your visit.</p><div class="book-photo hero-mini"></div></section>
+<section class="book-panel" id="panel-host"><span class="book-eyebrow">YOUR HOST</span><h2>Meet Zyen Homes</h2><p>Your stay is professionally managed by Zyen Homes Property Management. Our team is here to help throughout your stay and to make your Blue Mountains getaway as smooth as possible.</p></section>
+<section class="book-panel" id="panel-times"><span class="book-eyebrow">ARRIVAL & DEPARTURE</span><h2>Check-In & Check-Out</h2><div class="detail-grid"><div><small>CHECK-IN</small><strong>Details coming soon</strong></div><div><small>CHECK-OUT</small><strong>Details coming soon</strong></div></div></section>
+<section class="book-panel" id="panel-checkin"><span class="book-eyebrow">ARRIVAL</span><h2>Check-In Details</h2><p>Your detailed arrival and property-access instructions will appear here.</p></section>
+<section class="book-panel" id="panel-checkout"><span class="book-eyebrow">DEPARTURE</span><h2>Check-Out Details</h2><p>Your check-out checklist and departure instructions will appear here.</p></section>
+<section class="book-panel" id="panel-wifi"><span class="book-eyebrow">STAY CONNECTED</span><h2>Wi-Fi</h2><div class="detail-grid"><div><small>NETWORK</small><strong>116bluemountains</strong></div><div><small>PASSWORD</small><strong>skichalet116</strong></div></div></section>
+<section class="book-panel" id="panel-parking"><span class="book-eyebrow">ARRIVAL</span><h2>Parking</h2><p class="feature-line">Maximum 7 vehicles</p><p>Please park only within the designated parking area for 116 Tyrolean Lane.</p><div class="book-alert">Please do not park on the neighbouring property.</div></section>
+<section class="book-panel" id="panel-rules"><span class="book-eyebrow">PLEASE REVIEW</span><h2>House Rules</h2><p>Complete house rules will be added here so everyone in your group can review them easily.</p></section>
+<section class="book-panel" id="panel-swimspa"><span class="book-eyebrow">RELAX & ENJOY</span><h2>Swimspa & Hot Tub</h2><p>Please rinse off before entering to help us keep the water clean and comfortable for everyone.</p><div class="book-alert">Do not adjust the temperature or any system settings.</div><p>Please replace the cover after every use. Do not sit, stand or place objects on the cover.</p></section>
+<section class="book-panel" id="panel-bbq"><span class="book-eyebrow">OUTDOOR COOKING</span><h2>Natural Gas BBQ</h2><p>The BBQ is connected directly to natural gas. The gas shut-off lever is located on top of the deck beside the BBQ.</p><ol><li>Before using, turn the gas lever ON.</li><li>Use the BBQ normally.</li><li>After using, turn the burners OFF and then turn the gas lever OFF.</li></ol></section>
+<section class="book-panel" id="panel-waste"><span class="book-eyebrow">GARBAGE & RECYCLING</span><h2>Waste</h2><p>Please leave all garbage and recycling bags inside the wooden bins located outside at the front of the house.</p><p>Please make sure the bin lids are completely closed.</p></section>
+<section class="book-panel" id="panel-kitchen"><span class="book-eyebrow">AT HOME</span><h2>Kitchen Guide</h2><p>Kitchen appliances, supplies and helpful instructions will be organized here.</p></section>
+<section class="book-panel" id="panel-winter"><span class="book-eyebrow">SEASONAL GUIDE</span><h2>Winter in Blue Mountains</h2><p>Our favourite winter activities, skiing information and seasonal recommendations will appear here.</p></section>
+<section class="book-panel" id="panel-summer"><span class="book-eyebrow">SEASONAL GUIDE</span><h2>Summer in Blue Mountains</h2><p>Summer activities, golf, trails and local recommendations will appear here.</p></section>
+<section class="book-panel" id="panel-map"><span class="book-eyebrow">EXPLORE</span><h2>Area Map</h2><p>A convenient map and nearby points of interest will be added here.</p></section>
+<section class="book-panel" id="panel-kids"><span class="book-eyebrow">FAMILY FUN</span><h2>Places for Kids</h2><p>Family-friendly attractions and activities around Blue Mountains will appear here.</p></section>
+<section class="book-panel" id="panel-delivery"><span class="book-eyebrow">CONVENIENCE</span><h2>Home Delivery</h2><p>Local grocery, food and other useful delivery options will appear here.</p></section>
+<section class="book-panel" id="panel-contact"><span class="book-eyebrow">GUEST SUPPORT</span><h2>Contact Zyen Homes</h2><p>Need assistance during your stay? Our team is here to help.</p><div class="detail-grid"><div><small>EMAIL</small><strong><a href="mailto:Info@zyenhomes.com">Info@zyenhomes.com</a></strong></div><div><small>TEXT / PHONE</small><strong><a href="tel:+16475888580">647-588-8580</a></strong></div></div></section>
+<section class="book-panel" id="panel-feedback"><span class="book-eyebrow">WE VALUE YOUR STAY</span><h2>Feedback</h2><p>We'd love to hear about your experience. A simple guest feedback form will be added here.</p></section>
+</div></div>
 </section>
 <div class="footer"><a href="https://zyenhomes.github.io/zyenhomes-website/index.html">Zyen Homes Property Management</a><br>Exceptional stays. Professionally managed.</div>
 </main>
 <script>
+document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.book-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.book-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');const panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');if(window.innerWidth<=760){document.querySelector('.book-content').scrollIntoView({behavior:'smooth',block:'start'});}});});
+
 document.addEventListener('click',function(e){
 const section=e.target.closest('.guide-section');
 if(section && e.target===section){return;}
