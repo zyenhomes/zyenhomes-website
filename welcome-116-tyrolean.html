@@ -47,6 +47,18 @@ body{background:#f3f0e8;color:#24332d}
  .hero h1{font-size:42px}.hero p{font-size:14px}
  .wrap{width:calc(100% - 24px);margin:28px auto 55px}.card{padding:25px 22px;border-radius:3px}.card h2{font-size:24px}
 }
+
+.guide-menu{background:#fff;border:1px solid #e4e0d6;padding:32px 34px;margin-bottom:22px;text-align:center;box-shadow:0 12px 34px rgba(20,43,35,.055)}
+.guide-menu-kicker{font-size:10px;letter-spacing:.18em;color:#718078;font-weight:800}
+.guide-menu h2{font-family:Georgia,'Times New Roman',serif;color:var(--green);font-size:30px;font-weight:500;margin:5px 0 24px}
+.guide-menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.guide-menu-grid a{min-height:92px;border:1px solid #e1e5e2;text-decoration:none;color:var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:#fafaf7;transition:.15s ease}
+.guide-menu-grid a:hover{transform:translateY(-2px);border-color:#aebbb5;background:#fff}
+.guide-menu-grid span{font-size:23px}.guide-menu-grid strong{font-size:13px;letter-spacing:.02em}
+.guide-section{scroll-margin-top:24px}
+.guide-section:after{content:"Back to Guide Menu ↑";display:block;text-align:right;margin-top:24px;padding-top:14px;border-top:1px solid #ece9e1;color:var(--green);font-size:12px;font-weight:700;cursor:pointer}
+html{scroll-behavior:smooth}
+@media(max-width:520px){.guide-menu{padding:25px 18px}.guide-menu h2{font-size:26px}.guide-menu-grid{grid-template-columns:repeat(2,1fr)}.guide-menu-grid a{min-height:86px}}
 </style>
 </head>
 <body>
@@ -60,15 +72,36 @@ body{background:#f3f0e8;color:#24332d}
 <button type="submit">OPEN WELCOME GUIDE →</button>
 <p class="note">Your name and email are used to provide access to this guest guide. Promotional emails will only be sent if you select the consent box above.</p></form></section>
 <section class="guide" id="guide">
-<div class="card"><span class="pill">WI-FI</span><h2>📶 Connect to Wi-Fi</h2><p>Network</p><div class="value">116bluemountains</div><p>Password</p><div class="value">skichalet116</div></div>
-<div class="card"><span class="pill">PARKING</span><h2>🚗 Parking</h2><div class="value">Maximum 7 vehicles</div><p>Please park only within the designated parking area for 116 Tyrolean Lane.</p><div class="warning">Please do not park on the neighbouring property.</div></div>
-<div class="card"><span class="pill">GARBAGE & RECYCLING</span><h2>🗑️ Waste</h2><p>Please leave all garbage and recycling bags inside the wooden bins located outside at the front of the house.</p><p>Please make sure the bin lids are completely closed.</p></div>
-<div class="card"><span class="pill">SWIMSPA / HOT TUB</span><h2>♨️ Swimspa & Hot Tub</h2><p>Please rinse off before entering to help us keep the water clean and comfortable for everyone.</p><div class="warning">Do not adjust the temperature or any system settings.</div><p>Please replace the cover after every use. Do not sit, stand or place objects on the cover.</p></div>
+<nav class="guide-menu" id="guide-menu" aria-label="Welcome guide menu">
+<div class="guide-menu-kicker">QUICK ACCESS</div><h2>What do you need?</h2>
+<div class="guide-menu-grid">
+<a href="#wifi"><span>📶</span><strong>Wi-Fi</strong></a>
+<a href="#parking"><span>🚗</span><strong>Parking</strong></a>
+<a href="#waste"><span>🗑️</span><strong>Garbage</strong></a>
+<a href="#swimspa"><span>♨️</span><strong>Swimspa</strong></a>
+<a href="#bbq"><span>🔥</span><strong>BBQ</strong></a>
+<a href="#contact"><span>☎️</span><strong>Contact</strong></a>
+</div></nav>
+<div class="card guide-section" id="wifi"><span class="pill">WI-FI</span><h2>📶 Connect to Wi-Fi</h2><p>Network</p><div class="value">116bluemountains</div><p>Password</p><div class="value">skichalet116</div></div>
+<div class="card guide-section" id="parking"><span class="pill">PARKING</span><h2>🚗 Parking</h2><div class="value">Maximum 7 vehicles</div><p>Please park only within the designated parking area for 116 Tyrolean Lane.</p><div class="warning">Please do not park on the neighbouring property.</div></div>
+<div class="card guide-section" id="waste"><span class="pill">GARBAGE & RECYCLING</span><h2>🗑️ Waste</h2><p>Please leave all garbage and recycling bags inside the wooden bins located outside at the front of the house.</p><p>Please make sure the bin lids are completely closed.</p></div>
+<div class="card guide-section" id="swimspa"><span class="pill">SWIMSPA / HOT TUB</span><h2>♨️ Swimspa & Hot Tub</h2><p>Please rinse off before entering to help us keep the water clean and comfortable for everyone.</p><div class="warning">Do not adjust the temperature or any system settings.</div><p>Please replace the cover after every use. Do not sit, stand or place objects on the cover.</p></div>
 <div class="card"><span class="pill">NATURAL GAS BBQ</span><h2>🔥 BBQ</h2><p>The BBQ is connected directly to natural gas. The gas shut-off lever is located on top of the deck beside the BBQ.</p><ol class="steps"><li><strong>Before using:</strong> Turn the gas lever ON.</li><li>Use the BBQ normally.</li><li><strong>After using:</strong> Turn the BBQ burners OFF, then turn the gas lever OFF.</li></ol></div>
 </section>
 <div class="footer"><a href="https://zyenhomes.github.io/zyenhomes-website/index.html">Zyen Homes Property Management</a><br>Exceptional stays. Professionally managed.</div>
 </main>
 <script>
+document.addEventListener('click',function(e){
+const section=e.target.closest('.guide-section');
+if(section && e.target===section){return;}
+if(section && e.target.matches('.guide-section::after')){return;}
+});
+document.querySelectorAll('.guide-section').forEach(section=>{
+section.addEventListener('click',function(e){
+const r=this.getBoundingClientRect();
+if(e.clientY-r.top > this.offsetHeight-58){document.getElementById('guide-menu').scrollIntoView({behavior:'smooth',block:'start'});}
+});
+});
 document.getElementById('welcomeForm').addEventListener('submit',async function(e){
 e.preventDefault();
 const form=this;
