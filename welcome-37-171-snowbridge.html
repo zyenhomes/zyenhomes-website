@@ -98,6 +98,22 @@ html{scroll-behavior:smooth}
  .book-content{padding-bottom:95px}
 }
 @media(prefers-reduced-motion:reduce){.book-nav,.mobile-nav-backdrop{transition:none}}
+
+/* Compact contact panel on phones: show the full logo without excessive scrolling */
+@media(max-width:760px){
+ #panel-contact{padding-bottom:4px}
+ #panel-contact .book-eyebrow{font-size:9px}
+ #panel-contact h2{font-size:clamp(25px,7vw,31px);margin:5px 0 10px;line-height:1.12}
+ #panel-contact>p{font-size:13px;line-height:1.45;margin:0 0 12px}
+ #panel-contact .detail-grid{grid-template-columns:1fr;gap:8px;margin:12px 0}
+ #panel-contact .detail-grid>div{padding:11px 14px}
+ #panel-contact .detail-grid small{font-size:9px;margin-bottom:3px}
+ #panel-contact .detail-grid strong{font-size:18px;overflow-wrap:anywhere}
+ #panel-contact>div[style*="text-align:center"]{margin-top:12px!important}
+ #panel-contact>div[style*="text-align:center"] h3{font-size:19px;line-height:1.2;margin:10px 0 6px}
+ #panel-contact>div[style*="text-align:center"] p{font-size:12px;line-height:1.4;margin:6px 0}
+ #panel-contact>div[style*="text-align:center"] img{width:55%!important;max-width:180px!important;margin:10px auto 0!important;height:auto!important}
+}
 </style>
 </head>
 <body>
