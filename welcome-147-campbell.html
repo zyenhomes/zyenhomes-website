@@ -264,14 +264,7 @@ html{scroll-behavior:smooth}
 <section class="book-panel" id="panel-feedback"><span class="book-eyebrow">WE VALUE YOUR STAY</span><h2>How Was Your Stay?</h2><p>Your feedback helps us improve the experience for you and future guests. This takes less than a minute.</p>
 <form id="feedbackForm" class="feedback-form" action="https://formspree.io/f/xaeqykbv" method="POST">
 <div class="feedback-field"><label>Overall Stay</label><div class="star-rating" aria-label="Overall stay rating"><input type="radio" id="star5" name="overallRating" value="5" required><label for="star5">★</label><input type="radio" id="star4" name="overallRating" value="4"><label for="star4">★</label><input type="radio" id="star3" name="overallRating" value="3"><label for="star3">★</label><input type="radio" id="star2" name="overallRating" value="2"><label for="star2">★</label><input type="radio" id="star1" name="overallRating" value="1"><label for="star1">★</label></div></div>
-<div class="feedback-grid"><div class="feedback-field"><label for="cleanliness">Cleanlinconst mobileToggle=document.querySelector('.mobile-guide-toggle'),mobileClose=document.querySelector('.mobile-nav-close'),mobileBackdrop=document.querySelector('.mobile-nav-backdrop'),mobileNav=document.getElementById('mobileGuideNav');
-function setMobileMenu(open){document.body.classList.toggle('mobile-nav-open',open);mobileToggle.setAttribute('aria-expanded',String(open));if(open){mobileClose.focus();}else{mobileToggle.focus();}}
-mobileToggle.addEventListener('click',()=>setMobileMenu(true));
-mobileClose.addEventListener('click',()=>setMobileMenu(false));
-mobileBackdrop.addEventListener('click',()=>setMobileMenu(false));
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);});
-window.addEventListener('resize',()=>{if(window.innerWidth>760&&document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);});
-document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.book-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.book-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');const panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');if(window.innerWidth<=760){if(document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);document.querySelector('.book-content').scrollIntoView({behavior:'smooth',block:'start'});}});});>1 - Poor</option></select></div></div>
+<div class="feedback-grid"><div class="feedback-field"><label for="cleanliness">Cleanliness</label><select id="cleanliness" name="cleanliness" required><option value="">Select</option><option>5 - Excellent</option><option>4 - Very Good</option><option>3 - Good</option><option>2 - Fair</option><option>1 - Poor</option></select></div><div class="feedback-field"><label for="comfort">Comfort</label><select id="comfort" name="comfort" required><option value="">Select</option><option>5 - Excellent</option><option>4 - Very Good</option><option>3 - Good</option><option>2 - Fair</option><option>1 - Poor</option></select></div></div>
 <div class="feedback-field"><label>Was everything working properly?</label><div class="choice-row"><label><input type="radio" name="everythingWorking" value="Yes" required> Yes</label><label><input type="radio" name="everythingWorking" value="No"> No</label></div></div>
 <div class="feedback-field"><label for="enjoyed">What did you enjoy most?</label><textarea id="enjoyed" name="enjoyedMost" rows="3" placeholder="Tell us what you loved..."></textarea></div>
 <div class="feedback-field"><label for="improve">Anything we could improve?</label><textarea id="improve" name="improvements" rows="3" placeholder="Your suggestions help us improve..."></textarea></div>
@@ -285,7 +278,14 @@ document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click
 <div class="footer"><a href="https://zyenhomes.github.io/zyenhomes-website/index.html">Zyen Homes Property Management</a><br>Exceptional stays. Professionally managed.</div>
 </main>
 <script>
-document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.book-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.book-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');const panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');if(window.innerWidth<=760){document.querySelector('.book-content').scrollIntoView({behavior:'smooth',block:'start'});}});});
+const mobileToggle=document.querySelector('.mobile-guide-toggle'),mobileClose=document.querySelector('.mobile-nav-close'),mobileBackdrop=document.querySelector('.mobile-nav-backdrop'),mobileNav=document.getElementById('mobileGuideNav');
+function setMobileMenu(open){document.body.classList.toggle('mobile-nav-open',open);mobileToggle.setAttribute('aria-expanded',String(open));if(open){mobileClose.focus();}else{mobileToggle.focus();}}
+mobileToggle.addEventListener('click',()=>setMobileMenu(true));
+mobileClose.addEventListener('click',()=>setMobileMenu(false));
+mobileBackdrop.addEventListener('click',()=>setMobileMenu(false));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);});
+window.addEventListener('resize',()=>{if(window.innerWidth>760&&document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);});
+document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.book-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.book-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');const panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');if(window.innerWidth<=760){if(document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);document.querySelector('.book-content').scrollIntoView({behavior:'smooth',block:'start'});}});});
 
 document.addEventListener('click',function(e){
 const section=e.target.closest('.guide-section');
