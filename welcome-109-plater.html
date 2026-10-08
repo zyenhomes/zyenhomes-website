@@ -85,9 +85,9 @@ html{scroll-behavior:smooth}
 .mobile-guide-toggle,.mobile-nav-backdrop,.mobile-nav-close{display:none}
 @media(max-width:760px){
  body.mobile-nav-open{overflow:hidden}
- .guide.open .mobile-guide-toggle{display:flex;position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:30;width:auto;align-items:center;gap:9px;padding:14px 19px;border-radius:999px;background:#183f32;color:#fff;box-shadow:0 8px 28px rgba(12,36,26,.28);font-size:13px;letter-spacing:.07em;cursor:pointer}
- .mobile-nav-backdrop{display:block;position:fixed;inset:0;background:rgba(10,25,19,.52);z-index:39;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
- .book-nav{position:fixed;top:0;bottom:0;left:0;z-index:40;width:min(86vw,340px);height:100dvh;padding:16px 0 calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;transform:translateX(-105%);transition:transform .26s ease;background:#f7f5ef;box-shadow:12px 0 32px rgba(0,0,0,.15);border:0;scrollbar-width:thin}
+ .guide.open .mobile-guide-toggle{display:flex;position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:9999;pointer-events:auto;touch-action:manipulation;width:auto;align-items:center;gap:9px;padding:14px 19px;border-radius:999px;background:#183f32;color:#fff;box-shadow:0 8px 28px rgba(12,36,26,.28);font-size:13px;letter-spacing:.07em;cursor:pointer}
+ .mobile-nav-backdrop{display:block;position:fixed;inset:0;background:rgba(10,25,19,.52);z-index:10000;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+ .book-nav{position:fixed;top:0;bottom:0;left:0;z-index:10001;width:min(86vw,340px);height:100dvh;padding:16px 0 calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;transform:translateX(-105%);transition:transform .26s ease;background:#f7f5ef;box-shadow:12px 0 32px rgba(0,0,0,.15);border:0;scrollbar-width:thin}
  .book-nav-title{display:block;padding:10px 24px 20px;color:#183f32;font-size:12px;letter-spacing:.16em}
  .book-tab{display:block;width:100%;flex:none;text-align:left;white-space:normal;padding:14px 24px;font-size:14px;border-bottom:1px solid #e8e5dc;letter-spacing:0}
  .book-tab.active{background:#183f32;color:#fff}
@@ -260,7 +260,7 @@ html{scroll-behavior:smooth}
 <script>
 const mobileToggle=document.querySelector('.mobile-guide-toggle'),mobileClose=document.querySelector('.mobile-nav-close'),mobileBackdrop=document.querySelector('.mobile-nav-backdrop'),mobileNav=document.getElementById('mobileGuideNav');
 function setMobileMenu(open){document.body.classList.toggle('mobile-nav-open',open);mobileToggle.setAttribute('aria-expanded',String(open));if(open){mobileClose.focus();}else{mobileToggle.focus();}}
-mobileToggle.addEventListener('click',()=>setMobileMenu(true));
+mobileToggle.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();setMobileMenu(true);});
 mobileClose.addEventListener('click',()=>setMobileMenu(false));
 mobileBackdrop.addEventListener('click',()=>setMobileMenu(false));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);});
