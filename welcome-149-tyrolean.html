@@ -97,6 +97,7 @@ html{scroll-behavior:smooth}
  .book-content{padding-bottom:95px}
 }
 @media(prefers-reduced-motion:reduce){.book-nav,.mobile-nav-backdrop{transition:none}}
+.welcome-open-link{display:block;background:#244c3c;color:#fff!important;text-align:center;text-decoration:none;font-weight:700;padding:15px 20px;border-radius:8px;cursor:pointer;margin-top:16px}.guide:target{display:block!important}
 </style>
 </head>
 <body>
@@ -107,7 +108,7 @@ html{scroll-behavior:smooth}
 <form id="welcomeForm" onsubmit="return false;"><label for="name">First Name</label><input id="name" name="name" type="text" autocomplete="given-name">
 <label for="email">Email Address</label><input id="email" name="email" type="email" autocomplete="email">
 <label class="consent"><input id="marketing" name="marketingConsent" type="checkbox" value="Yes"><span>Yes, I would like to receive exclusive offers, special discounts and promotional emails from Zyen Homes Property Management. I understand that I can unsubscribe at any time.</span></label>
-<button type="button" id="openWelcomeGuide">OPEN WELCOME GUIDE →</button>
+<a id="openWelcomeGuide" class="welcome-open-link" href="#guide" onclick="document.getElementById('access').style.display='none';document.getElementById('guide').style.display='block';">OPEN WELCOME GUIDE →</a>
 <p class="note">Your name and email are used to provide access to this guest guide. Promotional emails will only be sent if you select the consent box above.</p></form></section>
 <section class="guide" id="guide">
 <button type="button" class="mobile-guide-toggle" aria-controls="mobileGuideNav" aria-expanded="false">☰ &nbsp; MENU</button><div class="mobile-nav-backdrop" aria-hidden="true"></div><div class="welcome-book">
