@@ -107,7 +107,7 @@ html{scroll-behavior:smooth}
 <form id="welcomeForm" action="https://formspree.io/f/xaeqykbv" method="POST"><label for="name">First Name</label><input id="name" name="name" type="text" autocomplete="given-name">
 <label for="email">Email Address</label><input id="email" name="email" type="email" autocomplete="email">
 <label class="consent"><input id="marketing" name="marketingConsent" type="checkbox" value="Yes"><span>Yes, I would like to receive exclusive offers, special discounts and promotional emails from Zyen Homes Property Management. I understand that I can unsubscribe at any time.</span></label>
-<button type="submit">OPEN WELCOME GUIDE →</button>
+<button type="button" id="openWelcomeGuide">OPEN WELCOME GUIDE →</button>
 <p class="note">Your name and email are used to provide access to this guest guide. Promotional emails will only be sent if you select the consent box above.</p></form></section>
 <section class="guide" id="guide">
 <button type="button" class="mobile-guide-toggle" aria-controls="mobileGuideNav" aria-expanded="false">☰ &nbsp; MENU</button><div class="mobile-nav-backdrop" aria-hidden="true"></div><div class="welcome-book">
@@ -285,6 +285,13 @@ document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click
 <div class="footer"><a href="https://zyenhomes.github.io/zyenhomes-website/index.html">Zyen Homes Property Management</a><br>Exceptional stays. Professionally managed.</div>
 </main>
 <script>
+// Testing mode: open the welcome guide immediately without guest registration.
+document.getElementById('openWelcomeGuide').addEventListener('click',function(){
+  document.getElementById('access').style.display='none';
+  document.getElementById('guide').classList.add('open');
+  document.getElementById('guide').scrollIntoView({behavior:'smooth',block:'start'});
+});
+
 document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.book-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.book-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');const panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');if(window.innerWidth<=760){document.querySelector('.book-content').scrollIntoView({behavior:'smooth',block:'start'});}});});
 
 document.addEventListener('click',function(e){
