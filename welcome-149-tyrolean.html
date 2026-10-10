@@ -99,6 +99,7 @@ html{scroll-behavior:smooth}
 @media(prefers-reduced-motion:reduce){.book-nav,.mobile-nav-backdrop{transition:none}}
 .welcome-open-link{display:block;background:#244c3c;color:#fff!important;text-align:center;text-decoration:none;font-weight:700;padding:15px 20px;border-radius:8px;cursor:pointer;margin-top:16px}.guide:target{display:block!important}
 .test-property-switcher{padding:12px 18px 20px;border-bottom:1px solid #d5d9d2}.test-property-switcher label{display:block;font-size:10px;letter-spacing:.08em;font-weight:800;color:#183f32;margin:0 0 8px}.test-property-switcher select{width:100%;padding:11px 8px;border:1px solid #bbc9c0;background:white;border-radius:5px;color:#183f32;font-size:13px}
+.book-nav a.book-tab{display:block;text-decoration:none}.book-panel:target{display:block!important}.book-content:has(.book-panel:target) .book-panel.active:not(:target){display:none}
 </style>
 </head>
 <body>
@@ -116,27 +117,27 @@ html{scroll-behavior:smooth}
 <aside class="book-nav" id="mobileGuideNav" aria-label="Welcome guide sections"><button type="button" class="mobile-nav-close" aria-label="Close guide menu">✕ &nbsp; CLOSE</button>
 <div class="test-property-switcher" aria-label="Testing property navigation"><label for="testPropertySelect">TEST MODE · SWITCH PROPERTY</label><select id="testPropertySelect" aria-label="Switch welcome guide property"><option value="">Select a property…</option><option value="welcome-100-pilsen.html">100 Pilsen Way</option><option value="welcome-105-pilsen.html">105 Pilsen Way</option><option value="welcome-116-tyrolean.html">116 Tyrolean Lane</option><option value="welcome-109-plater.html">109 Plater Street</option><option value="welcome-147-campbell.html">147 Campbell Crescent</option><option value="welcome-35-171-snowbridge.html">35-171 Snowbridge Way</option><option value="welcome-39-171-snowbridge.html">39-171 Snowbridge Way</option><option value="welcome-145-tyrolean.html">145 Tyrolean Lane</option><option value="welcome-147-tyrolean.html">147 Tyrolean Lane</option><option value="welcome-149-tyrolean.html">149 Tyrolean Lane</option><option value="welcome-151-tyrolean.html">151 Tyrolean Lane</option><option value="welcome-197-arlberg.html">197 Arlberg</option></select></div>
 <div class="book-nav-title">WELCOME GUIDE</div>
-<button class="book-tab active" data-panel="welcome">Welcome</button>
-<button class="book-tab" data-panel="host">Meet Your Host</button>
+<a class="book-tab active" data-panel="welcome" href="#panel-welcome">Welcome</a>
+<a class="book-tab" data-panel="host" href="#panel-host">Meet Your Host</a>
 
-<button class="book-tab" data-panel="checkin">Check-In Details</button>
-<button class="book-tab" data-panel="checkout">Check-Out Details</button>
-<button class="book-tab" data-panel="wifi">Wi-Fi</button>
-<button class="book-tab" data-panel="parking">Parking</button>
-<button class="book-tab" data-panel="rules">House Rules</button>
-<button class="book-tab" data-panel="swimspa">Swimspa / Hot Tub</button>
-<button class="book-tab" data-panel="fireplace">Fireplace</button>
-<button class="book-tab" data-panel="bbq">BBQ</button>
-<button class="book-tab" data-panel="waste">Garbage & Recycling</button>
-<button class="book-tab" data-panel="kitchen">Kitchen Guide</button>
-<button class="book-tab" data-panel="winter">Winter in Blue Mountains</button>
-<button class="book-tab" data-panel="summer">Summer in Blue Mountains</button>
-<button class="book-tab" data-panel="map">Area Map</button>
-<button class="book-tab" data-panel="kids">Places for Kids</button>
-<button class="book-tab" data-panel="delivery">Home Delivery</button>
-<button class="book-tab" data-panel="contact">Contact Zyen Homes</button>
-<button class="book-tab" data-panel="emergency">Emergency Contacts</button>
-<button class="book-tab" data-panel="feedback">Feedback</button>
+<a class="book-tab" data-panel="checkin" href="#panel-checkin">Check-In Details</a>
+<a class="book-tab" data-panel="checkout" href="#panel-checkout">Check-Out Details</a>
+<a class="book-tab" data-panel="wifi" href="#panel-wifi">Wi-Fi</a>
+<a class="book-tab" data-panel="parking" href="#panel-parking">Parking</a>
+<a class="book-tab" data-panel="rules" href="#panel-rules">House Rules</a>
+<a class="book-tab" data-panel="swimspa" href="#panel-swimspa">Swimspa / Hot Tub</a>
+<a class="book-tab" data-panel="fireplace" href="#panel-fireplace">Fireplace</a>
+<a class="book-tab" data-panel="bbq" href="#panel-bbq">BBQ</a>
+<a class="book-tab" data-panel="waste" href="#panel-waste">Garbage & Recycling</a>
+<a class="book-tab" data-panel="kitchen" href="#panel-kitchen">Kitchen Guide</a>
+<a class="book-tab" data-panel="winter" href="#panel-winter">Winter in Blue Mountains</a>
+<a class="book-tab" data-panel="summer" href="#panel-summer">Summer in Blue Mountains</a>
+<a class="book-tab" data-panel="map" href="#panel-map">Area Map</a>
+<a class="book-tab" data-panel="kids" href="#panel-kids">Places for Kids</a>
+<a class="book-tab" data-panel="delivery" href="#panel-delivery">Home Delivery</a>
+<a class="book-tab" data-panel="contact" href="#panel-contact">Contact Zyen Homes</a>
+<a class="book-tab" data-panel="emergency" href="#panel-emergency">Emergency Contacts</a>
+<a class="book-tab" data-panel="feedback" href="#panel-feedback">Feedback</a>
 </aside>
 <div class="book-content">
 <section class="book-panel active" id="panel-welcome"><span class="book-eyebrow">WELCOME TO 116 TYROLEAN LANE</span><h2>Welcome to Your Blue Mountains Stay</h2><p>We're delighted to host you. This digital guide is designed to make your stay simple, comfortable and memorable. Use the menu to quickly find everything you need during your visit.</p><div class="book-photo hero-mini"></div><div style="display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;align-items:center;margin-top:14px;padding:10px;border:1px solid #dce3df;border-radius:14px"><a href="https://www.zyenhomes.com" target="_blank" rel="noopener noreferrer" aria-label="Zyen Homes website"><img src="Zyen%20Homes%20Logo(2).jpg" alt="Zyen Homes logo" loading="lazy" style="width:100%;max-width:90px;height:auto;display:block"></a><div><strong style="color:#183f32">Book Directly for Special Offers &amp; Discounts</strong><p style="margin:8px 0 0"><a href="https://www.zyenhomes.com" target="_blank" rel="noopener noreferrer" style="font-weight:700;overflow-wrap:anywhere">www.zyenhomes.com ↗</a></p></div></div></section>
