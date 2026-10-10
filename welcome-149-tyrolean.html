@@ -299,17 +299,16 @@ document.getElementById('openWelcomeGuide').addEventListener('click',function(){
 
 document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.book-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.book-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');const panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');if(window.innerWidth<=760){document.querySelector('.book-content').scrollIntoView({behavior:'smooth',block:'start'});}});});
 
-document.addEventListener('click',function(e){
-const section=e.target.closest('.guide-section');
-if(section && e.target===section){return;}
-if(section && e.target.matches('.guide-section::after')){return;}
-});
-document.querySelectorAll('.guide-section').forEach(section=>{
-section.addEventListener('click',function(e){
-const r=this.getBoundingClientRect();
-if(e.clientY-r.top > this.offsetHeight-58){document.getElementById('guide-menu').scrollIntoView({behavior:'smooth',block:'start'});}
-});
-});
+// Guide menu navigation and mobile drawer controls.
+const menuToggle=document.querySelector('.mobile-guide-toggle');
+const menuClose=document.querySelector('.mobile-nav-close');
+const menuBackdrop=document.querySelector('.mobile-nav-backdrop');
+function closeGuideMenu(){document.body.classList.remove('mobile-nav-open');if(menuToggle)menuToggle.setAttribute('aria-expanded','false');}
+if(menuToggle)menuToggle.addEventListener('click',()=>{document.body.classList.add('mobile-nav-open');menuToggle.setAttribute('aria-expanded','true');});
+if(menuClose)menuClose.addEventListener('click',closeGuideMenu);
+if(menuBackdrop)menuBackdrop.addEventListener('click',closeGuideMenu);
+document.querySelectorAll('.book-tab').forEach(tab=>tab.addEventListener('click',closeGuideMenu));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGuideMenu();});
 // Keep the guest registration form inactive during guide testing.
 document.getElementById('welcomeForm').addEventListener('submit',function(e){
  e.preventDefault();
