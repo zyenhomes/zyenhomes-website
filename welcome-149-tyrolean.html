@@ -104,7 +104,7 @@ html{scroll-behavior:smooth}
 <section class="hero"><div class="hero-copy"><div>GUEST WELCOME GUIDE</div><h1>149 Tyrolean</h1><p>Everything you need for a comfortable Blue Mountains stay.</p></div></section>
 <main class="wrap">
 <section class="card access" id="access"><h2>Welcome to Your Stay</h2><p>Enter your name and email to open your guest guide.</p>
-<form id="welcomeForm" action="https://formspree.io/f/xaeqykbv" method="POST"><label for="name">First Name</label><input id="name" name="name" type="text" autocomplete="given-name">
+<form id="welcomeForm" onsubmit="return false;"><label for="name">First Name</label><input id="name" name="name" type="text" autocomplete="given-name">
 <label for="email">Email Address</label><input id="email" name="email" type="email" autocomplete="email">
 <label class="consent"><input id="marketing" name="marketingConsent" type="checkbox" value="Yes"><span>Yes, I would like to receive exclusive offers, special discounts and promotional emails from Zyen Homes Property Management. I understand that I can unsubscribe at any time.</span></label>
 <button type="button" id="openWelcomeGuide">OPEN WELCOME GUIDE →</button>
@@ -305,40 +305,10 @@ const r=this.getBoundingClientRect();
 if(e.clientY-r.top > this.offsetHeight-58){document.getElementById('guide-menu').scrollIntoView({behavior:'smooth',block:'start'});}
 });
 });
-document.getElementById('welcomeForm').addEventListener('submit',async function(e){
-e.preventDefault();
-const form=this;
-const n=document.getElementById('name').value.trim(), em=document.getElementById('email').value.trim();
-// Testing phase: allow guide access without completing name/email.
-if(!n || !em){
-  document.getElementById('access').style.display='none';
-  document.getElementById('guide').classList.add('open');
-  window.scrollTo({top:document.getElementById('guide').offsetTop-16,behavior:'smooth'});
-  return;
-}
-if(!form.reportValidity())return;
-const button=form.querySelector('button[type="submit"]');
-const originalText=button.textContent;
-button.disabled=true; button.textContent='OPENING GUIDE...';
-const data=new FormData(form);
-data.append('_subject','149 Tyrolean Welcome Guide Registration');
-data.append('inquiryType','149 Tyrolean Welcome Guide');
-data.append('property','149 Tyrolean');
-data.append('marketingConsent',document.getElementById('marketing').checked?'Yes':'No');
-data.append('_replyto',em);
-data.append('accessedAt',new Date().toISOString());
-try{
-const response=await fetch('https://formspree.io/f/xaeqykbv',{method:'POST',body:data,headers:{'Accept':'application/json'}});
-if(!response.ok)throw new Error('Submission failed');
-localStorage.setItem('zyen116Guest',JSON.stringify({name:n,email:em,marketing:document.getElementById('marketing').checked,accessedAt:new Date().toISOString()}));
-document.getElementById('access').style.display='none';
-document.getElementById('guide').classList.add('open');
-window.scrollTo({top:document.getElementById('guide').offsetTop-16,behavior:'smooth'});
-}catch(error){
-let status=form.querySelector('.welcome-error');
-if(!status){status=document.createElement('p');status.className='note welcome-error';status.style.color='#9b2c2c';form.appendChild(status);}
-status.textContent='We could not open the guide right now. Please check your connection and try again.';
-}finally{button.disabled=false;button.textContent=originalText;}
+// Keep the guest registration form inactive during guide testing.
+document.getElementById('welcomeForm').addEventListener('submit',function(e){
+ e.preventDefault();
+ document.getElementById('openWelcomeGuide').click();
 });
 const feedbackForm=document.getElementById('feedbackForm');
 if(feedbackForm){feedbackForm.addEventListener('submit',async function(e){e.preventDefault();if(!this.reportValidity())return;const btn=this.querySelector('.feedback-submit');const status=this.querySelector('.feedback-status');btn.disabled=true;btn.textContent='SENDING...';const data=new FormData(this);data.append('submittedAt',new Date().toISOString());try{const res=await fetch(this.action,{method:'POST',body:data,headers:{'Accept':'application/json'}});if(!res.ok)throw new Error();this.innerHTML='<div class="feedback-thanks"><h3>Thank You</h3><p>We truly appreciate you taking the time to share your experience with us. Your feedback helps Zyen Homes continue improving every stay.</p></div>';}catch(err){status.textContent='We could not send your feedback right now. Please try again.';status.style.color='#9b2c2c';btn.disabled=false;btn.textContent='SUBMIT FEEDBACK →';}});}
