@@ -97,6 +97,7 @@ html{scroll-behavior:smooth}
  .book-content{padding-bottom:95px}
 }
 @media(prefers-reduced-motion:reduce){.book-nav,.mobile-nav-backdrop{transition:none}}
+.test-property-switcher{padding:12px 18px 20px;border-bottom:1px solid #d5d9d2}.test-property-switcher label{display:block;font-size:10px;letter-spacing:.08em;font-weight:800;color:#183f32;margin:0 0 8px}.test-property-switcher select{width:100%;padding:11px 8px;border:1px solid #bbc9c0;background:white;border-radius:5px;color:#183f32;font-size:13px}
 </style>
 </head>
 <body>
@@ -112,7 +113,7 @@ html{scroll-behavior:smooth}
 <section class="guide" id="guide">
 <button type="button" class="mobile-guide-toggle" aria-controls="mobileGuideNav" aria-expanded="false">☰ &nbsp; MENU</button><div class="mobile-nav-backdrop" aria-hidden="true"></div><div class="welcome-book">
 <aside class="book-nav" id="mobileGuideNav" aria-label="Welcome guide sections"><button type="button" class="mobile-nav-close" aria-label="Close guide menu">✕ &nbsp; CLOSE</button>
-<div class="book-nav-title">WELCOME GUIDE</div>
+<div class="test-property-switcher" aria-label="Testing property navigation"><label for="testPropertySelect">TEST MODE · SWITCH PROPERTY</label><select id="testPropertySelect" aria-label="Switch welcome guide property"><option value="">Select a property…</option><option value="welcome-100-pilsen.html">100 Pilsen Way</option><option value="welcome-105-pilsen.html">105 Pilsen Way</option><option value="welcome-116-tyrolean.html">116 Tyrolean Lane</option><option value="welcome-109-plater.html">109 Plater Street</option><option value="welcome-147-campbell.html">147 Campbell Crescent</option><option value="welcome-35-171-snowbridge.html">35-171 Snowbridge Way</option><option value="welcome-39-171-snowbridge.html">39-171 Snowbridge Way</option><option value="welcome-145-tyrolean.html">145 Tyrolean Lane</option><option value="welcome-147-tyrolean.html">147 Tyrolean Lane</option><option value="welcome-149-tyrolean.html">149 Tyrolean Lane</option><option value="welcome-151-tyrolean.html">151 Tyrolean Lane</option><option value="welcome-197-arlberg.html">197 Arlberg</option></select></div><div class="book-nav-title">WELCOME GUIDE</div>
 <button class="book-tab active" data-panel="welcome">Welcome</button>
 <button class="book-tab" data-panel="host">Meet Your Host</button>
 
@@ -264,6 +265,8 @@ html{scroll-behavior:smooth}
 <div class="footer"><a href="https://zyenhomes.github.io/zyenhomes-website/index.html">Zyen Homes Property Management</a><br>Exceptional stays. Professionally managed.</div>
 </main>
 <script>
+document.addEventListener("change",function(e){if(e.target.id==="testPropertySelect"&&e.target.value)window.location.href=e.target.value;});
+
 const mobileToggle=document.querySelector('.mobile-guide-toggle'),mobileClose=document.querySelector('.mobile-nav-close'),mobileBackdrop=document.querySelector('.mobile-nav-backdrop'),mobileNav=document.getElementById('mobileGuideNav');
 function setMobileMenu(open){document.body.classList.toggle('mobile-nav-open',open);mobileToggle.setAttribute('aria-expanded',String(open));if(open){mobileClose.focus();}else{mobileToggle.focus();}}
 mobileToggle.addEventListener('click',()=>setMobileMenu(true));
