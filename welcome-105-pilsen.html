@@ -275,20 +275,8 @@ mobileClose.addEventListener('click',()=>setMobileMenu(false));
 mobileBackdrop.addEventListener('click',()=>setMobileMenu(false));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);});
 window.addEventListener('resize',()=>{if(window.innerWidth>760&&document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);});
-document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.book-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.book-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');const panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');if(window.innerWidth<=760){if(document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);document.querySelector('.book-content').scrollIntoView({behavior:'smooth',block:'start'});}});});tion>1 - Poor</option></select></div></div>
-<div class="feedback-field"><label>Was everything working properly?</label><div class="choice-row"><label><input type="radio" name="everythingWorking" value="Yes" required> Yes</label><label><input type="radio" name="everythingWorking" value="No"> No</label></div></div>
-<div class="feedback-field"><label for="enjoyed">What did you enjoy most?</label><textarea id="enjoyed" name="enjoyedMost" rows="3" placeholder="Tell us what you loved..."></textarea></div>
-<div class="feedback-field"><label for="improve">Anything we could improve?</label><textarea id="improve" name="improvements" rows="3" placeholder="Your suggestions help us improve..."></textarea></div>
-<div class="feedback-field"><label>Would you stay with Zyen Homes again?</label><div class="choice-row"><label><input type="radio" name="stayAgain" value="Yes" required> Yes</label><label><input type="radio" name="stayAgain" value="Maybe"> Maybe</label><label><input type="radio" name="stayAgain" value="No"> No</label></div></div>
-<input type="hidden" name="property" value="105 Pilsen Way"><input type="hidden" name="inquiryType" value="Guest Feedback"><input type="hidden" name="_subject" value="105 Pilsen Way Guest Feedback">
-<button type="submit" class="feedback-submit">SUBMIT FEEDBACK →</button><p class="feedback-status" aria-live="polite"></p>
-</form>
-</section>
-</div></div>
-</section>
-<div class="footer"><a href="https://zyenhomes.github.io/zyenhomes-website/index.html">Zyen Homes Property Management</a><br>Exceptional stays. Professionally managed.</div>
-</main>
-<script>
+document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.book-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.book-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');const panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');if(window.innerWidth<=760){if(document.body.classList.contains('mobile-nav-open'))setMobileMenu(false);document.querySelector('.book-content').scrollIntoView({behavior:'smooth',block:'start'});}});})
+
 document.querySelectorAll('.book-tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.book-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.book-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');const panel=document.getElementById('panel-'+tab.dataset.panel);if(panel)panel.classList.add('active');if(window.innerWidth<=760){document.querySelector('.book-content').scrollIntoView({behavior:'smooth',block:'start'});}});});
 
 document.addEventListener('click',function(e){
