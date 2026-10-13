@@ -3807,3 +3807,9 @@ section.management {
   .form-success-panel h2{font-size:34px;}
   .form-success-panel .btn{width:100%;}
 }
+
+/* Ensure all property links remain above decorative layers and accept clicks */
+.featured-rentals .property-grid,.featured-rentals .all-properties-link{position:relative;z-index:3}
+.featured-rentals a.property-card-link{position:relative;display:block;pointer-events:auto!important;cursor:pointer}
+.featured-rentals .all-properties-link a{position:relative;display:inline-block;pointer-events:auto!important;cursor:pointer}
+.featured-rentals a.property-card-link::before,.featured-rentals a.property-card-link::after{pointer-events:none}
