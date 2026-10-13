@@ -3,38 +3,44 @@
  .zy-gallery{margin:28px 0 38px}.zy-gallery-main{width:100%;height:clamp(260px,50vw,580px);object-fit:cover;border-radius:14px;display:block;background:#edf0ed}.zy-gallery-thumbs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-top:10px}.zy-gallery-thumbs button{padding:0;border:2px solid transparent;background:none;border-radius:8px;overflow:hidden;cursor:pointer}.zy-gallery-thumbs button.active{border-color:#174f41}.zy-gallery-thumbs img{width:100%;height:95px;object-fit:cover;display:block}.zy-gallery-status{color:#596a61;margin:10px 0}.zy-gallery-count{margin:10px 0;color:#596a61;font-size:13px}@media(max-width:600px){.zy-gallery-thumbs{grid-template-columns:repeat(4,minmax(0,1fr))}.zy-gallery-thumbs img{height:70px}}</style></head><body><header class="site-header"><a class="brand brand-logo" href="index.html"><img src="Zyen Homes Logo(2).jpg" alt="Zyen Homes"></a><nav><a href="index.html">Home</a><a href="rentals.html">All Properties</a><a href="custom-stay.html">Custom Stay</a></nav></header><main class="zy-wrap"><a class="zy-back" href="rentals.html">← All Properties</a><div id="property"></div></main><footer class="zy-foot">Zyen Homes Property Management · <a href="mailto:info@zyenhomes.com">Contact Us</a></footer><script src="properties-data.js"></script><script>
 const q=new URLSearchParams(location.search),x=ZYEN_PROPERTIES.find(x=>x.id===q.get('id')),root=document.querySelector('#property');if(!x){root.innerHTML='<h1>Property not found</h1><a href="rentals.html">View all properties</a>'}else{document.title=x.name+' | Zyen Homes';const subject=encodeURIComponent('Booking inquiry: '+x.name),details=encodeURIComponent('Hello Zyen Homes,\n\nI would like to inquire about '+x.name+'.\nCheck-in: '+(q.get('checkin')||'Flexible')+'\nCheck-out: '+(q.get('checkout')||'Flexible')+'\nGuests: '+(q.get('guests')||'Please advise')+'\n\nPlease confirm availability and pricing.');root.innerHTML='<section id="live-gallery" class="zy-gallery" aria-label="Property photo gallery"><p class="zy-gallery-status">Loading photos from Guesty…</p></section><div class="zy-detail"><img src="'+encodeURI(x.image)+'" alt="'+x.name+'" id="detail-photo"><div><p class="zy-tag">'+x.location+'</p><h1 class="zy-title">'+x.name+'</h1><p class="zy-sub">'+x.beds+' bedrooms · '+x.baths+' bathrooms · Sleeps '+x.guests+'</p><p>'+x.feature+'</p><div class="zy-notice"><strong>Booking integration in progress.</strong><p>Live availability, final pricing and online payments are not yet enabled. Contact our team for a confirmed quote.</p></div><a class="zy-button" href="mailto:info@zyenhomes.com?subject='+subject+'&body='+details+'">Request Availability & Pricing</a><p class="zy-muted">We will confirm your dates and total before any reservation is made.</p></div></div>'}
 
-// Live Guesty photo gallery for the connected property. Never expose Guesty credentials here.
+// GitHub-hosted property gallery — independent of Guesty.
 if(x && x.id==='116-tyrolean'){
   const gallery=document.getElementById('live-gallery');
-  const endpoint='https://zyenhomes-api.brendan-nguyen-90f.workers.dev/api/property/116-tyrolean';
-  fetch(endpoint,{headers:{Accept:'application/json'}})
-    .then(async response=>{if(!response.ok) throw new Error('Photos unavailable');return response.json()})
-    .then(data=>{
-      const items=Array.isArray(data.photos?.photos)?data.photos.photos:[];
-      const photos=items.filter(p=>typeof(p.original||p.source)==='string' && /^https:\/\//.test(p.original||p.source)).sort((a,b)=>(a.index??0)-(b.index??0));
-      if(!photos.length) throw new Error('No photos returned');
-      gallery.replaceChildren();
-      const main=document.createElement('img');
-      main.className='zy-gallery-main';main.alt=x.name+' property photo';main.loading='eager';
-      const counter=document.createElement('p');counter.className='zy-gallery-count';
-      const thumbs=document.createElement('div');thumbs.className='zy-gallery-thumbs';
-      function show(index){
-        main.src=photos[index].original||photos[index].source;
-        main.alt=x.name+' — photo '+(index+1);
-        counter.textContent='Photo '+(index+1)+' of '+photos.length+' · Updated from Guesty';
-        thumbs.querySelectorAll('button').forEach((b,i)=>{b.classList.toggle('active',i===index);b.setAttribute('aria-pressed',String(i===index))});
-      }
-      photos.forEach((photo,i)=>{
-        const button=document.createElement('button');button.type='button';button.setAttribute('aria-label','View photo '+(i+1));
-        const image=document.createElement('img');image.src=photo.thumbnail||photo.original||photo.source;image.alt='Photo '+(i+1);image.loading='lazy';
-        button.appendChild(image);button.addEventListener('click',()=>show(i));thumbs.appendChild(button);
-      });
-      gallery.append(main,counter,thumbs);show(0);
-      const detail=document.getElementById('detail-photo');
-      if(detail) detail.src=photos[0].original||photos[0].source;
-    })
-    .catch(()=>{
-      gallery.innerHTML='<p class="zy-gallery-status">The live photo gallery is temporarily unavailable. The property details are still available below.</p>';
+  const filenames=["10.jpg","11.jpg","116 Tyrolean Lane Web (12).jpg","116 Tyrolean Lane Web (14).jpg","116 Tyrolean Lane Web (15).jpg","116 Tyrolean Lane Web (17).jpg","116 Tyrolean Lane Web (18).jpg","116 Tyrolean Lane Web (20).jpg","116 Tyrolean Lane Web (21).jpg","116 Tyrolean Lane Web (22).jpg","116 Tyrolean Lane Web (23).jpg","116 Tyrolean Lane Web (24).jpg","116 Tyrolean Lane Web (30).jpg","116 Tyrolean Lane Web (31).jpg","116 Tyrolean Lane Web (33).jpg","116 Tyrolean Lane Web (34).jpg","116 Tyrolean Lane Web (35).jpg","116 Tyrolean Lane Web (36).jpg","116 Tyrolean Lane Web (4).jpg","116 Tyrolean Lane Web (49).jpg","116 Tyrolean Lane Web (51).jpg","116 Tyrolean Lane Web (53).jpg","116 Tyrolean Lane Web (60).jpg","116 Tyrolean Lane Web (62).jpg","116 Tyrolean Lane Web (64).jpg","116 Tyrolean Lane Web (67).jpg","116 Tyrolean Lane Web (8).jpg","12.jpg","13.jpg","14.jpg","15.jpg","16.jpg","17.jpg","18.jpg","20.jpg","21.jpg","22.jpg","23.jpg","3.jpg","5.jpg","6.jpg","8.jpg","9.jpg","20250929_164056.jpg","20250929_164227.jpg","20250930_221623.jpg","20250930_221816.jpg","20250930_222110.jpg","Advertisement pic (5).png","Cosy Modern Football Home Cinema.png","Sunlit Garden Swim Spa Deck.png"];
+  const photos=filenames.map(name=>({
+    url:'property-photos/116-tyrolean/'+encodeURIComponent(name),
+    name
+  }));
+  gallery.replaceChildren();
+  const main=document.createElement('img');
+  main.className='zy-gallery-main';
+  main.loading='eager';
+  const counter=document.createElement('p');
+  counter.className='zy-gallery-count';
+  const thumbs=document.createElement('div');
+  thumbs.className='zy-gallery-thumbs';
+  function show(index){
+    main.src=photos[index].url;
+    main.alt=x.name+' — photo '+(index+1);
+    counter.textContent='Photo '+(index+1)+' of '+photos.length;
+    thumbs.querySelectorAll('button').forEach((b,i)=>{
+      b.classList.toggle('active',i===index);
+      b.setAttribute('aria-pressed',String(i===index));
     });
+  }
+  photos.forEach((photo,i)=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.setAttribute('aria-label','View photo '+(i+1));
+    const image=document.createElement('img');
+    image.src=photo.url;image.alt='Photo '+(i+1);image.loading='lazy';
+    button.appendChild(image);
+    button.addEventListener('click',()=>show(i));
+    thumbs.appendChild(button);
+  });
+  gallery.append(main,counter,thumbs);
+  show(0);
+  const detail=document.getElementById('detail-photo');
+  if(detail)detail.src=photos[0].url;
 }
 </script></body></html>
