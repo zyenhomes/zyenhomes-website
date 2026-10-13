@@ -126,7 +126,7 @@ if(bookingSearch){
       checkOut:checkout.value,
       adults:String(adults)
     });
-    window.location.href='https://zyenhomes.guestybookings.com/en/properties?'+params.toString();
+    window.location.href='rentals.html?'+new URLSearchParams({checkin:checkin.value,checkout:checkout.value,guests:bookingSearch.querySelector('#booking-guests').value}).toString();
   });
 }
 
