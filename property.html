@@ -18,8 +18,10 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater')){
     "View All Photos":allNames
   };
   if(x.id==='109-plater') {
-    const empty=[];
-    Object.keys(categories).forEach(key=>{categories[key]=empty;});
+    const featured=["109 Plater Street Web (21) - Copy.jpg","Lively Dual-Zone Swim Spa Gathering.png","109 Plater Street Web (71).jpg","109 Plater Street Web (7).jpg","109 Plater Street Web (14).jpg","109 Plater Street Web (15).jpg","ChatGPT Image Sep 13, 2026, 10_12_24 PM.png","109 Plater Street Web (81B).JPG","20250603_131402.jpg","20250603_131522.jpg","109 Plater Street Web (51) - Copy.jpg","109 Plater Street Web (28) - Copy.jpg","Rustic Modern Living Room with Fireplace.png","109 Plater Street Web (68a).jpg"];
+    Object.keys(categories).forEach(key=>{categories[key]=[];});
+    categories['Featured Photos']=featured;
+    categories['View All Photos']=["109 Plater Street Web (21) - Copy.jpg","Lively Dual-Zone Swim Spa Gathering.png","109 Plater Street Web (71).jpg","109 Plater Street Web (7).jpg","109 Plater Street Web (14).jpg","109 Plater Street Web (15).jpg","ChatGPT Image Sep 13, 2026, 10_12_24 PM.png","109 Plater Street Web (81B).JPG","20250603_131402.jpg","20250603_131522.jpg","109 Plater Street Web (51) - Copy.jpg","109 Plater Street Web (28) - Copy.jpg","Rustic Modern Living Room with Fireplace.png","109 Plater Street Web (68a).jpg"];
   }
   let photos=[];
   const urlFor=name=>'property-photos/'+x.id+'/'+encodeURIComponent(name);
