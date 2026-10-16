@@ -58,7 +58,7 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
   }
   if(x.id==='147-campbell'){
     Object.keys(categories).forEach(key=>{delete categories[key];});
-    categories['Featured Photos']=[];
+    categories['Featured Photos']=["147 Campbell Crescent Web  17.jpg","147 Campbell Crescent Web  27.jpg","147 Campbell Crescent Web  35.jpg","147 Campbell Crescent Web  75.jpg","147 Campbell Crescent Web  5a.png","147 Campbell Crescent Web  7.jpg","147 Campbell Crescent Web  9a.png","147 Campbell Crescent Web  12.jpg","147 Campbell Crescent Web  11.jpg","147 Campbell Crescent Web  14.jpg","147 Campbell Crescent Web  1.jpg","147 Campbell Crescent Web  17.jpg","147 Campbell Crescent Web  19.jpg","147 Campbell Crescent Web  21.jpg","147 Campbell Crescent Web  33.jpg","147 Campbell Crescent Web  39.jpg","147 Campbell Crescent Web  51a.png","147 Campbell Crescent Web  62a.png","147 Campbell Crescent Web  75a.png"];
     categories['Hot Tub/Sauna']=[];
     categories['Living, Kitchen & Dining']=[];
     categories['Bedrooms & Bathrooms']=[];
@@ -67,7 +67,7 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
     categories['View All Photos']=[];
   }
   let photos=[];
-  const urlFor=name=>'property-photos/'+x.id+'/'+encodeURIComponent(name);
+  const urlFor=name=>'property-photos/'+(x.id==='147-campbell'?'147-Campbell':x.id)+'/'+encodeURIComponent(name);
   const tabs=document.createElement('div');
   tabs.className='zy-gallery-tabs';
   gallery.appendChild(tabs);
