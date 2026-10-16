@@ -68,9 +68,14 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
   }
   if(x.id==='940-seven-oaks'){
     Object.keys(categories).forEach(key=>delete categories[key]);
-    categories['Featured Photos']=['Serene Lakeside Retreat with Red Chairs.png'];
-    categories['Waterfront & Sunset Views']=['Serene Lakeside Retreat with Red Chairs.png'];
-    categories['View All Photos']=['Serene Lakeside Retreat with Red Chairs.png'];
+    const waterfrontPhotos=['Serene Lakeside Retreat with Red Chairs.png'];
+    categories['Featured Photos']=waterfrontPhotos;
+    categories['Waterfront View & Exterior']=waterfrontPhotos;
+    categories['Hot Tub']=[];
+    categories['Living, Kitchen & Dining']=[];
+    categories['Bedrooms & Bathrooms']=[];
+    categories['Entertainment']=[];
+    categories['View All Photos']=waterfrontPhotos;
   }
   let photos=[];
   const urlFor=name=>x.id==='940-seven-oaks'?encodeURIComponent(name):'property-photos/'+(x.id==='147-campbell'?'147-Campbell':x.id)+'/'+encodeURIComponent(name);
