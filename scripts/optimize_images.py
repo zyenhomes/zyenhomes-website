@@ -47,3 +47,5 @@ if pattern:
             page.write_text(after, encoding="utf-8")
             print(f"Updated references: {page.relative_to(ROOT)}")
 print(f"Optimized {len(converted)} images; original files retained.")
+
+# Re-run automatically whenever source images or this optimizer change.
