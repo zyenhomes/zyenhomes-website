@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Waterfront Cottage Rentals | Zyen Homes</title><meta name="description" content="Explore professionally managed Ontario waterfront cottages and vacation rentals with Zyen Homes.">
+<link rel="stylesheet" href="styles.css"><style>
+.site-header{position:relative;background:#153e35;color:#fff}.site-header nav a{color:#fff}
+.bm-container{max-width:1200px;margin:0 auto;padding:35px 22px 80px}
+.bm-back{display:inline-block;margin-bottom:22px;color:#1d5848;text-decoration:none;font-size:14px}
+.bm-heading{text-align:center;margin:14px auto 40px;max-width:780px}
+.bm-heading h1{font-family:Georgia,serif;font-size:clamp(38px,6vw,62px);color:#153e35;margin:0 0 16px}
+.bm-heading p{color:#64726b;font-size:17px;line-height:1.65;margin:0}
+.bm-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.bm-card{border:1px solid #e0e7e1;border-radius:15px;overflow:hidden;background:white;display:flex;flex-direction:column}
+.bm-card>a:first-child{display:block}.bm-card img{width:100%;height:230px;object-fit:cover;display:block}
+.bm-card-content{padding:22px;display:flex;flex:1;flex-direction:column}
+.bm-location{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;color:#28624f;margin:0 0 8px}
+.bm-card h2{font-family:Georgia,serif;font-size:25px;line-height:1.2;color:#153e35;margin:0 0 12px}
+.bm-details{font-size:14px;color:#65716a;margin:0 0 12px}.bm-features{font-size:14px;line-height:1.55;color:#3f5147;margin:0 0 22px}
+.bm-button{display:inline-block;align-self:flex-start;margin-top:auto;padding:12px 18px;background:#174f41;color:white;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px}
+.bm-footer{background:#153e35;color:#fff;padding:25px;text-align:center}.bm-footer a{color:white}
+@media(max-width:900px){.bm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.bm-container{padding:20px 16px 55px}.bm-heading{margin:12px auto 25px}.bm-grid{grid-template-columns:1fr;gap:18px}.bm-card img{height:235px}.bm-card-content{padding:19px}.bm-card h2{font-size:24px}}
+.site-header{display:flex;align-items:center}.bm-header-back{color:#fff;text-decoration:none;font-size:14px;font-weight:600;white-space:nowrap;margin-left:auto;padding:10px 22px}.bm-header-back:hover{text-decoration:underline}@media(max-width:700px){.site-header nav{display:none}.bm-header-back{padding:10px 14px;font-size:13px}.bm-container{padding-top:14px}.bm-heading{margin-top:6px}}</style></head><body>
+<header class="site-header"><a class="brand brand-logo" href="index.html"><img src="Zyen Homes Logo(2).webp" alt="Zyen Homes"></a><nav><a href="index.html">Home</a><a href="rentals.html">All Properties</a><a href="custom-stay.html">Custom Stay</a></nav><a class="bm-header-back" href="index.html">← Back to Home</a></header>
+<main class="bm-container"><div class="bm-heading"><h1>Waterfront Cottages</h1><p>Unwind by the water with peaceful views, outdoor relaxation and memorable cottage getaways. Explore our waterfront collection as it grows.</p></div><div class="bm-grid" id="bm-properties"></div></main>
+<footer class="bm-footer">Zyen Homes Property Management · <a href="mailto:info@zyenhomes.com">Contact Us</a></footer>
+<script src="properties-data.js"></script><script>
+const grid=document.getElementById('bm-properties');
+const homes=window.ZYEN_PROPERTIES.filter(home=>home.location==='Waterfront Cottage');
+grid.innerHTML=homes.map(home=>'<article class="bm-card"><a href="property.html?id='+encodeURIComponent(home.id)+'"><img loading="lazy" decoding="async" src="'+encodeURI(home.image)+'" alt="'+home.name+' vacation rental"></a><div class="bm-card-content"><p class="bm-location">Waterfront Ontario</p><h2>'+home.name+'</h2><p class="bm-details">'+home.beds+' Bedrooms · '+home.baths+' Bathrooms · Sleeps '+home.guests+'</p><p class="bm-features">'+home.feature+'</p><a class="bm-button" href="property.html?id='+encodeURIComponent(home.id)+'">View Property →</a></div></article>').join('');
+</script></body></html>
