@@ -3836,3 +3836,11 @@ section.management {
   }
   #booking-search input[type="date"]::-webkit-datetime-edit { padding: 0; }
 }
+
+/* Homepage mobile date fields: prevent Android Chrome from clipping the year. */
+@media(max-width:700px){
+  #booking-search{grid-template-columns:minmax(0,1fr)!important;}
+  #booking-search>div{min-width:0!important;grid-column:1/-1!important;}
+  #booking-search input[type="date"]{box-sizing:border-box!important;width:100%!important;min-width:0!important;height:48px!important;font-size:16px!important;padding:0 12px!important;letter-spacing:normal!important;}
+  #booking-search button{grid-column:1/-1!important;width:100%;}
+}
