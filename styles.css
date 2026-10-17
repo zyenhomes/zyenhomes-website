@@ -3813,3 +3813,26 @@ section.management {
 .featured-rentals a.property-card-link{position:relative;display:block;pointer-events:auto!important;cursor:pointer}
 .featured-rentals .all-properties-link a{position:relative;display:inline-block;pointer-events:auto!important;cursor:pointer}
 .featured-rentals a.property-card-link::before,.featured-rentals a.property-card-link::after{pointer-events:none}
+
+/* Keep the full date (including year) visible in the compact mobile booking search. */
+@media screen and (max-width: 650px) {
+  #booking-search > div:nth-child(1),
+  #booking-search > div:nth-child(2) { min-width: 0; }
+  #booking-search input[type="date"] {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 0 5px;
+    font-size: 13px;
+    letter-spacing: -0.3px;
+    font-variant-numeric: tabular-nums;
+  }
+  #booking-search input[type="date"]::-webkit-calendar-picker-indicator {
+    margin: 0;
+    padding: 0;
+    width: 16px;
+    flex: 0 0 16px;
+  }
+  #booking-search input[type="date"]::-webkit-datetime-edit { padding: 0; }
+}
