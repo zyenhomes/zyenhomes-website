@@ -69,7 +69,7 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
   if(x.id==='940-seven-oaks'){
     Object.keys(categories).forEach(key=>delete categories[key]);
     const waterfrontPhotos=['Serene Lakeside Retreat with Red Chairs.png'];
-    categories['Featured Photos']=waterfrontPhotos;
+    categories['Featured Photos']=["940_Seven_Oaks_35.png","940_Seven_Oaks_21.png","940_Seven_Oaks_50.png","940_Seven_Oaks_41.png","940_Seven_Oaks_36.png","940_Seven_Oaks_43.png","940_Seven_Oaks_22.png","940_Seven_Oaks_18.png","940_Seven_Oaks_20.png","940_Seven_Oaks_3.png","940_Seven_Oaks_8.png","940_Seven_Oaks_10.png","940_Seven_Oaks_11.png","940_Seven_Oaks_13.png","940_Seven_Oaks_15.png","940_Seven_Oaks_33.png","940_Seven_Oaks_16.png","940_Seven_Oaks_19.png","940_Seven_Oaks_24.png","940_Seven_Oaks_26.png","940_Seven_Oaks_32.png"];
     categories['Waterfront View & Exterior']=waterfrontPhotos;
     categories['Hot Tub']=[];
     categories['Living, Kitchen & Dining']=[];
@@ -78,7 +78,7 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
     categories['View All Photos']=waterfrontPhotos;
   }
   let photos=[];
-  const urlFor=name=>x.id==='940-seven-oaks'?encodeURIComponent(name):'property-photos/'+(x.id==='147-campbell'?'147-Campbell':x.id)+'/'+encodeURIComponent(name);
+  const urlFor=name=>x.id==='940-seven-oaks'?'property-photos/940-Sevenoaks/'+encodeURIComponent(name):'property-photos/'+(x.id==='147-campbell'?'147-Campbell':x.id)+'/'+encodeURIComponent(name);
   const tabs=document.createElement('div');
   tabs.className='zy-gallery-tabs';
   gallery.appendChild(tabs);
