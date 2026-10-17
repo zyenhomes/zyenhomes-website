@@ -3855,3 +3855,17 @@ section.management {
  #booking-search input[type=date]::-webkit-calendar-picker-indicator{width:14px!important;margin:0!important;padding:0!important;}
  #booking-search input[type=date]::-webkit-datetime-edit{padding:0!important;}
 }
+
+/* Unified Zyen Homes search appearance: match compact All Properties search on homepage hero */
+@media(max-width:700px){
+ #stays.search{padding:12px!important;border-radius:16px!important;background:#f4f6f3!important;}
+ #booking-search{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px 10px!important;align-items:end!important;}
+ #booking-search>div:nth-child(1),#booking-search>div:nth-child(2),#booking-search>div:nth-child(3){grid-column:auto!important;min-width:0!important;}
+ #booking-search>div:nth-child(3){grid-column:1!important;}
+ #booking-search button{grid-column:2!important;width:100%!important;height:43px!important;min-width:0!important;padding:4px!important;font-size:14px!important;border-radius:10px!important;letter-spacing:0!important;white-space:normal!important;}
+ #booking-search label{font-size:13px!important;color:#173f35!important;letter-spacing:0!important;text-transform:none!important;font-weight:700!important;margin:0 0 5px!important;}
+ #booking-search input{height:43px!important;border:1px solid #c5d2ca!important;border-radius:10px!important;background:white!important;box-sizing:border-box!important;width:100%!important;min-width:0!important;padding:0 8px!important;font-size:15px!important;}
+ #booking-search input[type=date]{height:43px!important;padding:0 4px!important;font-size:12px!important;letter-spacing:-.3px!important;}
+ #booking-search input[type=date]::-webkit-calendar-picker-indicator{width:14px!important;margin:0!important;padding:0!important;}
+ #stays.search .large-group-search-link{margin:12px 0 0!important;font-size:12px!important;}
+}
