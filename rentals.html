@@ -17,7 +17,7 @@ const addresses={
 '37-snowbridge':'37-171 Snowbridge Way, The Blue Mountains, Ontario, Canada',
 '109-plater':'109 Plater Street, The Blue Mountains, Ontario, Canada',
 '147-campbell':'147 Campbell Crescent, The Blue Mountains, Ontario, Canada',
-'940-seven-oaks':'940 Seven Oaks Drive, Otonabee-South Monaghan, Ontario, Canada'
+'940-seven-oaks':'940 Seven Oaks Dr, Bailieboro, ON K0L 1B0, Canada'
 };
 function eligible(x){
  const guests=Math.max(1,Number(f.elements.guests.value)||1);
@@ -55,17 +55,23 @@ async function locateProperties(){
    const response=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(query),{headers:{'Accept':'application/json'}});
    if(!response.ok)throw new Error('Geocoding unavailable');
    const data=await response.json();
-   if(data.length){
-    const pos=L.latLng(Number(data[0].lat),Number(data[0].lon));
+   // Some rural street addresses are missing from OpenStreetMap.
+   // Use an approximate Bailieboro-area marker if this address cannot be found.
+   const approximate=home.id==='940-seven-oaks' && !data.length;
+   const pos=data.length
+    ? L.latLng(Number(data[0].lat),Number(data[0].lon))
+    : approximate ? L.latLng(44.13223,-78.35351) : null;
+   if(pos){
     locations.set(home.id,pos);
     const marker=L.marker(pos,{propertyId:home.id}).addTo(markers);
     const link='property.html?id='+encodeURIComponent(home.id);
     const popup=document.createElement('div');
     const title=document.createElement('strong');title.textContent=home.name;popup.append(title,document.createElement('br'));
+    if(approximate){const note=document.createElement('small');note.textContent='Approximate Bailieboro area (not exact property location)';popup.append(note,document.createElement('br'));}
     const anchor=document.createElement('a');anchor.href=link;anchor.textContent='View property →';popup.append(anchor);
     marker.bindPopup(popup);
    }
-  }catch(error){console.warn('Unable to locate',home.name,error)}
+  }catch(error){console.warn('Unable to locate',home.name,error);if(home.id==='940-seven-oaks'){const pos=L.latLng(44.13223,-78.35351);locations.set(home.id,pos);const marker=L.marker(pos,{propertyId:home.id}).addTo(markers);marker.bindPopup('<strong>940 Seven Oaks Drive</strong><br><small>Approximate Bailieboro area</small><br><a href="property.html?id=940-seven-oaks">View property →</a>');}}
   await new Promise(resolve=>setTimeout(resolve,1100));
  }
  if(markers.getLayers().length){
