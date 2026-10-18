@@ -153,4 +153,45 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
   selectCategory('Featured Photos');
 
 }
+</script><script>
+(function(){
+  const slug=new URLSearchParams(location.search).get('id');
+  if(slug!=='37-snowbridge')return;
+  fetch('data/guesty-reviews.json',{cache:'no-cache'}).then(r=>{
+    if(!r.ok)throw new Error('Reviews not yet synced');
+    return r.json();
+  }).then(data=>{
+    const reviews=(data[slug]||[]).filter(r=>Number(r.rating)>=4&&Number(r.rating)<=5&&r.body);
+    if(!reviews.length)return;
+    const root=document.getElementById('property');
+    const section=document.createElement('section');
+    section.className='zy-info';
+    section.style.marginTop='38px';
+    const title=document.createElement('h2');
+    title.textContent='Guest Reviews';
+    const intro=document.createElement('p');
+    intro.className='zy-muted';
+    intro.textContent='Selected 4- and 5-star guest reviews retrieved from Guesty.';
+    const grid=document.createElement('div');
+    grid.className='zy-amenity-grid';
+    reviews.slice(0,12).forEach(review=>{
+      const card=document.createElement('div');
+      card.className='zy-amenity-group';
+      const stars=document.createElement('p');
+      stars.textContent='★'.repeat(Math.round(review.rating))+'☆'.repeat(5-Math.round(review.rating));
+      stars.style.color='#b17d24';
+      const name=document.createElement('h3');
+      name.textContent=review.name||'Guest';
+      const body=document.createElement('p');
+      body.textContent=review.body;
+      const date=document.createElement('p');
+      date.className='zy-muted';
+      date.textContent=review.date||'';
+      card.append(stars,name,body,date);
+      grid.append(card);
+    });
+    section.append(title,intro,grid);
+    root.append(section);
+  }).catch(()=>{});
+})();
 </script></body></html>
