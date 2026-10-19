@@ -5,4 +5,5 @@ window.ZYEN_PROPERTIES=[
 {id:"109-plater",name:"109 Plater Street",location:"Blue Mountains",beds:8,baths:4,guests:20,feature:"Walk 3 min to Ski Lift or 8 min to The Village · Hot Tub/SwimSpa",image:"109 Plater Street Print (21).webp"},
 {id:"147-campbell",name:"147 Campbell Crescent",location:"Blue Mountains",beds:5,baths:3,guests:12,feature:"Walk to Village · Hot Tub · Sauna",image:"147 Campbell Crescent Print 17.webp"},
 {id:"940-seven-oaks",name:"940 Seven Oaks Drive",location:"Waterfront Cottage",beds:6,baths:3,guests:12,feature:"Waterfront · Hot Tub · Sunset Views",image:"Serene Lakeside Retreat with Red Chairs.webp"}
+{id:"106-birch-view",name:"106 Birch View Trail",location:"Blue Mountains",beds:5,baths:3,guests:14,feature:"Private Hot Tub · Backyard Seating · Near Blue Mountain Village",image:""},
 ];
