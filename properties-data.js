@@ -6,5 +6,5 @@ window.ZYEN_PROPERTIES=[
 {id:"147-campbell",name:"147 Campbell Crescent",location:"Blue Mountains",beds:5,baths:3,guests:12,feature:"Walk to Village · Hot Tub · Sauna",image:"147 Campbell Crescent Print 17.webp"},
 {id:"940-seven-oaks",name:"940 Seven Oaks Drive",location:"Waterfront Cottage",beds:6,baths:3,guests:12,feature:"Waterfront · Hot Tub · Sunset Views",image:"Serene Lakeside Retreat with Red Chairs.webp"},
 {id:"106-birch-view",name:"106 Birch View Trail",location:"Blue Mountains",beds:5,baths:3,guests:14,feature:"Private Hot Tub · Backyard Seating · Near Blue Mountain Village",image:"property-photos/106-Birch-View/106 Birchviewtrail-4.webp"},
-{id:"197-arlberg",name:"197 Arlberg Crescent",location:"Blue Mountains",beds:8,baths:3,guests:20,feature:"8 Bedrooms · 3 Bathrooms · Licensed for 20 Guests",image:"Zyen Homes Logo(2).webp"},
+{id:"197-arlberg",name:"197 Arlberg Crescent",location:"Blue Mountains",beds:8,baths:3,guests:20,feature:"Private Hot Tub · Large Projector · Foosball · Arcade Games",image:"Zyen Homes Logo(2).webp"},
 ];
