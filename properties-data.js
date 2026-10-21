@@ -7,6 +7,6 @@ window.ZYEN_PROPERTIES=[
 {id:"940-seven-oaks",name:"940 Seven Oaks Drive",location:"Waterfront Cottage",beds:6,baths:3,guests:12,feature:"Waterfront · Hot Tub · Sunset Views",image:"Serene Lakeside Retreat with Red Chairs.webp"},
 {id:"106-birch-view",name:"106 Birch View Trail",location:"Blue Mountains",beds:5,baths:3,guests:14,feature:"Private Hot Tub · Backyard Seating · Near Blue Mountain Village",image:"property-photos/106-Birch-View/106 Birchviewtrail-4.webp?v=20261020"},
 {id:"197-arlberg",name:"197 Arlberg Crescent",location:"Blue Mountains",beds:8,baths:3,guests:20,feature:"Private Hot Tub · Large Projector · Foosball · Arcade Games",image:"property-photos/197-Arlberg/197-Arlberg-47.webp"},
-{id:"149-tyrolean",name:"149 Tyrolean Lane",location:"Blue Mountains",beds:6,baths:2,guests:16,feature:"Hot Tub · Private Sauna · Pool Table · 86-inch Smart TV · PS4",image:"property-photos/149-Tyrolean/149-Tyrolean-31.png"},
+{id:"149-tyrolean",name:"149 Tyrolean Lane",location:"Blue Mountains",beds:6,baths:2,guests:16,feature:"Hot Tub · Private Sauna · Pool Table · 86-inch Smart TV · PS4",image:"property-photos/149-Tyrolean/149-Tyrolean-31.webp"},
 {id:"100-pilsen",name:"100 Pilsen Way",location:"Blue Mountains",beds:8,baths:6.5,guests:16,feature:"Hot Tub · Mountain Views · Pool Table · Foosball · Gas Fireplace",image:"Zyen Homes Logo(2).webp"},
 ];
