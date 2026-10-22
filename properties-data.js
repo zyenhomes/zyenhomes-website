@@ -9,4 +9,5 @@ window.ZYEN_PROPERTIES=[
 {id:"197-arlberg",name:"197 Arlberg Crescent",location:"Blue Mountains",beds:8,baths:3,guests:20,feature:"Private Hot Tub · Large Projector · Foosball · Arcade Games",image:"property-photos/197-Arlberg/197-Arlberg-47.webp"},
 {id:"149-tyrolean",name:"149 Tyrolean Lane",location:"Blue Mountains",beds:6,baths:2,guests:16,feature:"Hot Tub · Private Sauna · Pool Table · 86-inch Smart TV · PS4",image:"property-photos/149-Tyrolean/149-Tyrolean-31.webp"},
 {id:"100-pilsen",name:"100 Pilsen Way",location:"Blue Mountains",beds:8,baths:6.5,guests:16,feature:"Hot Tub · Mountain Views · Pool Table · Foosball · Gas Fireplace",image:"property-photos/100-Pilsen/100-Pilsen-1.webp"},
+{id:"873235-5th-line-ehs",name:"873235 5th Line EHS",location:"Orangeville, Ontario",beds:5,baths:3.5,guests:14,feature:"Seasonal Heated Outdoor Pool · Year-Round Hot Tub · Pool Table · Ping Pong · 9 Beds",image:"property-photos/873235-5th-line-ehs/featured.webp"},
 ];
