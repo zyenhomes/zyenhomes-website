@@ -61,7 +61,7 @@ function render(){
  document.getElementById('results').innerHTML=visible.map(x=>{
   const query=new URLSearchParams({checkin:f.elements.checkin.value,checkout:f.elements.checkout.value,guests:f.elements.guests.value||2});
   const url='property.html?id='+encodeURIComponent(x.id)+'&'+query;
-  return '<article class="zy-card"><a href="'+url+'"><img loading="lazy" decoding="async" src="'+encodeURI(x.image)+'" alt="'+x.name+'"></a><div class="zy-card-body"><p class="zy-tag">'+x.location+'</p><h2>'+x.name+'</h2><p class="zy-muted">'+x.beds+' bedrooms · '+x.baths+' bathrooms · Sleeps '+x.guests+'</p><p>'+x.feature+'</p>'+(x.id==='149-tyrolean'?'<div class="zy-card-price" id="zy-price-149" aria-live="polite">Select dates above to see live Guesty pricing</div>':'')+'<a class="zy-button" href="'+url+'">View Property →</a></div></article>';
+  return '<article class="zy-card"><a href="'+url+'"><img loading="lazy" decoding="async" src="'+encodeURI(x.image)+'" alt="'+x.name+'"></a><div class="zy-card-body"><p class="zy-tag">'+x.location+'</p><h2>'+x.name+'</h2><p class="zy-muted">'+x.beds+' bedrooms · '+x.baths+' bathrooms · Sleeps '+x.guests+'</p><p>'+x.feature+'</p>'+(x.id==='149-tyrolean'?'<div class="zy-card-price" id="zy-price-149" aria-live="polite">'+(window.ZYEN_149_CARD_PRICE||'Select dates above to see live Guesty pricing')+'</div>':'')+'<a class="zy-button" href="'+url+'">View Property →</a></div></article>';
  }).join('')||'<p>No matching properties in this map area. Zoom out or select Show all.</p>';
  markers.eachLayer(marker=>{const x=ZYEN_PROPERTIES.find(home=>home.id===marker.options.propertyId);if(x)marker.setOpacity(eligible(x)?1:0.3)});
 }
@@ -107,4 +107,4 @@ async function locateProperties(){
  }else document.querySelector('.zy-map-help').textContent='Map locations are temporarily unavailable. All properties are listed on the left.';
 }
 locateProperties();
-</script><script src="zyen-149-pricing.js?v=20261025-card-dom-3"></script></body></html>
+</script><script src="zyen-149-pricing.js?v=20261025-direct-render-4"></script></body></html>
