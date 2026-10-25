@@ -34,3 +34,37 @@ jobs:
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: cloudflare
           command: deploy --config wrangler.toml
+
+      - name: Verify Worker health
+        run: |
+          curl --fail --silent --show-error --retry 3 \
+            "https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/" \
+            | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{if(JSON.parse(s).status!=="running")process.exit(1)})'
+
+      - name: Verify browser CORS preflight
+        run: |
+          status=$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -X OPTIONS -H "Origin: https://zyenhomes.com" \
+            -H "Access-Control-Request-Method: POST" \
+            -H "Access-Control-Request-Headers: content-type" \
+            "https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/149-tyrolean")
+          test "$status" = "204"
+
+      - name: Verify live Guesty quote once
+        run: |
+          node --input-type=module -e '
+            const start = new Date(Date.now()+14*86400000);
+            const end = new Date(Date.now()+16*86400000);
+            const date = d => d.toISOString().slice(0,10);
+            const res = await fetch("https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/149-tyrolean", {
+              method:"POST",headers:{"Content-Type":"application/json","Origin":"https://zyenhomes.com"},
+              body:JSON.stringify({checkIn:date(start),checkOut:date(end),guests:2})
+            });
+            const body = await res.json();
+            if (res.status === 429) { console.log("Rate limit active; live quote check inconclusive"); process.exit(0); }
+            if (!res.ok || !body.success || !Number.isFinite(body.pricing?.total)) {
+              console.error("Guesty quote check needs attention:",res.status,body.message);
+              process.exit(1);
+            }
+            console.log("Guesty quote OK, currency:",body.pricing.currency);
+          '
