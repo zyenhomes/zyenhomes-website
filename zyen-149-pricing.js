@@ -6,13 +6,29 @@
   let sequence = 0;
   let cardPrice = "Select dates above to see live Guesty pricing";
   function updateCardPrice() {
-    const card = document.getElementById("zy-price-149");
-    if (card) card.innerHTML = cardPrice;
+    const results = document.getElementById("results");
+    if (!results) return;
+    const cards = results.querySelectorAll(".zy-card");
+    for (const card of cards) {
+      const propertyLink = card.querySelector('a[href*="property.html?id=149-tyrolean"]');
+      if (!propertyLink) continue;
+      const viewButton = card.querySelector(".zy-card-body a.zy-button");
+      if (!viewButton) continue;
+      let price = card.querySelector(".zy-card-price");
+      if (!price) {
+        price = document.createElement("div");
+        price.className = "zy-card-price";
+        price.setAttribute("aria-live", "polite");
+        viewButton.before(price);
+      }
+      if (price.innerHTML !== cardPrice) price.innerHTML = cardPrice;
+    }
   }
   const observer = new MutationObserver(updateCardPrice);
   const results = document.getElementById("results");
   if (results) observer.observe(results, { childList: true });
   function setCardPrice(html) { cardPrice = html; updateCardPrice(); }
+  updateCardPrice();
   const money = (n, currency) => new Intl.NumberFormat("en-CA", {style:"currency",currency:currency||"CAD"}).format(n);
   function addLine(label, amount, currency) {
     const row = document.createElement("div");
