@@ -4,6 +4,15 @@
   const details = document.querySelector("#zy-149-details");
   if (!form || !status || !details) return;
   let sequence = 0;
+  let cardPrice = "Select dates above to see live Guesty pricing";
+  function updateCardPrice() {
+    const card = document.getElementById("zy-price-149");
+    if (card) card.innerHTML = cardPrice;
+  }
+  const observer = new MutationObserver(updateCardPrice);
+  const results = document.getElementById("results");
+  if (results) observer.observe(results, { childList: true });
+  function setCardPrice(html) { cardPrice = html; updateCardPrice(); }
   const money = (n, currency) => new Intl.NumberFormat("en-CA", {style:"currency",currency:currency||"CAD"}).format(n);
   function addLine(label, amount, currency) {
     const row = document.createElement("div");
@@ -21,13 +30,16 @@
     const guests = Number(form.elements.guests.value);
     const id = ++sequence;
     details.replaceChildren();
+    setCardPrice("Checking live Guesty price…");
     details.hidden = true;
     if (!checkIn || !checkOut || checkOut <= checkIn) {
       status.textContent = "Select valid check-in and check-out dates to see the price.";
+      setCardPrice("Select valid dates above to see pricing.");
       return;
     }
     if (!Number.isInteger(guests) || guests < 1 || guests > 16) {
       status.textContent = "149 Tyrolean Lane accommodates up to 16 guests.";
+      setCardPrice("149 Tyrolean Lane accommodates up to 16 guests.");
       return;
     }
     status.textContent = "Checking Guesty live pricing…";
@@ -47,10 +59,12 @@
       }
       addLine("Total booking price", pricing.total, currency);
       details.hidden = false;
+      setCardPrice("<strong>" + money(pricing.total, currency) + "</strong><small>Total for selected stay · includes fees and taxes</small>");
       status.textContent = "Guesty quote only; dates are not reserved. Prices may change before confirmation.";
     } catch {
       if (id !== sequence) return;
       status.textContent = "Live price unavailable. Use the Guesty booking search below.";
+      setCardPrice("Live price unavailable — check Guesty booking search.");
     }
   }
   form.addEventListener("submit", quote);
