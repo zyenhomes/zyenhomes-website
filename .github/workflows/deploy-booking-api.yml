@@ -1,0 +1,36 @@
+name: Deploy Zyen Homes Booking API
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zyenhomes-booking-api-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Validate and deploy Worker
+    runs-on: ubuntu-latest
+    environment: cloudflare-production
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Verify Worker and Wrangler config exist
+        run: |
+          test -s cloudflare/worker.js || { echo "Missing cloudflare/worker.js"; exit 1; }
+          test -s cloudflare/wrangler.toml || { echo "Missing cloudflare/wrangler.toml"; exit 1; }
+
+      - name: Validate JavaScript syntax
+        run: node --check cloudflare/worker.js
+
+      - name: Deploy existing Zyen Homes Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloudflare
+          command: deploy --config wrangler.toml
