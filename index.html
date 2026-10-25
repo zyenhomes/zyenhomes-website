@@ -7,6 +7,7 @@
 <link rel="canonical" href="https://www.zyenhomes.com/">
 <link rel="preload" as="image" href="zyenhomes-hero-optimized.webp" fetchpriority="high">
 <link rel="stylesheet" href="styles.css?v=20261016-hero-jpeg">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
 <style>.zy-guesty-search{max-width:1080px;margin:18px auto 8px;padding:16px;background:#fff;border:1px solid #dce6e1;border-radius:16px}.zy-guesty-heading{margin:0 0 12px;font-weight:700;color:#173f35;text-align:center}@media(max-width:700px){.zy-guesty-search{padding:12px;margin:12px auto}}</style>
 </head>
 <body>
@@ -309,5 +310,39 @@
     </form>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+<script>
+(function(){
+  const checkin=document.getElementById('booking-checkin');
+  const checkout=document.getElementById('booking-checkout');
+  if(!checkin||!checkout||typeof flatpickr!=='function')return;
+  checkin.type='text';
+  checkout.type='text';
+  checkin.placeholder='Select check-in and check-out';
+  checkout.placeholder='Select check-out';
+  checkin.readOnly=true;
+  checkout.readOnly=true;
+  const picker=flatpickr(checkin,{
+    mode:'range',dateFormat:'Y-m-d',minDate:'today',disableMobile:true,
+    showMonths:window.innerWidth>=900?2:1,
+    onChange:function(dates,formatted,instance){
+      if(dates.length===1){
+        checkin.value=instance.formatDate(dates[0],'Y-m-d');
+        checkout.value='';
+      }else if(dates.length===2){
+        checkin.value=instance.formatDate(dates[0],'Y-m-d');
+        checkout.value=instance.formatDate(dates[1],'Y-m-d');
+        checkin.dispatchEvent(new Event('change',{bubbles:true}));
+        checkout.dispatchEvent(new Event('change',{bubbles:true}));
+      }
+    },
+    onClose:function(dates,formatted,instance){
+      if(dates.length===1)checkin.value=instance.formatDate(dates[0],'Y-m-d');
+    }
+  });
+  checkout.addEventListener('click',function(){picker.open();});
+  checkout.addEventListener('focus',function(){picker.open();});
+})();
+</script>
 <script src="script.js?v=20261013-linksfix2"></script>
 </body></html>
