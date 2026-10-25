@@ -482,12 +482,46 @@ if (false && url.pathname === "/api/test-149-inquiry") {
 }
 
 if (url.pathname === "/api/public/quote/149-tyrolean") {
+  const origin = request.headers.get("Origin");
+  const allowedOrigins = new Set([
+    "https://zyenhomes.com",
+    "https://www.zyenhomes.com"
+  ]);
+  const corsHeaders = allowedOrigins.has(origin)
+    ? {
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Vary": "Origin"
+      }
+    : { "Vary": "Origin" };
+
+  const corsResponse = (body, init = {}) => Response.json(body, {
+    ...init,
+    headers: { ...(init.headers || {}), ...corsHeaders }
+  });
+
+  if (request.method === "OPTIONS") {
+    return allowedOrigins.has(origin)
+      ? new Response(null, { status: 204, headers: corsHeaders })
+      : Response.json({ success: false, message: "Origin not allowed" }, { status: 403 });
+  }
+  if (origin && !allowedOrigins.has(origin)) {
+    return corsResponse({ success: false, message: "Origin not allowed" }, { status: 403 });
+  }
+  if (request.method !== "POST") {
+    return corsResponse({ success: false, message: "POST required" }, { status: 405, headers: corsHeaders });
+  }
+  if (Number(request.headers.get("Content-Length") || 0) > 2048) {
+    return corsResponse({ success: false, message: "Request too large" }, { status: 413, headers: corsHeaders });
+  }
+
   
   // Limit pricing requests per client.
   const clientIP = request.headers.get("CF-Connecting-IP");
 
   if (!clientIP) {
-    return Response.json(
+    return corsResponse(
       { success: false, message: "Unable to verify client" },
       { status: 403 }
     );
@@ -498,7 +532,7 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
   });
 
   if (!allowed) {
-    return Response.json(
+    return corsResponse(
       {
         success: false,
         message: "Too many pricing requests. Please try again shortly."
@@ -511,15 +545,17 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
   }
 
   if (request.method !== "POST") {
-    return Response.json(
+    return corsResponse(
       { success: false, message: "POST required" },
       { status: 405 }
     );
   }
 
   try {
-    const body = await request.json();
-    const { checkIn, checkOut, guests } = body;
+    const rawBody = await request.text();
+    if (rawBody.length > 2048) return corsResponse({ success: false, message: "Request too large" }, { status: 413 });
+    const body = JSON.parse(rawBody);
+    const { checkIn, checkOut, guests } = body ?? {};
 
     const validDate = (value) => {
       if (typeof value !== "string" ||
@@ -541,13 +577,14 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
     if (
       !validDate(checkIn) ||
       !validDate(checkOut) ||
+      checkIn < new Date().toISOString().slice(0, 10) ||
       nights < 1 ||
       nights > 30 ||
       !Number.isInteger(guestCount) ||
       guestCount < 1 ||
       guestCount > 16
     ) {
-      return Response.json(
+      return corsResponse(
         { success: false, message: "Invalid dates or guest count" },
         { status: 400 }
       );
@@ -574,7 +611,7 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
     );
 
     if (!quoteResponse.ok) {
-      return Response.json(
+      return corsResponse(
         {
           success: false,
           message: "Unable to obtain Guesty pricing"
@@ -595,7 +632,7 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
       !money ||
       typeof money.hostPayout !== "number"
     ) {
-      return Response.json(
+      return corsResponse(
         {
           success: false,
           message: "Complete pricing is unavailable"
@@ -604,7 +641,7 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
       );
     }
 
-    return Response.json({
+    return corsResponse({
       success: true,
       property: "149 Tyrolean Lane",
       checkIn,
@@ -635,7 +672,7 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
   } catch (error) {
     console.error("Public quote failed:", error?.message);
 
-    return Response.json(
+    return corsResponse(
       {
         success: false,
         message: "Unable to retrieve pricing"
