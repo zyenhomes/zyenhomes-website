@@ -496,6 +496,11 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
       }
     : { "Vary": "Origin" };
 
+  const corsResponse = (body, init = {}) => Response.json(body, {
+    ...init,
+    headers: { ...(init.headers || {}), ...corsHeaders }
+  });
+
   if (request.method === "OPTIONS") {
     return allowedOrigins.has(origin)
       ? new Response(null, { status: 204, headers: corsHeaders })
@@ -510,10 +515,6 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
   if (Number(request.headers.get("Content-Length") || 0) > 2048) {
     return corsResponse({ success: false, message: "Request too large" }, { status: 413, headers: corsHeaders });
   }
-  const corsResponse = (body, init = {}) => Response.json(body, {
-    ...init,
-    headers: { ...(init.headers || {}), ...corsHeaders }
-  });
 
   
   // Limit pricing requests per client.
