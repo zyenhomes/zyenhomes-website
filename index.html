@@ -340,7 +340,21 @@
       if(dates.length===1)checkin.value=instance.formatDate(dates[0],'Y-m-d');
     }
   });
-  checkout.addEventListener('click',function(){picker.open();});
+  // Open the same date-range calendar from anywhere inside either date field.
+  [checkin,checkout].forEach(function(input){
+    input.readOnly=true;
+    input.setAttribute('inputmode','none');
+    input.setAttribute('autocomplete','off');
+    input.style.cursor='pointer';
+    const field=input.closest('div');
+    if(field){
+      field.style.cursor='pointer';
+      field.addEventListener('click',function(event){
+        if(event.target!==input)picker.open();
+      });
+    }
+    input.addEventListener('click',function(){picker.open();});
+  });
   checkout.addEventListener('focus',function(){picker.open();});
 })();
 </script>
