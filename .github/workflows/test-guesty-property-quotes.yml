@@ -1,0 +1,22 @@
+name: Test Guesty Property Quotes
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quote-tests:
+    name: Check nine live Guesty quotes (read-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate quote test syntax
+        run: node --check scripts/test-guesty-nine-quotes.mjs
+      - name: Test all connected listings without creating reservations
+        run: node scripts/test-guesty-nine-quotes.mjs
