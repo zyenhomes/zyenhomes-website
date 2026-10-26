@@ -744,7 +744,26 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
           headers: { Authorization: "Bearer " + token, Accept: "application/json", "Content-Type": "application/json" },
           body: JSON.stringify({ listingId, checkInDateLocalized: checkIn, checkOutDateLocalized: checkOut, guestsCount: count })
         });
-        if (!response.ok) return reply({ success: false, message: "Guesty quote unavailable", guestyStatus: response.status }, 502);
+        if (!response.ok) {
+          // Report only the upstream HTTP status and a vetted machine-readable error code.
+          // Never forward upstream response bodies: they may contain sensitive details.
+          const knownStatus = [400, 401, 403, 404, 409, 422, 429, 500, 502, 503, 504];
+          const upstreamStatus = knownStatus.includes(response.status) ? response.status : null;
+          const category = response.status === 400 || response.status === 422
+            ? "QUOTE_REJECTED"
+            : response.status === 404 ? "LISTING_NOT_FOUND"
+            : response.status === 409 ? "QUOTE_CONFLICT"
+            : response.status === 429 ? "GUESTY_RATE_LIMITED"
+            : response.status === 401 || response.status === 403 ? "GUESTY_AUTHORIZATION"
+            : response.status >= 500 ? "GUESTY_UPSTREAM_ERROR"
+            : "GUESTY_QUOTE_UNAVAILABLE";
+          return reply({
+            success: false,
+            message: "Guesty quote unavailable",
+            errorCode: category,
+            guestyStatus: upstreamStatus
+          }, 502);
+        }
         const payload = await response.json();
         const data = payload.results ?? payload;
         const quote = Array.isArray(data) ? data[0] : data;
