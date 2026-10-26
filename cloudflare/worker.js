@@ -682,6 +682,95 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
   }
 }
 
+
+    if (url.pathname.startsWith("/api/public/quote/property/")) {
+      const listings = {
+        "100-pilsen": "6914041f5fbb6800444aca89",
+        "105-pilsen": "69140406129e4200436cc529",
+        "106-birch-view": "699b704dda533d00151fd63b",
+        "109-plater": "69140412df75040043bc8c0d",
+        "116-tyrolean": "6914041adf75040043bc8ed8",
+        "147-campbell": "691403f14ae1bb0013bf4d92",
+        "149-tyrolean": "6abf9b85caf2480012c82479",
+        "197-arlberg": "6abf956cb58bb9004973e443",
+        "37-snowbridge": "691403d937f0ea0013f72152"
+      };
+      const propertyId = url.pathname.slice("/api/public/quote/property/".length);
+      const listingId = listings[propertyId];
+      if (!listingId) return Response.json({ success: false, message: "Property not connected to Guesty" }, { status: 404 });
+
+      const origin = request.headers.get("Origin");
+      const allowed = origin === "https://zyenhomes.com" || origin === "https://www.zyenhomes.com";
+      const cors = allowed ? {
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Vary": "Origin"
+      } : { "Vary": "Origin" };
+      const reply = (data, status = 200, extra = {}) => Response.json(data, { status, headers: { ...cors, ...extra } });
+      if (request.method === "OPTIONS") return allowed
+        ? new Response(null, { status: 204, headers: cors })
+        : reply({ success: false, message: "Origin not allowed" }, 403);
+      if (origin && !allowed) return reply({ success: false, message: "Origin not allowed" }, 403);
+      if (request.method !== "POST") return reply({ success: false, message: "POST required" }, 405);
+      if (Number(request.headers.get("Content-Length") || 0) > 2048) return reply({ success: false, message: "Request too large" }, 413);
+
+      const ip = request.headers.get("CF-Connecting-IP");
+      if (!ip) return reply({ success: false, message: "Client could not be verified" }, 403);
+      const limited = await env.BOOKING_RATE_LIMITER.limit({ key: "quote-all:" + ip });
+      if (!limited.success) return reply({ success: false, message: "Too many requests" }, 429, { "Retry-After": "60" });
+
+      try {
+        const raw = await request.text();
+        if (raw.length > 2048) return reply({ success: false, message: "Request too large" }, 413);
+        const body = JSON.parse(raw);
+        const { checkIn, checkOut, guests } = body ?? {};
+        const validDate = (value) => {
+          if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+          const d = new Date(value + "T00:00:00Z");
+          return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value;
+        };
+        const nights = validDate(checkIn) && validDate(checkOut)
+          ? (Date.parse(checkOut) - Date.parse(checkIn)) / 86400000 : 0;
+        const count = Number(guests);
+        const maxGuests = { "100-pilsen": 16, "105-pilsen": 20, "106-birch-view": 14, "109-plater": 20, "116-tyrolean": 20, "147-campbell": 12, "149-tyrolean": 16, "197-arlberg": 20, "37-snowbridge": 10 };
+        if (!validDate(checkIn) || !validDate(checkOut) || checkIn < new Date().toISOString().slice(0, 10) ||
+            nights < 1 || nights > 30 || !Number.isInteger(count) || count < 1 || count > maxGuests[propertyId]) {
+          return reply({ success: false, message: "Invalid dates or guest count" }, 400);
+        }
+        const token = await getGuestyToken(env);
+        const response = await fetch("https://booking.guesty.com/api/reservations/quotes", {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token, Accept: "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify({ listingId, checkInDateLocalized: checkIn, checkOutDateLocalized: checkOut, guestsCount: count })
+        });
+        if (!response.ok) return reply({ success: false, message: "Guesty quote unavailable", guestyStatus: response.status }, 502);
+        const payload = await response.json();
+        const data = payload.results ?? payload;
+        const quote = Array.isArray(data) ? data[0] : data;
+        const plans = Array.isArray(quote?.rates?.ratePlans) ? quote.rates.ratePlans : [];
+        const plan = plans[0];
+        const money = plan?.ratePlan?.money ?? plan?.money?.money;
+        if (!money || !Number.isFinite(money.hostPayout)) return reply({ success: false, message: "Complete pricing unavailable" }, 502);
+        return reply({
+          success: true, propertyId, checkIn, checkOut, guests: count,
+          pricing: {
+            currency: money.currency || "CAD",
+            accommodation: money.fareAccommodation ?? null,
+            cleaning: money.fareCleaning ?? null,
+            taxes: money.totalTaxes ?? null,
+            subtotal: money.subTotalPrice ?? null,
+            total: money.hostPayout,
+            invoiceItems: (money.invoiceItems ?? []).map(i => ({ title: i.title, amount: i.amount, currency: i.currency, type: i.type })),
+            nightlyRates: (plan.days ?? []).map(d => ({ date: d.date, price: d.price, currency: d.currency }))
+          }
+        });
+      } catch (error) {
+        console.error("Multi-property quote failed:", error?.message);
+        return reply({ success: false, message: "Unable to retrieve pricing" }, 502);
+      }
+    }
+
     return Response.json(
       { error: "Not found" },
       { status: 404 }
