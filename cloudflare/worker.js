@@ -683,6 +683,84 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
 }
 
 
+    if (url.pathname === "/api/public/quotes/batch") {
+      const origin = request.headers.get("Origin");
+      const allowed = origin === "https://zyenhomes.com" || origin === "https://www.zyenhomes.com";
+      const cors = allowed ? {
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Vary": "Origin"
+      } : { "Vary": "Origin" };
+      const reply = (data, status = 200) => Response.json(data, { status, headers: cors });
+      if (request.method === "OPTIONS") return allowed
+        ? new Response(null, { status: 204, headers: cors })
+        : reply({ success: false, message: "Origin not allowed" }, 403);
+      if (origin && !allowed) return reply({ success: false, message: "Origin not allowed" }, 403);
+      if (request.method !== "POST") return reply({ success: false, message: "POST required" }, 405);
+      if (Number(request.headers.get("Content-Length") || 0) > 2048)
+        return reply({ success: false, message: "Request too large" }, 413);
+      const ip = request.headers.get("CF-Connecting-IP");
+      if (!ip) return reply({ success: false, message: "Client could not be verified" }, 403);
+      const limit = await env.BOOKING_RATE_LIMITER.limit({ key: "quote-batch:" + ip });
+      if (!limit.success) return reply({ success: false, message: "Too many requests" }, 429);
+      try {
+        const raw = await request.text();
+        if (raw.length > 2048) return reply({ success: false, message: "Request too large" }, 413);
+        const body = JSON.parse(raw);
+        const { checkIn, checkOut, guests } = body ?? {};
+        const validDate = v => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) &&
+          !Number.isNaN(Date.parse(v)) && new Date(v + "T00:00:00Z").toISOString().slice(0,10) === v;
+        const nights = validDate(checkIn) && validDate(checkOut)
+          ? (Date.parse(checkOut) - Date.parse(checkIn)) / 86400000 : 0;
+        const count = Number(guests);
+        if (!validDate(checkIn) || !validDate(checkOut) || checkIn < new Date().toISOString().slice(0,10) ||
+            nights < 1 || nights > 30 || !Number.isInteger(count) || count < 1 || count > 20)
+          return reply({ success: false, message: "Invalid dates or guest count" }, 400);
+        const listings = [
+          ["100-pilsen","6914041f5fbb6800444aca89",16],
+          ["105-pilsen","69140406129e4200436cc529",20],
+          ["106-birch-view","699b704dda533d00151fd63b",14],
+          ["109-plater","69140412df75040043bc8c0d",20],
+          ["116-tyrolean","6914041adf75040043bc8ed8",20],
+          ["147-campbell","691403f14ae1bb0013bf4d92",12],
+          ["149-tyrolean","6abf9b85caf2480012c82479",16],
+          ["197-arlberg","6abf956cb58bb9004973e443",20],
+          ["37-snowbridge","691403d937f0ea0013f72152",10]
+        ].filter(([, , capacity]) => capacity >= count);
+        const token = await getGuestyToken(env);
+        const results = {};
+        // Limit upstream concurrency to three rather than nine simultaneous Guesty calls.
+        for (let offset = 0; offset < listings.length; offset += 3) {
+          const group = listings.slice(offset, offset + 3);
+          const settled = await Promise.all(group.map(async ([id, listingId]) => {
+            try {
+              const res = await fetch("https://booking.guesty.com/api/reservations/quotes", {
+                method: "POST",
+                headers: { Authorization: "Bearer " + token, Accept: "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({ listingId, checkInDateLocalized: checkIn, checkOutDateLocalized: checkOut, guestsCount: count })
+              });
+              if (!res.ok) return [id, { status: "unknown" }];
+              const payload = await res.json();
+              const data = payload.results ?? payload;
+              const quote = Array.isArray(data) ? data[0] : data;
+              const plan = quote?.rates?.ratePlans?.[0];
+              const money = plan?.ratePlan?.money ?? plan?.money?.money;
+              if (!Number.isFinite(money?.hostPayout)) return [id, { status: "unknown" }];
+              return [id, { status: "priced", total: money.hostPayout, currency: money.currency || "CAD" }];
+            } catch {
+              return [id, { status: "unknown" }];
+            }
+          }));
+          for (const [id, result] of settled) results[id] = result;
+        }
+        return reply({ success: true, results });
+      } catch (error) {
+        console.error("Batch quote failed", error?.message);
+        return reply({ success: false, message: "Unable to retrieve pricing" }, 502);
+      }
+    }
+
     if (url.pathname.startsWith("/api/public/quote/property/")) {
       const listings = {
         "100-pilsen": "6914041f5fbb6800444aca89",
