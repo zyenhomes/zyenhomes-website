@@ -67,7 +67,7 @@
         if (item?.status === "priced" && Number.isFinite(item.total)) {
           statuses.set(property.id, { type: "price", total: item.total, currency: item.currency });
         } else if (item?.status === "unavailable") {
-          statuses.set(property.id, { type: "message", message: "Select different date" });
+          statuses.set(property.id, { type: "message", message: "Unavailable. Select different dates" });
         } else {
           statuses.set(property.id, { type: "message", message: "Unable to check availability" });
         }
