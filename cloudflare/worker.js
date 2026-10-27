@@ -795,7 +795,42 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
                 headers: { Authorization: "Bearer " + token, Accept: "application/json", "Content-Type": "application/json" },
                 body: JSON.stringify({ listingId, checkInDateLocalized: checkIn, checkOutDateLocalized: checkOut, guestsCount: count })
               });
-              if (!res.ok) return [id, { status: "unknown" }];
+              if (!res.ok) {
+                // Quote failure alone is ambiguous; verify the entire stay on the calendar.
+                try {
+                  const calendarUrl = new URL("https://booking.guesty.com/api/listings/" +
+                    encodeURIComponent(listingId) + "/calendar");
+                  calendarUrl.searchParams.set("from", checkIn);
+                  calendarUrl.searchParams.set("to", checkOut);
+                  const calendarRes = await fetch(calendarUrl, {
+                    headers: { Authorization: "Bearer " + token, Accept: "application/json" }
+                  });
+                  if (calendarRes.ok) {
+                    const days = await calendarRes.json();
+                    if (Array.isArray(days)) {
+                      const byDate = new Map();
+                      let duplicate = false;
+                      for (const day of days) {
+                        if (typeof day?.date !== "string") continue;
+                        if (byDate.has(day.date)) duplicate = true;
+                        byDate.set(day.date, day);
+                      }
+                      let blocked = false;
+                      let complete = !duplicate;
+                      for (let i = 0; i < nights; i++) {
+                        const date = new Date(Date.parse(checkIn) + i * 86400000).toISOString().slice(0,10);
+                        const status = String(byDate.get(date)?.status ?? "").toLowerCase();
+                        if (["booked","blocked","unavailable"].includes(status)) blocked = true;
+                        else if (status !== "available") complete = false;
+                      }
+                      if (complete && blocked) return [id, { status: "unavailable" }];
+                    }
+                  }
+                } catch {
+                  // Calendar errors must never be interpreted as unavailable.
+                }
+                return [id, { status: "unknown" }];
+              }
               const payload = await res.json();
               const data = payload.results ?? payload;
               const quote = Array.isArray(data) ? data[0] : data;
