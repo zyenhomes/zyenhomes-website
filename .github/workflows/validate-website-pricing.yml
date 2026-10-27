@@ -1,0 +1,24 @@
+name: Validate Website Pricing
+
+on:
+  pull_request:
+    paths:
+      - 'rentals.html'
+      - 'zyen-all-pricing.js'
+      - '.github/workflows/validate-website-pricing.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JavaScript syntax and pricing integration
+        run: node scripts/validate-website-pricing.mjs
