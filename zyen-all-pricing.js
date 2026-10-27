@@ -95,12 +95,12 @@
     const requestedIn = params.get("checkin");
     const requestedOut = params.get("checkout");
     const requestedGuests = params.get("guests");
-    if (/^\\d{4}-\\d{2}-\\d{2}$/.test(requestedIn || "") &&
-        /^\\d{4}-\\d{2}-\\d{2}$/.test(requestedOut || "") &&
+    if (/^\d{4}-\d{2}-\d{2}$/.test(requestedIn || "") &&
+        /^\d{4}-\d{2}-\d{2}$/.test(requestedOut || "") &&
         requestedOut > requestedIn) {
       form.elements.checkin.value = requestedIn;
       form.elements.checkout.value = requestedOut;
-      if (requestedGuests && /^\\d+$/.test(requestedGuests)) {
+      if (requestedGuests && /^\d+$/.test(requestedGuests)) {
         form.elements.guests.value = requestedGuests;
       }
       // Reuse the same submit flow as the Find Properties button.
