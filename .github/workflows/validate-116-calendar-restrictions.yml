@@ -1,0 +1,19 @@
+name: Validate 116 Calendar Restrictions
+on:
+  pull_request:
+    paths:
+      - 'zyen-116-calendar-pilot.js'
+      - 'property.html'
+      - 'scripts/validate-116-calendar-restrictions.mjs'
+      - '.github/workflows/validate-116-calendar-restrictions.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/validate-116-calendar-restrictions.mjs

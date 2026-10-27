@@ -1,0 +1,10 @@
+import {readFileSync} from "node:fs";
+import assert from "node:assert/strict";
+const source=readFileSync("zyen-116-calendar-pilot.js","utf8");
+new Function(source);
+assert.match(source,/day\.cta===false/);
+assert.match(source,/day\.ctd===false/);
+assert.match(source,/nights>=arrival\.minNights/);
+assert.match(source,/day\.status!=="available"/);
+assert.match(source,/known\.get\(checkOut\)\.ctd!==false/);
+console.log("116 calendar restrictions static checks passed");
