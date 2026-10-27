@@ -136,7 +136,7 @@
     if(!checkIn||!checkOut||!stayClear(checkIn,checkOut) || !known.has(checkOut) || known.get(checkOut).ctd!==false || known.get(checkIn).cta!==false || (Date.parse(checkOut)-Date.parse(checkIn))/86400000<known.get(checkIn).minNights){result.textContent="Select an available stay.";return;}
     check.disabled=true;result.textContent="Checking live Guesty price…";
     try{
-      const res=await fetch("https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/property/"+encodeURIComponent(propertyId)",{
+      const res=await fetch("https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/property/"+encodeURIComponent(propertyId),{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({checkIn,checkOut,guests:Number(fields.Guests.value)})
       });
