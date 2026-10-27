@@ -1,0 +1,12 @@
+import {readFileSync} from "node:fs";
+import assert from "node:assert/strict";
+const worker=readFileSync("cloudflare/worker.js","utf8");
+const page=readFileSync("property.html","utf8");
+const client=readFileSync("zyen-116-calendar-pilot.js","utf8");
+new Function(client);
+assert.match(worker,/api\/public\/calendar\/116-tyrolean/);
+assert.match(worker,/calendar-pilot:/);
+assert.match(client,/known\.get\(date\)==="available"/);
+assert.match(client,/stayClear\(checkIn,date\)/);
+assert.match(page,/zyen-116-calendar-pilot\.js/);
+console.log("116 calendar pilot static checks passed");
