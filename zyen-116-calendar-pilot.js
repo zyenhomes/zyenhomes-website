@@ -8,8 +8,13 @@
   section.className = "zy-116-booking";
   section.style.cssText = "background:#f3f6f3;border:1px solid #dce6e1;border-radius:15px;padding:20px;margin:20px 0 28px;max-width:740px";
   section.innerHTML = '<h2 style="font:700 26px Georgia,serif;color:#153e35;margin:0 0 8px">Check dates & pricing</h2><p class="zy-116-hint">Choose check-in, then check-out. Booked and blocked dates are disabled.</p><div class="zy-116-controls" style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0"></div><div class="zy-116-calendar" style="max-width:420px;background:white;border:1px solid #dce6e1;border-radius:12px;padding:14px"></div><button type="button" class="zy-button zy-116-check" disabled style="margin-top:14px">Check price</button><p class="zy-116-result" role="status" aria-live="polite"></p>';
-  const gallery = root.querySelector("#live-gallery");
-  if (gallery) gallery.before(section); else root.append(section);
+  const slot = root.querySelector("#zy-116-booking-slot");
+  if (slot) slot.replaceWith(section);
+  else {
+    const details = root.querySelector(".zy-detail > div:last-child");
+    if (details) details.append(section);
+    else root.prepend(section);
+  }
   const controls = section.querySelector(".zy-116-controls");
   const fields = {};
   for (const name of ["Check-in","Check-out","Guests"]) {
