@@ -53,35 +53,32 @@
     const eligible = window.ZYEN_PROPERTIES.filter(p => connected.has(p.id) && p.guests >= guests);
     for (const property of eligible) statuses.set(property.id, { type: "message", message: "Checking Guesty pricing…" });
     updateCards();
-    for (const property of eligible) {
+    try {
+      const response = await fetch("https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quotes/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ checkIn, checkOut, guests })
+      });
+      const result = await response.json();
       if (generation !== myGeneration) return;
-      // A shared per-client limiter is in place; pace requests and avoid bursts.
-      const wait = Math.max(0, lastStartedAt + 6500 - Date.now());
-      if (wait) await sleep(wait);
-      if (generation !== myGeneration) return;
-      lastStartedAt = Date.now();
-      try {
-        const response = await fetch(base + encodeURIComponent(property.id), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ checkIn, checkOut, guests })
-        });
-        const result = await response.json();
-        if (generation !== myGeneration) return;
-        if (response.ok && result.success && Number.isFinite(result.pricing?.total)) {
-          statuses.set(property.id, { type: "price", total: result.pricing.total, currency: result.pricing.currency });
-        } else if (response.status === 429) {
-          statuses.set(property.id, { type: "message", message: "Pricing temporarily busy — try again shortly" });
+      if (!response.ok || !result.success) throw Error("Batch quote unavailable");
+      for (const property of eligible) {
+        const item = result.results?.[property.id];
+        if (item?.status === "priced" && Number.isFinite(item.total)) {
+          statuses.set(property.id, { type: "price", total: item.total, currency: item.currency });
+        } else if (item?.status === "unavailable") {
+          statuses.set(property.id, { type: "message", message: "Select different date" });
         } else {
-          // An upstream 502 does NOT prove dates are unavailable.
-          statuses.set(property.id, { type: "message", message: "Check availability with Guesty" });
+          statuses.set(property.id, { type: "message", message: "Unable to check availability" });
         }
-      } catch {
-        if (generation !== myGeneration) return;
-        statuses.set(property.id, { type: "message", message: "Unable to check price — try again" });
       }
-      updateCards();
+    } catch {
+      if (generation !== myGeneration) return;
+      for (const property of eligible) {
+        statuses.set(property.id, { type: "message", message: "Unable to check availability" });
+      }
     }
+    updateCards();
   }
   form.addEventListener("submit", () => { void searchQuotes(); });
   for (const name of ["checkin", "checkout", "guests"]) {
