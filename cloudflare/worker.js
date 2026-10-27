@@ -739,7 +739,21 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
     }
 
     // Read-only calendar for the 116 Tyrolean property-page pilot.
-    if (url.pathname === "/api/public/calendar/116-tyrolean") {
+    if (url.pathname.startsWith("/api/public/calendar/")) {
+      const propertyId = url.pathname.slice("/api/public/calendar/".length);
+      const calendarListings = {
+        "100-pilsen":"6914041f5fbb6800444aca89",
+        "105-pilsen":"69140406129e4200436cc529",
+        "106-birch-view":"699b704dda533d00151fd63b",
+        "109-plater":"69140412df75040043bc8c0d",
+        "116-tyrolean":"6914041adf75040043bc8ed8",
+        "147-campbell":"691403f14ae1bb0013bf4d92",
+        "149-tyrolean":"6abf9b85caf2480012c82479",
+        "197-arlberg":"6abf956cb58bb9004973e443",
+        "37-snowbridge":"691403d937f0ea0013f72152"
+      };
+      const listingId = calendarListings[propertyId];
+      if (!listingId) return Response.json({success:false,message:"Property not connected to Guesty"},{status:404});
       const origin = request.headers.get("Origin");
       const allowed = origin === "https://zyenhomes.com" || origin === "https://www.zyenhomes.com";
       const cors = { "Vary": "Origin", "Cache-Control": "no-store",
@@ -756,11 +770,11 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
         return reply({ success:false, message:"Invalid date range" },400);
       const ip = request.headers.get("CF-Connecting-IP");
       if (!ip) return reply({ success:false, message:"Client not verified" },403);
-      const limit = await env.BOOKING_RATE_LIMITER.limit({ key:"calendar-pilot:"+ip });
+      const limit = await env.BOOKING_RATE_LIMITER.limit({ key:"calendar:"+ip });
       if (!limit.success) return reply({ success:false, message:"Too many requests" },429);
       try {
         const token = await getGuestyToken(env);
-        const endpoint = new URL("https://booking.guesty.com/api/listings/6914041adf75040043bc8ed8/calendar");
+        const endpoint = new URL("https://booking.guesty.com/api/listings/"+encodeURIComponent(listingId)+"/calendar");
         endpoint.searchParams.set("from",from); endpoint.searchParams.set("to",to);
         const res = await fetch(endpoint,{headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
         if (!res.ok) return reply({success:false,message:"Calendar temporarily unavailable"},502);
@@ -784,7 +798,7 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
           const date = new Date(Date.parse(from)+i*86400000).toISOString().slice(0,10);
           days.push({date,...(dates.get(date) ?? {status:"unknown",minNights:null,cta:null,ctd:null})});
         }
-        return reply({success:true,propertyId:"116-tyrolean",days});
+        return reply({success:true,propertyId,days});
       } catch {
         return reply({success:false,message:"Calendar temporarily unavailable"},502);
       }
