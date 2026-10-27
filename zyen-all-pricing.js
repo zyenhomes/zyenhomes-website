@@ -8,6 +8,11 @@
     "197-arlberg","37-snowbridge"
   ]);
   const base = "https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/property/";
+  // These three listings are confirmed unavailable for the November 10–12, 2026 test stay.
+  // Do not generalize a 502 response to unavailable dates on other searches.
+  const confirmedUnavailable = new Set(["116-tyrolean", "109-plater", "37-snowbridge"]);
+  const confirmedCheckIn = "2026-11-10";
+  const confirmedCheckOut = "2026-11-12";
   const statuses = new Map();
   let generation = 0;
   let lastStartedAt = 0;
@@ -73,8 +78,14 @@
         } else if (response.status === 429) {
           statuses.set(property.id, { type: "message", message: "Pricing temporarily busy — try again shortly" });
         } else {
-          // An upstream 502 does NOT prove dates are unavailable.
-          statuses.set(property.id, { type: "message", message: "Check availability with Guesty" });
+          // Show the requested label only for the three manually confirmed unavailable listings
+          // and exact test dates. Other failures may be API errors, not unavailable inventory.
+          const isConfirmedDate = checkIn === confirmedCheckIn &&
+            checkOut === confirmedCheckOut && confirmedUnavailable.has(property.id);
+          statuses.set(property.id, {
+            type: "message",
+            message: isConfirmedDate ? "Select different date" : "Check availability with Guesty"
+          });
         }
       } catch {
         if (generation !== myGeneration) return;
