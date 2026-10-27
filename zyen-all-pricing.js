@@ -70,11 +70,13 @@
         if (generation !== myGeneration) return;
         if (response.ok && result.success && Number.isFinite(result.pricing?.total)) {
           statuses.set(property.id, { type: "price", total: result.pricing.total, currency: result.pricing.currency });
+        } else if (result.availability === "unavailable") {
+          statuses.set(property.id, { type: "message", message: "Select different date" });
         } else if (response.status === 429) {
           statuses.set(property.id, { type: "message", message: "Pricing temporarily busy — try again shortly" });
         } else {
-          // An upstream 502 does NOT prove dates are unavailable.
-          statuses.set(property.id, { type: "message", message: "Check availability with Guesty" });
+          // Quote failures alone are not proof of unavailable inventory.
+          statuses.set(property.id, { type: "message", message: "Unable to check availability" });
         }
       } catch {
         if (generation !== myGeneration) return;
