@@ -45,7 +45,8 @@
   async function loadMonth() {
     const ticket=++sequence;
     const from=iso(month)>todayISO?iso(month):todayISO;
-    const to=iso(new Date(month.getFullYear(),month.getMonth()+1,1));
+    // Include the following month to support stays crossing month boundaries.
+    const to=iso(new Date(month.getFullYear(),month.getMonth()+2,1));
     if(to<=from){render();return;}
     result.textContent="Loading Guesty calendar…";
     try {
@@ -63,8 +64,13 @@
     render();
   }
   function canSelect(date) {
-    return date>=todayISO && known.get(date)==="available" &&
-      (!selectingOut || (date>checkIn && (Date.parse(date)-Date.parse(checkIn))/86400000<=30 && stayClear(checkIn,date)));
+    if (date < todayISO) return false;
+    if (!selectingOut) return known.get(date)==="available";
+    // Check-out is a departure boundary, not an occupied night.
+    // A guest may depart on a booked day if all preceding nights are available.
+    return date>checkIn &&
+      (Date.parse(date)-Date.parse(checkIn))/86400000<=30 &&
+      known.has(date) && stayClear(checkIn,date);
   }
   function stayClear(start,end) {
     for(let date=start;date<end;date=plus(date,1)) if(known.get(date)!=="available")return false;
