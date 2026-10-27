@@ -771,12 +771,18 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
           if (!valid(day?.date) || dates.has(day.date))
             return reply({success:false,message:"Calendar format unavailable"},502);
           const state = String(day.status ?? "").toLowerCase();
-          dates.set(day.date,["available","booked","blocked","unavailable"].includes(state) ? state : "unknown");
+          dates.set(day.date, {
+            status: ["available","booked","blocked","unavailable"].includes(state) ? state : "unknown",
+            // Restrictive defaults for ambiguous rule fields; never claim availability.
+            minNights: Number.isInteger(day.minNights) && day.minNights >= 1 && day.minNights <= 30 ? day.minNights : null,
+            cta: typeof day.cta === "boolean" ? day.cta : null,
+            ctd: typeof day.ctd === "boolean" ? day.ctd : null
+          });
         }
         const days = [];
         for (let i=0;i<nights;i++) {
           const date = new Date(Date.parse(from)+i*86400000).toISOString().slice(0,10);
-          days.push({date,status:dates.get(date) ?? "unknown"});
+          days.push({date,...(dates.get(date) ?? {status:"unknown",minNights:null,cta:null,ctd:null})});
         }
         return reply({success:true,propertyId:"116-tyrolean",days});
       } catch {
