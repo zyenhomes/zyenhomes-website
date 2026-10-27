@@ -683,6 +683,61 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
 }
 
 
+    // Temporary read-only calendar diagnostic for the known 116 Tyrolean test stays.
+    // No credentials or raw Guesty calendar payload are returned.
+    if (url.pathname === "/api/public/calendar-diagnostic/116-tyrolean") {
+      if (request.method !== "GET") return Response.json({ error: "GET required" }, { status: 405 });
+      const origin = request.headers.get("Origin");
+      if (origin && origin !== "https://zyenhomes.com" && origin !== "https://www.zyenhomes.com")
+        return Response.json({ error: "Origin not allowed" }, { status: 403 });
+      const ip = request.headers.get("CF-Connecting-IP");
+      if (!ip) return Response.json({ error: "Client not verified" }, { status: 403 });
+      const limit = await env.BOOKING_RATE_LIMITER.limit({ key: "calendar-diagnostic:" + ip });
+      if (!limit.success) return Response.json({ error: "Rate limited" }, { status: 429 });
+      const token = await getGuestyToken(env);
+      const listingId = "6914041adf75040043bc8ed8";
+      const cases = [
+        { label: "known_quote", from: "2026-11-04", to: "2026-11-06" },
+        { label: "confirmed_unavailable", from: "2026-11-10", to: "2026-11-12" }
+      ];
+      const results = await Promise.all(cases.map(async test => {
+        try {
+          const endpoint = new URL("https://booking.guesty.com/api/listings/" +
+            encodeURIComponent(listingId) + "/calendar");
+          endpoint.searchParams.set("from", test.from);
+          endpoint.searchParams.set("to", test.to);
+          const res = await fetch(endpoint, {
+            headers: { Authorization: "Bearer " + token, Accept: "application/json" }
+          });
+          if (!res.ok) return { label: test.label, upstreamStatus: res.status, shape: "unavailable" };
+          const json = await res.json();
+          const data = Array.isArray(json) ? json
+            : Array.isArray(json?.days) ? json.days
+            : Array.isArray(json?.results) ? json.results
+            : Array.isArray(json?.results?.days) ? json.results.days : null;
+          const sample = Array.isArray(data) && data.length ? data[0] : null;
+          const allowedFields = ["date","day","status","available","isAvailable","isBlocked","blocked","booked"];
+          return {
+            label: test.label,
+            upstreamStatus: res.status,
+            shape: Array.isArray(json) ? "array" : typeof json,
+            topLevelKeys: Array.isArray(json) ? [] : Object.keys(json || {}).slice(0,20),
+            dayCount: data?.length ?? null,
+            sampleDayKeys: sample && typeof sample === "object" ? Object.keys(sample).slice(0,25) : [],
+            sampleAvailabilityFields: sample && typeof sample === "object"
+              ? Object.fromEntries(allowedFields.filter(k => Object.hasOwn(sample,k))
+                .map(k => [k, typeof sample[k] === "string" || typeof sample[k] === "boolean"
+                  ? sample[k] : null])) : {}
+          };
+        } catch {
+          return { label: test.label, upstreamStatus: null, shape: "error" };
+        }
+      }));
+      return Response.json({ success: true, diagnosticOnly: true, results }, {
+        headers: { "Cache-Control": "no-store", "Access-Control-Allow-Origin": origin || "https://zyenhomes.com" }
+      });
+    }
+
     if (url.pathname === "/api/public/quotes/batch") {
       const origin = request.headers.get("Origin");
       const allowed = origin === "https://zyenhomes.com" || origin === "https://www.zyenhomes.com";
