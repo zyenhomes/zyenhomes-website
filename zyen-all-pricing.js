@@ -81,19 +81,31 @@
     updateCards();
   }
   form.addEventListener("submit", () => { void searchQuotes(); });
-  // Search automatically when the home-page Search Stays link supplied valid dates.
-  // Wait until all page scripts initialize; never submit the form again or navigate.
-  const query = new URLSearchParams(window.location.search);
-  const fromHome = query.has("checkin") && query.has("checkout");
-  if (fromHome && form.elements.checkin.value && form.elements.checkout.value &&
-      form.elements.checkout.value > form.elements.checkin.value) {
-    void searchQuotes();
-  }
   for (const name of ["checkin", "checkout", "guests"]) {
     form.elements[name].addEventListener("change", () => {
       generation++;
       statuses.clear();
       updateCards();
     });
+  }
+  // Run after all date-picker and page initialization has settled.
+  // Homepage links carry the complete search as URL query parameters.
+  const params = new URLSearchParams(location.search);
+  if (params.has("checkin") && params.has("checkout")) {
+    const requestedIn = params.get("checkin");
+    const requestedOut = params.get("checkout");
+    const requestedGuests = params.get("guests");
+    if (/^\d{4}-\d{2}-\d{2}$/.test(requestedIn || "") &&
+        /^\d{4}-\d{2}-\d{2}$/.test(requestedOut || "") &&
+        requestedOut > requestedIn) {
+      form.elements.checkin.value = requestedIn;
+      form.elements.checkout.value = requestedOut;
+      if (requestedGuests && /^\d+$/.test(requestedGuests)) {
+        form.elements.guests.value = requestedGuests;
+      }
+      // Reuse the same submit flow as the Find Properties button.
+      // No navigation, no reservations, no duplicate request.
+      queueMicrotask(() => form.requestSubmit());
+    }
   }
 })();
