@@ -738,6 +738,52 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
       });
     }
 
+    // Read-only calendar for the 116 Tyrolean property-page pilot.
+    if (url.pathname === "/api/public/calendar/116-tyrolean") {
+      const origin = request.headers.get("Origin");
+      const allowed = origin === "https://zyenhomes.com" || origin === "https://www.zyenhomes.com";
+      const cors = { "Vary": "Origin", "Cache-Control": "no-store",
+        ...(allowed ? { "Access-Control-Allow-Origin": origin } : {}) };
+      const reply = (body, status = 200) => Response.json(body, { status, headers: cors });
+      if (request.method !== "GET") return reply({ success:false, message:"GET required" },405);
+      if (origin && !allowed) return reply({ success:false, message:"Origin not allowed" },403);
+      const valid = v => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) &&
+        !Number.isNaN(Date.parse(v)) && new Date(v+"T00:00:00Z").toISOString().slice(0,10)===v;
+      const from = url.searchParams.get("from"), to = url.searchParams.get("to");
+      const nights = valid(from) && valid(to) ? (Date.parse(to)-Date.parse(from))/86400000 : 0;
+      if (!valid(from) || !valid(to) || nights < 1 || nights > 62 ||
+          from < new Date().toISOString().slice(0,10))
+        return reply({ success:false, message:"Invalid date range" },400);
+      const ip = request.headers.get("CF-Connecting-IP");
+      if (!ip) return reply({ success:false, message:"Client not verified" },403);
+      const limit = await env.BOOKING_RATE_LIMITER.limit({ key:"calendar-pilot:"+ip });
+      if (!limit.success) return reply({ success:false, message:"Too many requests" },429);
+      try {
+        const token = await getGuestyToken(env);
+        const endpoint = new URL("https://booking.guesty.com/api/listings/6914041adf75040043bc8ed8/calendar");
+        endpoint.searchParams.set("from",from); endpoint.searchParams.set("to",to);
+        const res = await fetch(endpoint,{headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
+        if (!res.ok) return reply({success:false,message:"Calendar temporarily unavailable"},502);
+        const payload = await res.json();
+        if (!Array.isArray(payload)) return reply({success:false,message:"Calendar format unavailable"},502);
+        const dates = new Map();
+        for (const day of payload) {
+          if (!valid(day?.date) || dates.has(day.date))
+            return reply({success:false,message:"Calendar format unavailable"},502);
+          const state = String(day.status ?? "").toLowerCase();
+          dates.set(day.date,["available","booked","blocked","unavailable"].includes(state) ? state : "unknown");
+        }
+        const days = [];
+        for (let i=0;i<nights;i++) {
+          const date = new Date(Date.parse(from)+i*86400000).toISOString().slice(0,10);
+          days.push({date,status:dates.get(date) ?? "unknown"});
+        }
+        return reply({success:true,propertyId:"116-tyrolean",days});
+      } catch {
+        return reply({success:false,message:"Calendar temporarily unavailable"},502);
+      }
+    }
+
     if (url.pathname === "/api/public/quotes/batch") {
       const origin = request.headers.get("Origin");
       const allowed = origin === "https://zyenhomes.com" || origin === "https://www.zyenhomes.com";
