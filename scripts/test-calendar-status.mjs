@@ -1,0 +1,10 @@
+import assert from "node:assert/strict";
+import { assessCalendar } from "../lib/guesty-calendar-status.mjs";
+const ci="2026-11-10",co="2026-11-12";
+assert.equal(assessCalendar({days:[{date:ci,status:"available"},{date:"2026-11-11",status:"booked"}]},ci,co),"unavailable");
+assert.equal(assessCalendar({days:[{date:ci,status:"available"},{date:"2026-11-11",status:"available"}]},ci,co),"available");
+assert.equal(assessCalendar({days:[{date:ci,status:"booked"}]},ci,co),"unknown");
+assert.equal(assessCalendar({days:[{date:ci,status:"blocked"},{date:"2026-11-11",status:"mystery"}]},ci,co),"unknown");
+assert.equal(assessCalendar({error:"not authorized"},ci,co),"unknown");
+assert.equal(assessCalendar({days:[{date:ci,status:"available"},{date:ci,status:"blocked"}]},ci,co),"unknown");
+console.log("Conservative calendar parser tests passed");
