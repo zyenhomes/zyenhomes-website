@@ -1,0 +1,21 @@
+name: Validate 116 Calendar Pilot
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/worker.js'
+      - 'property.html'
+      - 'zyen-116-calendar-pilot.js'
+      - 'scripts/validate-116-calendar-pilot.mjs'
+      - '.github/workflows/validate-116-calendar-pilot.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check cloudflare/worker.js
+      - run: node scripts/validate-116-calendar-pilot.mjs
