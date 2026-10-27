@@ -1,0 +1,12 @@
+import { readFileSync } from "node:fs";
+import assert from "node:assert/strict";
+const html=readFileSync("rentals.html","utf8");
+const calendar=readFileSync("zyen-range-calendar.js","utf8");
+new Function(calendar);
+assert.match(html,/name="checkin"[^>]*readonly/);
+assert.match(html,/name="checkout"[^>]*readonly/);
+assert.match(html,/zyen-range-calendar\.js/);
+assert.match(calendar,/choosing="checkout"/);
+assert.match(calendar,/popup\.hidden=true/);
+assert.match(calendar,/dispatchEvent\(new Event\("change"/);
+console.log("Shared calendar syntax and integration checks passed");

@@ -1,0 +1,19 @@
+name: Validate Shared Date Calendar
+on:
+  pull_request:
+    paths:
+      - 'rentals.html'
+      - 'zyen-range-calendar.js'
+      - 'scripts/validate-range-calendar.mjs'
+      - '.github/workflows/validate-range-calendar.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/validate-range-calendar.mjs
