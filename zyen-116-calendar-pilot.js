@@ -55,7 +55,7 @@
       const data=await response.json();
       if(ticket!==sequence)return;
       if(!response.ok||!data.success||!Array.isArray(data.days))throw Error("Calendar unavailable");
-      for(const day of data.days)known.set(day.date,day.status);
+      for(const day of data.days)known.set(day.date,{status:day.status,minNights:day.minNights,cta:day.cta,ctd:day.ctd});
       result.textContent="";
     } catch {
       if(ticket!==sequence)return;
@@ -65,15 +65,20 @@
   }
   function canSelect(date) {
     if (date < todayISO) return false;
-    if (!selectingOut) return known.get(date)==="available";
-    // Check-out is a departure boundary, not an occupied night.
-    // A guest may depart on a booked day if all preceding nights are available.
-    return date>checkIn &&
-      (Date.parse(date)-Date.parse(checkIn))/86400000<=30 &&
-      known.has(date) && stayClear(checkIn,date);
+    const day=known.get(date);
+    if (!day) return false;
+    if (!selectingOut) return day.status==="available" && day.cta===false &&
+      Number.isInteger(day.minNights) && day.minNights>=1;
+    const arrival=known.get(checkIn);
+    const nights=(Date.parse(date)-Date.parse(checkIn))/86400000;
+    return date>checkIn && nights<=30 && nights>=arrival.minNights &&
+      day.ctd===false && stayClear(checkIn,date);
   }
   function stayClear(start,end) {
-    for(let date=start;date<end;date=plus(date,1)) if(known.get(date)!=="available")return false;
+    for(let date=start;date<end;date=plus(date,1)) {
+      const day=known.get(date);
+      if (!day || day.status!=="available") return false;
+    }
     return true;
   }
   function render() {
@@ -100,7 +105,7 @@
       const date=iso(new Date(y,m,n));
       const b=document.createElement("button");b.type="button";b.textContent=String(n);
       b.disabled=!canSelect(date);
-      b.setAttribute("aria-label",date+" "+(known.get(date)||"not verified"));
+      b.setAttribute("aria-label",date+" "+(known.get(date)?.status||"not verified"));
       b.style.cssText="padding:9px 0;border:0;border-radius:6px;font:inherit;cursor:pointer;background:white;color:#153e35";
       if(b.disabled)b.style.cssText+=";color:#a7aaa7;background:#edf0ed;cursor:not-allowed;text-decoration:line-through";
       if(date===checkIn||date===checkOut)b.style.cssText+=";background:#174f41;color:white";
@@ -119,7 +124,7 @@
     refreshFields();render();
   };
   check.onclick=async()=>{
-    if(!checkIn||!checkOut||!stayClear(checkIn,checkOut)){result.textContent="Select an available stay.";return;}
+    if(!checkIn||!checkOut||!stayClear(checkIn,checkOut) || !known.has(checkOut) || known.get(checkOut).ctd!==false || known.get(checkIn).cta!==false || (Date.parse(checkOut)-Date.parse(checkIn))/86400000<known.get(checkIn).minNights){result.textContent="Select an available stay.";return;}
     check.disabled=true;result.textContent="Checking live Guesty price…";
     try{
       const res=await fetch("https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/property/116-tyrolean",{
