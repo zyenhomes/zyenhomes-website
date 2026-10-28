@@ -35,7 +35,7 @@ jobs:
               console.error("Cloudflare Account ID must be exactly 32 hexadecimal characters.");
               process.exit(1);
             }
-            appendFileSync(process.env.GITHUB_ENV, "CLOUDFLARE_ACCOUNT_ID="+clean+"\\n");
+            appendFileSync(process.env.GITHUB_ENV, "CLOUDFLARE_ACCOUNT_ID="+clean+"\n");
           '
 
       - name: Show remote migration state (read only)
