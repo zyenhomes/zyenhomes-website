@@ -917,6 +917,84 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
       }
     }
 
+    // Inquiry storage only. Guesty sync is intentionally disabled until its API is verified.
+    if (url.pathname === "/api/public/booking-request") {
+      const origin = request.headers.get("Origin");
+      const allowed = origin === "https://zyenhomes.com" || origin === "https://www.zyenhomes.com";
+      const headers = { "Vary":"Origin", "Cache-Control":"no-store",
+        ...(allowed ? {"Access-Control-Allow-Origin":origin,
+          "Access-Control-Allow-Methods":"POST, OPTIONS",
+          "Access-Control-Allow-Headers":"Content-Type"} : {}) };
+      const reply = (data,status=200) => Response.json(data,{status,headers});
+      if (request.method === "OPTIONS") return allowed
+        ? new Response(null,{status:204,headers})
+        : reply({success:false,message:"Origin not allowed"},403);
+      if (!allowed) return reply({success:false,message:"Origin not allowed"},403);
+      if (request.method !== "POST") return reply({success:false,message:"POST required"},405);
+      if (!env.BOOKING_DB) return reply({success:false,message:"Booking requests are not configured yet"},503);
+      if (Number(request.headers.get("Content-Length")||0)>4096)
+        return reply({success:false,message:"Request too large"},413);
+      const ip=request.headers.get("CF-Connecting-IP");
+      if (!ip) return reply({success:false,message:"Client not verified"},403);
+      const limit=await env.BOOKING_RATE_LIMITER.limit({key:"booking-request:"+ip});
+      if (!limit.success) return reply({success:false,message:"Too many requests"},429);
+      try {
+        const raw=await request.text();
+        if(raw.length>4096) return reply({success:false,message:"Request too large"},413);
+        const b=JSON.parse(raw);
+        const listings={
+          "100-pilsen":"6914041f5fbb6800444aca89",
+          "105-pilsen":"69140406129e4200436cc529",
+          "106-birch-view":"699b704dda533d00151fd63b",
+          "109-plater":"69140412df75040043bc8c0d",
+          "116-tyrolean":"6914041adf75040043bc8ed8",
+          "147-campbell":"691403f14ae1bb0013bf4d92",
+          "149-tyrolean":"6abf9b85caf2480012c82479",
+          "197-arlberg":"6abf956cb58bb9004973e443",
+          "37-snowbridge":"691403d937f0ea0013f72152"
+        };
+        const caps={"100-pilsen":16,"105-pilsen":20,"106-birch-view":14,"109-plater":20,"116-tyrolean":20,"147-campbell":12,"149-tyrolean":16,"197-arlberg":20,"37-snowbridge":10};
+        const clean=(v,max)=>typeof v==="string"?v.trim().slice(0,max):"";
+        const propertyId=clean(b.propertyId,40),listingId=listings[propertyId];
+        const name=clean(b.name,100),email=clean(b.email,150).toLowerCase(),
+          phone=clean(b.phone,40),message=clean(b.message||"",1000);
+        const checkIn=clean(b.checkIn,10),checkOut=clean(b.checkOut,10),guests=Number(b.guests);
+        const validDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(v) &&
+          !Number.isNaN(Date.parse(v)) && new Date(v+"T00:00:00Z").toISOString().slice(0,10)===v;
+        const nights=validDate(checkIn)&&validDate(checkOut)
+          ?(Date.parse(checkOut)-Date.parse(checkIn))/86400000:0;
+        if(!listingId||name.length<2||!/^\S+@\S+\.\S+$/.test(email)||phone.length<6||
+          !validDate(checkIn)||!validDate(checkOut)||checkIn<new Date().toISOString().slice(0,10)||
+          nights<1||nights>30||!Number.isInteger(guests)||guests<1||guests>caps[propertyId]||
+          typeof b.marketingConsent!=="boolean")
+          return reply({success:false,message:"Please check your booking details"},400);
+        // Reprice server-side. Never trust a total supplied by the browser.
+        const token=await getGuestyToken(env);
+        const quoteRes=await fetch("https://booking.guesty.com/api/reservations/quotes",{
+          method:"POST",headers:{Authorization:"Bearer "+token,Accept:"application/json","Content-Type":"application/json"},
+          body:JSON.stringify({listingId,checkInDateLocalized:checkIn,checkOutDateLocalized:checkOut,guestsCount:guests})
+        });
+        if(!quoteRes.ok) return reply({success:false,message:"Availability or pricing changed. Please check dates again"},409);
+        const payload=await quoteRes.json(),q=payload.results??payload;
+        const quote=Array.isArray(q)?q[0]:q;
+        const plan=quote?.rates?.ratePlans?.[0];
+        const money=plan?.ratePlan?.money??plan?.money?.money;
+        if(!Number.isFinite(money?.hostPayout)||money.hostPayout<=0||money.currency&&money.currency!=="CAD")
+          return reply({success:false,message:"Unable to verify the current quote"},502);
+        const totalCents=Math.round(money.hostPayout*100);
+        const requestId=crypto.randomUUID();
+        const consent=b.marketingConsent===true;
+        await env.BOOKING_DB.prepare(
+          "INSERT INTO booking_requests (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,message,quote_total_cents,quote_currency,marketing_consent,marketing_consent_at,consent_text_version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+        ).bind(requestId,propertyId,name,email,phone,checkIn,checkOut,guests,message,totalCents,"CAD",
+          consent?1:0,consent?new Date().toISOString():null,consent?"v1":null).run();
+        return reply({success:true,requestId,status:"received",guestySyncStatus:"pending",
+          message:"Request received by Zyen Homes. This is not a confirmed reservation."},201);
+      } catch {
+        return reply({success:false,message:"Could not save request. Please try again"},503);
+      }
+    }
+
     if (url.pathname.startsWith("/api/public/quote/property/")) {
       const listings = {
         "100-pilsen": "6914041f5fbb6800444aca89",
