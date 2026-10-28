@@ -1,0 +1,20 @@
+name: Validate Inline Booking Form
+on:
+  pull_request:
+    paths:
+      - 'property.html'
+      - 'zyen-connected-calendar.js'
+      - 'zyen-116-calendar-pilot.js'
+      - 'scripts/validate-inline-booking-form.mjs'
+      - '.github/workflows/validate-inline-booking-form.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/validate-inline-booking-form.mjs
