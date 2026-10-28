@@ -1,0 +1,20 @@
+name: Validate Click To Open Calendars
+on:
+  pull_request:
+    paths:
+      - 'zyen-116-calendar-pilot.js'
+      - 'zyen-connected-calendar.js'
+      - 'property.html'
+      - 'scripts/validate-click-to-open-calendars.mjs'
+      - '.github/workflows/validate-click-to-open-calendars.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/validate-click-to-open-calendars.mjs
