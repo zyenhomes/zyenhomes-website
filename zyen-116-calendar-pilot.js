@@ -15,6 +15,15 @@
     if (details) details.append(section);
     else root.prepend(section);
   }
+  // Responsive layout: keep the calendar within narrow phone screens.
+  section.style.maxWidth="100%";
+  section.style.boxSizing="border-box";
+  section.style.minWidth="0";
+  const responsiveCalendar=section.querySelector(".zy-116-calendar");
+  responsiveCalendar.style.maxWidth="100%";
+  responsiveCalendar.style.width="100%";
+  responsiveCalendar.style.boxSizing="border-box";
+  responsiveCalendar.style.overflowX="hidden";
   const controls = section.querySelector(".zy-116-controls");
   const fields = {};
   for (const name of ["Check-in","Check-out","Guests"]) {
@@ -103,7 +112,7 @@
     next.onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()+1,1);loadMonth();};
     head.append(prev,label,next);calendar.append(head);
     const grid=document.createElement("div");
-    grid.style.cssText="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center";
+    grid.style.cssText="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center;width:100%";
     for(const name of ["Su","Mo","Tu","We","Th","Fr","Sa"]){
       const el=document.createElement("span");el.textContent=name;el.style.fontSize="12px";grid.append(el);
     }
@@ -114,14 +123,14 @@
       const b=document.createElement("button");b.type="button";b.textContent=String(n);
       b.disabled=!canSelect(date);
       b.setAttribute("aria-label",date+" "+(known.get(date)?.status||"not verified"));
-      b.style.cssText="padding:9px 0;border:0;border-radius:6px;font:inherit;cursor:pointer;background:white;color:#153e35";
+      b.style.cssText="padding:10px 0;min-width:0;min-height:40px;border:0;border-radius:6px;font:inherit;cursor:pointer;background:white;color:#153e35";
       if(b.disabled)b.style.cssText+=";color:#a7aaa7;background:#edf0ed;cursor:not-allowed;text-decoration:line-through";
       if(checkIn && checkOut && date>checkIn && date<checkOut) b.style.background="#d7ebe1";
       if(date===checkIn||date===checkOut)b.style.cssText+=";background:#174f41;color:white";
       b.onclick=()=>{
         if(!selectingOut){checkIn=date;checkOut="";selectingOut=true;}
         else {checkOut=date;selectingOut=false;setCalendarOpen(false);}
-        result.textContent="";refreshFields();render();
+        clearQuote();result.textContent="";refreshFields();render();
       };
       grid.append(b);
     }
@@ -134,21 +143,46 @@
   for(const key of ["Check-in","Check-out"])fields[key].onclick=()=>{
     selectingOut=key==="Check-out" && Boolean(checkIn);
     if(key==="Check-in"){checkIn="";checkOut="";}
-    setCalendarOpen(true);refreshFields();render();
+    clearQuote();setCalendarOpen(true);refreshFields();render();
   };
+  // Inquiry only: no reservation, payment, or inventory hold is created.
+  const inquiry=document.createElement("a");
+  inquiry.className="zy-button";
+  inquiry.textContent="Request to book";
+  inquiry.hidden=true;
+  inquiry.style.cssText="display:none;margin:12px 0 0 10px;text-decoration:none";
+  check.after(inquiry);
+  function clearQuote(){
+    inquiry.hidden=true;
+    inquiry.style.display="none";
+    inquiry.removeAttribute("href");
+  }
+  fields.Guests.addEventListener("change",()=>{clearQuote();result.textContent="";});
   check.onclick=async()=>{
     if(!checkIn||!checkOut||!stayClear(checkIn,checkOut) || !known.has(checkOut) || known.get(checkOut).ctd!==false || known.get(checkIn).cta!==false || (Date.parse(checkOut)-Date.parse(checkIn))/86400000<known.get(checkIn).minNights){result.textContent="Select an available stay.";return;}
-    check.disabled=true;result.textContent="Checking live Guesty price…";
+    clearQuote();check.disabled=true;result.textContent="Checking live Guesty price…";
     try{
       const res=await fetch("https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/property/116-tyrolean",{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({checkIn,checkOut,guests:Number(fields.Guests.value)})
       });
       const data=await res.json();
-      result.textContent=res.ok&&data.success&&Number.isFinite(data.pricing?.total)
+      if(res.ok&&data.success&&Number.isFinite(data.pricing?.total)) resolvedQuote={total:data.pricing.total,formatted:new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD"}).format(data.pricing.total)};\n      result.textContent=res.ok&&data.success&&Number.isFinite(data.pricing?.total)
         ? new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD"}).format(data.pricing.total)+" total, including fees and taxes. Quote only; no dates reserved."
         : "Unable to confirm this stay. Please select different dates or contact us.";
     }catch{result.textContent="Unable to check pricing right now. Please try again.";}
+    // Display the inquiry action only after a valid, successful live quote.
+    if(resolvedQuote && Number.isFinite(resolvedQuote.total)){
+      const propertyName=window.ZYEN_PROPERTIES?.find(p=>p.id===(typeof propertyId==="string"?propertyId:"116-tyrolean"))?.name || "Vacation rental";
+      const subject="Booking inquiry: "+propertyName;
+      const body=["Hello Zyen Homes,","", "I would like to request a booking.",
+        "Property: "+propertyName,"Check-in: "+checkIn,"Check-out: "+checkOut,
+        "Guests: "+fields.Guests.value,"Quoted total: "+resolvedQuote.formatted,
+        "Please confirm availability and next steps.","",
+        "Name:","Contact number:"].join("\\n");
+      inquiry.href="mailto:info@zyenhomes.com?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+      inquiry.hidden=false;inquiry.style.display="inline-block";
+    }
     check.disabled=false;
   };
   refreshFields();loadMonth();
