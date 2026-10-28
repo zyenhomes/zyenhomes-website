@@ -1,0 +1,42 @@
+name: Verify Zyen Homes D1 Schema (Read Only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify existing D1 database structure
+    runs-on: ubuntu-latest
+    environment: cloudflare-production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Wrangler 4
+        run: npm install --no-save wrangler@4
+
+      - name: Validate Cloudflare account identifier
+        env:
+          RAW_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module -e '
+            import { appendFileSync } from "node:fs";
+            const id=(process.env.RAW_ACCOUNT_ID||"").trim();
+            if (!/^[a-fA-F0-9]{32}$/.test(id)) {
+              console.error("Account ID format invalid");
+              process.exit(1);
+            }
+            appendFileSync(process.env.GITHUB_ENV,"CLOUDFLARE_ACCOUNT_ID="+id+"\n");
+          '
+
+      - name: Verify database tables and columns (read only)
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "SELECT name, type FROM sqlite_master WHERE name IN ('booking_requests','marketing_opt_ins') ORDER BY name;"
+          ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "SELECT name FROM pragma_table_info('booking_requests') WHERE name IN ('request_id','property_id','guest_name','guest_email','guest_phone','check_in','check_out','guests','message','quote_total_cents','marketing_consent','marketing_consent_at','guesty_sync_status') ORDER BY name;"
+          ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "SELECT COUNT(*) AS stored_requests FROM booking_requests;"
+          ../node_modules/.bin/wrangler d1 migrations list zyenhomes-booking-requests --remote --config wrangler.toml
