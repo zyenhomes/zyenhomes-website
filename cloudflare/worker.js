@@ -931,6 +931,8 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
         : reply({success:false,message:"Origin not allowed"},403);
       if (!allowed) return reply({success:false,message:"Origin not allowed"},403);
       if (request.method !== "POST") return reply({success:false,message:"POST required"},405);
+      // Fail closed until anti-abuse, idempotency, notification and Guesty sync are verified.
+      if (env.BOOKING_REQUESTS_ENABLED !== "true") return reply({success:false,message:"Online booking requests are not enabled yet"},503);
       if (!env.BOOKING_DB) return reply({success:false,message:"Booking requests are not configured yet"},503);
       if (Number(request.headers.get("Content-Length")||0)>4096)
         return reply({success:false,message:"Request too large"},413);
