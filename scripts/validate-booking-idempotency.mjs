@@ -1,0 +1,10 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("cloudflare/worker.js","utf8");
+new Function(s.replace(/export default/,"const worker ="));
+assert.match(s,/BOOKING_REQUESTS_ENABLED !== "true"/);
+assert.match(s,/crypto\.subtle\.digest\("SHA-256"/);
+assert.match(s,/INSERT OR IGNORE INTO booking_requests/);
+assert.match(s,/SELECT request_id FROM booking_requests WHERE request_id=\?/);
+assert.match(s,/marketingConsent/);
+console.log("Booking request idempotency and safety gate checks passed");
