@@ -113,6 +113,7 @@
       b.setAttribute("aria-label",date+" "+(known.get(date)?.status||"not verified"));
       b.style.cssText="padding:9px 0;border:0;border-radius:6px;font:inherit;cursor:pointer;background:white;color:#153e35";
       if(b.disabled)b.style.cssText+=";color:#a7aaa7;background:#edf0ed;cursor:not-allowed;text-decoration:line-through";
+      if(checkIn && checkOut && date>checkIn && date<checkOut) b.style.background="#d7ebe1";
       if(date===checkIn||date===checkOut)b.style.cssText+=";background:#174f41;color:white";
       b.onclick=()=>{
         if(!selectingOut){checkIn=date;checkOut="";selectingOut=true;}
