@@ -1,0 +1,27 @@
+name: Verify Booking Requests Remain Disabled
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify disabled booking submission using safe POST
+        run: |
+          node --input-type=module -e '
+            const url="https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/booking-request";
+            const res=await fetch(url,{
+              method:"POST",
+              headers:{"Origin":"https://zyenhomes.com","Content-Type":"application/json"},
+              body:JSON.stringify({propertyId:"invalid-safety-test",name:"Test",email:"test@example.invalid",phone:"0000000000",checkIn:"2099-01-01",checkOut:"2099-01-03",guests:2,marketingConsent:false})
+            });
+            const data=await res.json();
+            console.log("HTTP status:",res.status);
+            console.log("Response:",data.message);
+            if(res.status!==503 || data.message!=="Online booking requests are not enabled yet"){
+              console.error("Safety gate is not behaving as expected. Stop deployment.");
+              process.exit(1);
+            }
+            console.log("PASS: booking submissions are disabled before database writes.");
+          '
