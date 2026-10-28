@@ -1,0 +1,25 @@
+name: Validate Booking Request Storage
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/worker.js'
+      - 'cloudflare/migrations/**'
+      - 'cloudflare/BOOKING_REQUEST_SETUP.md'
+      - '.github/workflows/validate-booking-request-storage.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check cloudflare/worker.js
+      - name: Check fail-closed storage and consent safeguards
+        run: |
+          grep -q 'if (!env.BOOKING_DB)' cloudflare/worker.js
+          grep -q 'marketingConsent' cloudflare/worker.js
+          grep -q 'marketing_consent = 1' cloudflare/migrations/0001_booking_requests.sql
+          grep -q 'guesty_sync_status' cloudflare/migrations/0001_booking_requests.sql
