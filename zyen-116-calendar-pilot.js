@@ -26,7 +26,7 @@
     input.name = name.toLowerCase();
     input.type = name === "Guests" ? "number" : "text";
     if (name === "Guests") {input.min="1";input.max="20";input.value=params.get("guests") || "2";}
-    else {input.readOnly=true;input.placeholder="Select on calendar";}
+    else {input.readOnly=true;input.placeholder="Click";input.style.cursor="pointer";}
     label.append(input);controls.append(label);fields[name]=input;
   }
   const today = new Date();
@@ -36,6 +36,9 @@
   let checkIn = "", checkOut = "", selectingOut = false, sequence = 0;
   const known = new Map();
   const calendar = section.querySelector(".zy-116-calendar");
+  calendar.hidden=true;
+  calendar.style.display="none";
+  const setCalendarOpen = open => {calendar.hidden=!open;calendar.style.display=open?"":"none";};
   const result = section.querySelector(".zy-116-result");
   const check = section.querySelector(".zy-116-check");
   const plus = (date,n) => new Date(Date.parse(date+"T00:00:00Z")+n*86400000).toISOString().slice(0,10);
@@ -117,7 +120,7 @@
       if(date===checkIn||date===checkOut)b.style.cssText+=";background:#174f41;color:white";
       b.onclick=()=>{
         if(!selectingOut){checkIn=date;checkOut="";selectingOut=true;}
-        else {checkOut=date;selectingOut=false;}
+        else {checkOut=date;selectingOut=false;setCalendarOpen(false);}
         result.textContent="";refreshFields();render();
       };
       grid.append(b);
@@ -131,7 +134,7 @@
   for(const key of ["Check-in","Check-out"])fields[key].onclick=()=>{
     selectingOut=key==="Check-out" && Boolean(checkIn);
     if(key==="Check-in"){checkIn="";checkOut="";}
-    refreshFields();render();
+    setCalendarOpen(true);refreshFields();render();
   };
   check.onclick=async()=>{
     if(!checkIn||!checkOut||!stayClear(checkIn,checkOut) || !known.has(checkOut) || known.get(checkOut).ctd!==false || known.get(checkIn).cta!==false || (Date.parse(checkOut)-Date.parse(checkIn))/86400000<known.get(checkIn).minNights){result.textContent="Select an available stay.";return;}
