@@ -4,7 +4,7 @@ for(const path of ["zyen-connected-calendar.js","zyen-116-calendar-pilot.js"]){
  const s=readFileSync(path,"utf8");
  new Function(s);
  assert.match(s,/responsiveCalendar\.style\.maxWidth="100%"/);
- assert.match(s,/minHeight:40px/);
+ assert.match(s,/min-height:40px/);
  assert.match(s,/Request to book/);
  assert.match(s,/mailto:info@zyenhomes\.com/);
  assert.match(s,/let resolvedQuote=null/);
