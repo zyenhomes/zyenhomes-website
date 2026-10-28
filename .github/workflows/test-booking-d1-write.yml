@@ -37,7 +37,7 @@ jobs:
           "$W" d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "$SQL"
           CHECK="SELECT CASE WHEN COUNT(*)=1 AND MAX(marketing_consent)=0 AND MAX(guesty_sync_status)='not_requested' AND MAX(guests)=2 AND MAX(quote_total_cents)=10000 THEN 'PASS' ELSE 'FAIL' END AS verification FROM booking_requests WHERE request_id='$ID';"
           "$W" d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "$CHECK" --json > /tmp/d1-check.json
-          node -e 'const d=require("/tmp/d1-check.json"); const text=JSON.stringify(d); if(!text.includes("\\"PASS\\"")){console.error("D1 verification failed");process.exit(1)}console.log("Synthetic record verified; marketing consent is false.");'
+          node -e 'const d=require("/tmp/d1-check.json"); const rows=Array.isArray(d)?d.flatMap(x=>x.results||[]):d.results||[]; if(!rows.some(x=>x.verification==="PASS")){console.error("D1 verification failed");process.exit(1)} console.log("Synthetic record verified; marketing consent is false.");'
       - name: Always remove synthetic record
         if: always() && env.SYNTHETIC_REQUEST_ID != ''
         working-directory: cloudflare
