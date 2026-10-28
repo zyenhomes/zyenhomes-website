@@ -1,0 +1,22 @@
+name: Validate Booking Request Deployment Gate
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/worker.js'
+      - 'cloudflare/wrangler.toml'
+      - '.github/workflows/validate-booking-request-gate.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check cloudflare/worker.js
+      - name: Confirm public submissions remain disabled
+        run: |
+          grep -q 'BOOKING_REQUESTS_ENABLED !== "true"' cloudflare/worker.js
+          grep -q 'BOOKING_REQUESTS_ENABLED = "false"' cloudflare/wrangler.toml
