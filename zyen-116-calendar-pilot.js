@@ -161,13 +161,15 @@
   check.onclick=async()=>{
     if(!checkIn||!checkOut||!stayClear(checkIn,checkOut) || !known.has(checkOut) || known.get(checkOut).ctd!==false || known.get(checkIn).cta!==false || (Date.parse(checkOut)-Date.parse(checkIn))/86400000<known.get(checkIn).minNights){result.textContent="Select an available stay.";return;}
     clearQuote();check.disabled=true;result.textContent="Checking live Guesty price…";
+    let resolvedQuote=null;
     try{
       const res=await fetch("https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/property/116-tyrolean",{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({checkIn,checkOut,guests:Number(fields.Guests.value)})
       });
       const data=await res.json();
-      if(res.ok&&data.success&&Number.isFinite(data.pricing?.total)) resolvedQuote={total:data.pricing.total,formatted:new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD"}).format(data.pricing.total)};\n      result.textContent=res.ok&&data.success&&Number.isFinite(data.pricing?.total)
+      if(res.ok&&data.success&&Number.isFinite(data.pricing?.total)) resolvedQuote={total:data.pricing.total,formatted:new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD"}).format(data.pricing.total)};
+      result.textContent=res.ok&&data.success&&Number.isFinite(data.pricing?.total)
         ? new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD"}).format(data.pricing.total)+" total, including fees and taxes. Quote only; no dates reserved."
         : "Unable to confirm this stay. Please select different dates or contact us.";
     }catch{result.textContent="Unable to check pricing right now. Please try again.";}
