@@ -165,8 +165,11 @@
     form.hidden=true;form.style.display="none";
   }
   inquiry.onclick=()=>{
-    form.hidden=false;form.style.display="block";
-    form.querySelector('input[name="fullName"]').focus();
+    form.hidden=false;
+    form.style.display="block";
+    form.scrollIntoView({behavior:"smooth",block:"start"});
+    const nameField=form.querySelector('input[name="fullName"]');
+    if(nameField) nameField.focus({preventScroll:true});
   };
   form.onsubmit=event=>{
     event.preventDefault();
