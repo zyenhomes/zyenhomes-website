@@ -7,7 +7,7 @@
   const section = document.createElement("section");
   section.className = "zy-116-booking";
   section.style.cssText = "background:#f3f6f3;border:1px solid #dce6e1;border-radius:15px;padding:20px;margin:20px 0 28px;max-width:740px";
-  section.innerHTML = '<h2 style="font:700 26px Georgia,serif;color:#153e35;margin:0 0 8px">Check dates & pricing</h2><p class="zy-116-hint">Choose check-in, then check-out. Booked and blocked dates are disabled.</p><div class="zy-116-controls" style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0"></div><div class="zy-116-calendar" style="max-width:420px;background:white;border:1px solid #dce6e1;border-radius:12px;padding:14px"></div><button type="button" class="zy-button zy-116-check" disabled style="margin-top:14px">Check price</button><p class="zy-116-result" role="status" aria-live="polite"></p>';
+  section.innerHTML = '<h2 style="font:700 26px Georgia,serif;color:#153e35;margin:0 0 8px">Check dates & pricing</h2><p class="zy-116-hint">Choose check-in, then check-out. Booked and blocked dates are disabled.</p><div class="zy-116-controls" style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0"></div><div class="zy-116-calendar" hidden style="display:none;max-width:420px;background:white;border:1px solid #dce6e1;border-radius:12px;padding:14px"></div><button type="button" class="zy-button zy-116-check" disabled style="margin-top:14px">Check price</button><p class="zy-116-result" role="status" aria-live="polite"></p>';
   const slot = root.querySelector("#zy-116-booking-slot");
   if (slot) slot.replaceWith(section);
   else {
@@ -38,7 +38,7 @@
   const calendar = section.querySelector(".zy-116-calendar");
   calendar.hidden=true;
   calendar.style.display="none";
-  const setCalendarOpen = open => {calendar.hidden=!open;calendar.style.display=open?"":"none";};
+  const setCalendarOpen = open => {calendar.hidden=!open;calendar.style.display=open?"block":"none";};
   const result = section.querySelector(".zy-116-result");
   const check = section.querySelector(".zy-116-check");
   const plus = (date,n) => new Date(Date.parse(date+"T00:00:00Z")+n*86400000).toISOString().slice(0,10);
