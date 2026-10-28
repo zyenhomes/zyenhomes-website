@@ -38,5 +38,7 @@ jobs:
         run: |
           ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "SELECT name, type FROM sqlite_master WHERE name IN ('booking_requests','marketing_opt_ins') ORDER BY name;"
           ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "SELECT name FROM pragma_table_info('booking_requests') WHERE name IN ('request_id','property_id','guest_name','guest_email','guest_phone','check_in','check_out','guests','message','quote_total_cents','marketing_consent','marketing_consent_at','guesty_sync_status') ORDER BY name;"
+          ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "SELECT request_id, property_id, guest_name, guest_email, guest_phone, check_in, check_out, guests, message, quote_total_cents, marketing_consent, marketing_consent_at, guesty_sync_status FROM booking_requests LIMIT 0;"
+          ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "SELECT guest_name, guest_email, guest_phone, marketing_consent_at FROM marketing_opt_ins LIMIT 0;"
           ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "SELECT COUNT(*) AS stored_requests FROM booking_requests;"
           ../node_modules/.bin/wrangler d1 migrations list zyenhomes-booking-requests --remote --config wrangler.toml
