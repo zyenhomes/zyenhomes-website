@@ -1,0 +1,25 @@
+name: Initialize Zyen Homes Booking Database
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: zyenhomes-booking-d1-migrations
+  cancel-in-progress: false
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: cloudflare-production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify D1 configuration and migration
+        run: |
+          test -s cloudflare/migrations/0001_booking_requests.sql
+          grep -q 'binding = "BOOKING_DB"' cloudflare/wrangler.toml
+      - name: Apply reviewed migration to remote D1
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloudflare
+          command: d1 migrations apply zyenhomes-booking-requests --remote --config wrangler.toml

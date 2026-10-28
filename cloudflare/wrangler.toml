@@ -13,3 +13,9 @@ name = "BOOKING_RATE_LIMITER"
 type = "ratelimit"
 namespace_id = "1001"
 simple = { limit = 10, period = 60 }
+
+[[d1_databases]]
+binding = "BOOKING_DB"
+database_name = "zyenhomes-booking-requests"
+database_id = "6669a8ef-2b3b-41d0-ad24-4e881873bd2e"
+migrations_dir = "migrations"
