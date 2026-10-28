@@ -149,18 +149,40 @@
     if(key==="Check-in"){checkIn="";checkOut="";}
     clearQuote();setCalendarOpen(true);refreshFields();render();
   };
-  // Inquiry only: no reservation, payment, or inventory hold is created.
-  const inquiry=document.createElement("a");
-  inquiry.className="zy-button";
+  // Show a real inline form; sending still uses the guest's email app.
+  const inquiry=document.createElement("button");
+  inquiry.type="button";inquiry.className="zy-button";
   inquiry.textContent="Request to book";
-  inquiry.hidden=true;
-  inquiry.style.cssText="display:none;margin:12px 0 0 10px;text-decoration:none";
+  inquiry.hidden=true;inquiry.style.cssText="display:none;margin:12px 0 0 10px";
   check.after(inquiry);
+  const form=document.createElement("form");
+  form.hidden=true;form.style.cssText="display:none;margin-top:16px;padding:16px;background:white;border:1px solid #dce6e1;border-radius:10px";
+  form.innerHTML='<h3 style="margin:0 0 12px;color:#153e35">Booking request details</h3><label style="display:block;margin-bottom:10px">Full name <input name="fullName" autocomplete="name" required maxlength="100" style="display:block;width:100%;box-sizing:border-box;padding:10px"></label><label style="display:block;margin-bottom:10px">Email <input type="email" name="email" autocomplete="email" required maxlength="150" style="display:block;width:100%;box-sizing:border-box;padding:10px"></label><label style="display:block;margin-bottom:10px">Phone <input type="tel" name="phone" autocomplete="tel" required maxlength="40" style="display:block;width:100%;box-sizing:border-box;padding:10px"></label><label style="display:block;margin-bottom:10px">Message (optional) <textarea name="message" maxlength="1000" rows="3" style="display:block;width:100%;box-sizing:border-box;padding:10px"></textarea></label><p style="font-size:13px">Submitting opens your email application with these details. You must send the email to complete the request. No reservation or payment is created.</p><button class="zy-button" type="submit">Prepare booking request email</button>';
+  section.append(form);
+  let quotedTotal=null;
   function clearQuote(){
-    inquiry.hidden=true;
-    inquiry.style.display="none";
-    inquiry.removeAttribute("href");
+    quotedTotal=null;inquiry.hidden=true;inquiry.style.display="none";
+    form.hidden=true;form.style.display="none";
   }
+  inquiry.onclick=()=>{
+    form.hidden=false;form.style.display="block";
+    form.querySelector('input[name="fullName"]').focus();
+  };
+  form.onsubmit=event=>{
+    event.preventDefault();
+    if(!quotedTotal || !form.reportValidity())return;
+    const data=new FormData(form);
+    const id=typeof propertyId==="string"?propertyId:"116-tyrolean";
+    const propertyName=window.ZYEN_PROPERTIES?.find(p=>p.id===id)?.name || "Vacation rental";
+    const lines=["Hello Zyen Homes,","I would like to request a booking.","",
+      "Property: "+propertyName,"Check-in: "+checkIn,"Check-out: "+checkOut,
+      "Guests: "+fields.Guests.value,"Quoted total: "+quotedTotal,"",
+      "Full name: "+data.get("fullName"),"Email: "+data.get("email"),
+      "Phone: "+data.get("phone"),"Message: "+(data.get("message")||""),"",
+      "Please confirm availability and next steps."];
+    const href="mailto:info@zyenhomes.com?subject="+encodeURIComponent("Booking inquiry: "+propertyName)+"&body="+encodeURIComponent(lines.join("\\n"));
+    window.location.href=href;
+  };
   fields.Guests.addEventListener("change",()=>{clearQuote();result.textContent="";});
   check.onclick=async()=>{
     if(!checkIn||!checkOut||!stayClear(checkIn,checkOut) || !known.has(checkOut) || known.get(checkOut).ctd!==false || known.get(checkIn).cta!==false || (Date.parse(checkOut)-Date.parse(checkIn))/86400000<known.get(checkIn).minNights){result.textContent="Select an available stay.";return;}
@@ -177,16 +199,8 @@
         ? new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD"}).format(data.pricing.total)+" total, including fees and taxes. Quote only; no dates reserved."
         : "Unable to confirm this stay. Please select different dates or contact us.";
     }catch{result.textContent="Unable to check pricing right now. Please try again.";}
-    // Display the inquiry action only after a valid, successful live quote.
     if(resolvedQuote && Number.isFinite(resolvedQuote.total)){
-      const propertyName=window.ZYEN_PROPERTIES?.find(p=>p.id===(typeof propertyId==="string"?propertyId:"116-tyrolean"))?.name || "Vacation rental";
-      const subject="Booking inquiry: "+propertyName;
-      const body=["Hello Zyen Homes,","", "I would like to request a booking.",
-        "Property: "+propertyName,"Check-in: "+checkIn,"Check-out: "+checkOut,
-        "Guests: "+fields.Guests.value,"Quoted total: "+resolvedQuote.formatted,
-        "Please confirm availability and next steps.","",
-        "Name:","Contact number:"].join("\\n");
-      inquiry.href="mailto:info@zyenhomes.com?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+      quotedTotal=resolvedQuote.formatted;
       inquiry.hidden=false;inquiry.style.display="inline-block";
     }
     check.disabled=false;
