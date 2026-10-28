@@ -176,7 +176,7 @@
       "Full name: "+data.get("fullName"),"Email: "+data.get("email"),
       "Phone: "+data.get("phone"),"Message: "+(data.get("message")||""),"",
       "Please confirm availability and next steps."];
-    const href="mailto:info@zyenhomes.com?subject="+encodeURIComponent("Booking inquiry: "+propertyName)+"&body="+encodeURIComponent(lines.join("\\n"));
+    const href="mailto:info@zyenhomes.com?subject="+encodeURIComponent("Booking inquiry: "+propertyName)+"&body="+encodeURIComponent(lines.join("\n"));
     window.location.href=href;
   };
   fields.Guests.addEventListener("change",()=>{clearQuote();result.textContent="";});
