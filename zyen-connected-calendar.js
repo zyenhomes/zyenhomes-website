@@ -159,6 +159,19 @@
   form.hidden=true;form.style.cssText="display:none;margin-top:16px;padding:16px;background:white;border:1px solid #dce6e1;border-radius:10px";
   form.innerHTML='<h3 style="margin:0 0 12px;color:#153e35">Booking request details</h3><label style="display:block;margin-bottom:10px">Full name <input name="fullName" autocomplete="name" required maxlength="100" style="display:block;width:100%;box-sizing:border-box;padding:10px"></label><label style="display:block;margin-bottom:10px">Email <input type="email" name="email" autocomplete="email" required maxlength="150" style="display:block;width:100%;box-sizing:border-box;padding:10px"></label><label style="display:block;margin-bottom:10px">Phone <input type="tel" name="phone" autocomplete="tel" required maxlength="40" style="display:block;width:100%;box-sizing:border-box;padding:10px"></label><label style="display:block;margin-bottom:10px">Message (optional) <textarea name="message" maxlength="1000" rows="3" style="display:block;width:100%;box-sizing:border-box;padding:10px"></textarea></label><p style="font-size:13px">Submitting opens your email application with these details. You must send the email to complete the request. No reservation or payment is created.</p><button class="zy-button" type="submit">Prepare booking request email</button>';
   section.append(form);
+  // Staged only: direct submission stays disabled until server-side safety and notifications pass.
+  const directSubmissionEnabled=false;
+  const consent=document.createElement("label");
+  consent.style.cssText="display:block;margin:12px 0;font-size:13px;line-height:1.5";
+  const consentBox=document.createElement("input");
+  consentBox.type="checkbox";consentBox.name="marketingConsent";consentBox.checked=false;
+  consent.append(consentBox,document.createTextNode(" Optional: I agree to receive Zyen Homes promotional emails. I can unsubscribe at any time. Booking requests do not require this consent."));
+  form.querySelector('button[type="submit"]').before(consent);
+  const formStatus=document.createElement("p");
+  formStatus.setAttribute("role","status");
+  formStatus.setAttribute("aria-live","polite");
+  form.append(formStatus);
+
   let quotedTotal=null;
   function clearQuote(){
     quotedTotal=null;inquiry.hidden=true;inquiry.style.display="none";
@@ -171,20 +184,45 @@
     const nameField=form.querySelector('input[name="fullName"]');
     if(nameField) nameField.focus({preventScroll:true});
   };
-  form.onsubmit=event=>{
+  form.onsubmit=async event=>{
     event.preventDefault();
     if(!quotedTotal || !form.reportValidity())return;
     const data=new FormData(form);
     const id=typeof propertyId==="string"?propertyId:"116-tyrolean";
     const propertyName=window.ZYEN_PROPERTIES?.find(p=>p.id===id)?.name || "Vacation rental";
+    const submission={
+      propertyId:id, checkIn,checkOut,guests:Number(fields.Guests.value),
+      name:String(data.get("fullName")||"").trim(),
+      email:String(data.get("email")||"").trim(),
+      phone:String(data.get("phone")||"").trim(),
+      message:String(data.get("message")||"").trim(),
+      marketingConsent:consentBox.checked
+    };
+    if(directSubmissionEnabled){
+      const submit=form.querySelector('button[type="submit"]');
+      submit.disabled=true;formStatus.textContent="Submitting your request…";
+      try{
+        const response=await fetch("https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/booking-request",{
+          method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(submission)
+        });
+        const payload=await response.json();
+        if(!response.ok||!payload.success||!payload.requestId)throw Error("Submission unavailable");
+        formStatus.textContent="Request received. Reference: "+payload.requestId+". This is not a confirmed reservation.";
+        form.querySelectorAll("input,textarea,button").forEach(el=>el.disabled=true);
+      }catch{
+        formStatus.textContent="We could not submit your request. No booking has been confirmed. Please try again later or contact us.";
+      }finally{submit.disabled=false;}
+      return;
+    }
+    // Existing email flow remains active until the backend is approved.
     const lines=["Hello Zyen Homes,","I would like to request a booking.","",
       "Property: "+propertyName,"Check-in: "+checkIn,"Check-out: "+checkOut,
       "Guests: "+fields.Guests.value,"Quoted total: "+quotedTotal,"",
-      "Full name: "+data.get("fullName"),"Email: "+data.get("email"),
-      "Phone: "+data.get("phone"),"Message: "+(data.get("message")||""),"",
+      "Full name: "+submission.name,"Email: "+submission.email,
+      "Phone: "+submission.phone,"Message: "+submission.message,
+      "Promotional email consent: "+(submission.marketingConsent?"Yes":"No"),"",
       "Please confirm availability and next steps."];
-    const href="mailto:info@zyenhomes.com?subject="+encodeURIComponent("Booking inquiry: "+propertyName)+"&body="+encodeURIComponent(lines.join("\n"));
-    window.location.href=href;
+    window.location.href="mailto:info@zyenhomes.com?subject="+encodeURIComponent("Booking inquiry: "+propertyName)+"&body="+encodeURIComponent(lines.join("\\n"));
   };
   fields.Guests.addEventListener("change",()=>{clearQuote();result.textContent="";});
   check.onclick=async()=>{
