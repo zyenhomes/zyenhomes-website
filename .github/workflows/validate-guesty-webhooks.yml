@@ -6,6 +6,9 @@ on:
       - 'cloudflare/worker.js'
       - 'cloudflare/wrangler.toml'
       - 'scripts/test-guesty-webhooks.mjs'
+      - 'scripts/test-guesty-webhooks-extended.mjs'
+      - 'scripts/test-guesty-d1-migration.py'
+      - 'cloudflare/migrations/0002_guesty_message_events.sql'
       - '.github/workflows/validate-guesty-webhooks.yml'
 permissions:
   contents: read
@@ -19,3 +22,5 @@ jobs:
           node-version: '22'
       - run: node scripts/test-guesty-webhooks.mjs
       - run: node scripts/test-guesty-webhooks-extended.mjs
+      - name: Validate D1 archive migration offline
+        run: python3 scripts/test-guesty-d1-migration.py
