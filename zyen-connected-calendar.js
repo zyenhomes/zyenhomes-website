@@ -127,6 +127,10 @@
       grid.append(b);
     }
     calendar.append(grid);
+    const legend=document.createElement("p");
+    legend.style.cssText="font-size:12px;color:#42584e;margin:12px 0 0";
+    legend.textContent="White: Available | Grey: Unavailable | Dark green: Selected dates | Light green: Selected stay";
+    calendar.append(legend);
   }
   for(const key of ["Check-in","Check-out"])fields[key].onclick=()=>{
     selectingOut=key==="Check-out" && Boolean(checkIn);
