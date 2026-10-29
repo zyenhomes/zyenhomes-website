@@ -1,0 +1,59 @@
+name: Reconcile Booking D1 Migration 0001
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type RECONCILE_BOOKING_0001 to approve production migration"
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: zyenhomes-booking-d1-migrations
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    environment: cloudflare-production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm isolated migration and safety settings
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          test "$CONFIRMATION" = "RECONCILE_BOOKING_0001"
+          cmp cloudflare/migrations/0001_booking_requests.sql cloudflare/reconcile-0001/0001_booking_requests.sql
+          test "$(find cloudflare/reconcile-0001 -name '*.sql' | wc -l)" -eq 1
+          grep -q 'GUESTY_WEBHOOKS_ENABLED = "false"' cloudflare/wrangler.toml
+          grep -q 'BOOKING_REQUESTS_ENABLED = "false"' cloudflare/wrangler.toml
+      - name: Install Wrangler 4
+        run: npm install --no-save wrangler@4
+      - name: Validate Cloudflare account ID
+        env:
+          RAW_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module -e '
+            import {appendFileSync} from "node:fs";
+            const id=(process.env.RAW_ID||"").trim();
+            if(!/^[a-fA-F0-9]{32}$/.test(id))throw Error("Invalid account ID");
+            appendFileSync(process.env.GITHUB_ENV,"CLOUDFLARE_ACCOUNT_ID="+id+"\n");
+          '
+      - name: Confirm 0001 is the only pending isolated migration
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          ../node_modules/.bin/wrangler d1 migrations list zyenhomes-booking-requests --remote --config wrangler.toml --migrations-dir reconcile-0001
+      - name: Apply isolated 0001 through Wrangler
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          ../node_modules/.bin/wrangler d1 migrations apply zyenhomes-booking-requests --remote --config wrangler.toml --migrations-dir reconcile-0001
+      - name: Verify original table and recorded migration
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "SELECT name FROM sqlite_master WHERE type='table' AND name='booking_requests';"
+          ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.toml --command "SELECT id,name FROM d1_migrations ORDER BY id;"
