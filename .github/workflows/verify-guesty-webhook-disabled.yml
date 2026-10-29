@@ -1,0 +1,29 @@
+name: Verify Live Guesty Webhook Disabled (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify production webhook rejects POST while disabled
+        run: |
+          node --input-type=module -e '
+            const endpoint="https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/webhooks/guesty/messages";
+            const response=await fetch(endpoint,{
+              method:"POST",
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({event:"reservation.messageReceived",reservationId:"synthetic-disabled-test"}),
+              signal:AbortSignal.timeout(15000)
+            });
+            const data=await response.json().catch(()=>({}));
+            console.log("HTTP status:",response.status);
+            console.log("Message:",String(data.message||"none").slice(0,120));
+            if(response.status!==503||data.message!=="Webhook receiver disabled"){
+              console.error("FAIL: webhook is not confirmed disabled; stop before configuring subscriptions");
+              process.exit(1);
+            }
+            console.log("PASS: live webhook processing is disabled; no messages stored");
+          '
