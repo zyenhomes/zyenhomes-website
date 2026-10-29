@@ -1,0 +1,16 @@
+name: Verify Guesty Open API Webhook Access (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    environment: guesty-open-api-readonly
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate and list Guesty webhook subscriptions (read only)
+        env:
+          GUESTY_OPEN_API_CLIENT_ID: ${{ secrets.GUESTY_OPEN_API_CLIENT_ID }}
+          GUESTY_OPEN_API_CLIENT_SECRET: ${{ secrets.GUESTY_OPEN_API_CLIENT_SECRET }}
+        run: node scripts/check-guesty-open-api-webhooks.mjs
