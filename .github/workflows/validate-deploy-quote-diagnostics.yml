@@ -1,0 +1,25 @@
+name: Validate Deployment Quote Diagnostics
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/deploy-booking-api.yml'
+      - '.github/workflows/validate-deploy-quote-diagnostics.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check diagnostic retry and failure behavior
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('.github/workflows/deploy-booking-api.yml').read_text()
+          assert 'attempt<=3' in s
+          assert 'AbortSignal.timeout(20000)' in s
+          assert 'process.exit(1)' in s
+          assert 'Worker was deployed' in s
+          assert '429,500,502,503,504' in s
+          print('PASS: bounded retries, timeouts, diagnostics and failing health check retained')
+          PY
