@@ -1,3 +1,4 @@
+import { receiveGuestyMessageWebhook } from "./guesty-webhooks.js";
 
 let cachedToken = null;
 let tokenExpiresAt = 0;
@@ -8,6 +9,8 @@ let pendingToken = null;
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api/webhooks/guesty/messages") return receiveGuestyMessageWebhook(request,env);
 
     if (url.pathname === "/") {
       return Response.json({

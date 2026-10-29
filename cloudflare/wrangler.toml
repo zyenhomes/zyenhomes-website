@@ -22,3 +22,4 @@ migrations_dir = "migrations"
 
 [vars]
 BOOKING_REQUESTS_ENABLED = "false"
+GUESTY_WEBHOOKS_ENABLED = "false"

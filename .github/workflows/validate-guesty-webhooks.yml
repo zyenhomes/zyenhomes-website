@@ -1,0 +1,26 @@
+name: Validate Guesty Webhook Receiver
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/guesty-webhooks.js'
+      - 'cloudflare/worker.js'
+      - 'cloudflare/wrangler.toml'
+      - 'scripts/test-guesty-webhooks.mjs'
+      - 'scripts/test-guesty-webhooks-extended.mjs'
+      - 'scripts/test-guesty-d1-migration.py'
+      - 'cloudflare/migrations/0002_guesty_message_events.sql'
+      - '.github/workflows/validate-guesty-webhooks.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/test-guesty-webhooks.mjs
+      - run: node scripts/test-guesty-webhooks-extended.mjs
+      - name: Validate D1 archive migration offline
+        run: python3 scripts/test-guesty-d1-migration.py
