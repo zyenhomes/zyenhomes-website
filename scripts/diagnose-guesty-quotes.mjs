@@ -7,7 +7,7 @@ const cases=[
 ];
 let failed=0;
 for(const c of cases){
-  const url=base+"/api/public/quote/"+c.property;
+  const url=base+(c.property==="149-tyrolean"?"/api/public/quote/149-tyrolean":"/api/public/quote/property/"+c.property);
   try{
     const response=await fetch(url,{
       method:"POST",
