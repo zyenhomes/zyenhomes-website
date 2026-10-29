@@ -50,21 +50,40 @@ jobs:
             "https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/149-tyrolean")
           test "$status" = "204"
 
-      - name: Verify live Guesty quote once
+      - name: Verify live Guesty quote with diagnostic retries
         run: |
           node --input-type=module -e '
-            const start = new Date(Date.now()+14*86400000);
-            const end = new Date(Date.now()+16*86400000);
-            const date = d => d.toISOString().slice(0,10);
-            const res = await fetch("https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/149-tyrolean", {
-              method:"POST",headers:{"Content-Type":"application/json","Origin":"https://zyenhomes.com"},
-              body:JSON.stringify({checkIn:date(start),checkOut:date(end),guests:2})
-            });
-            const body = await res.json();
-            if (res.status === 429) { console.log("Rate limit active; live quote check inconclusive"); process.exit(0); }
-            if (!res.ok || !body.success || !Number.isFinite(body.pricing?.total)) {
-              console.error("Guesty quote check needs attention:",res.status,body.message);
-              process.exit(1);
+            const endpoint="https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/quote/149-tyrolean";
+            const start=new Date(Date.now()+14*86400000);
+            const end=new Date(Date.now()+16*86400000);
+            const date=d=>d.toISOString().slice(0,10);
+            const requestBody={checkIn:date(start),checkOut:date(end),guests:2};
+            let lastStatus=0;
+            for(let attempt=1;attempt<=3;attempt++){
+              try{
+                const res=await fetch(endpoint,{
+                  method:"POST",
+                  headers:{"Content-Type":"application/json","Origin":"https://zyenhomes.com"},
+                  body:JSON.stringify(requestBody),
+                  signal:AbortSignal.timeout(20000)
+                });
+                lastStatus=res.status;
+                const data=await res.json().catch(()=>({}));
+                if(res.ok&&data.success&&Number.isFinite(data.pricing?.total)){
+                  console.log("PASS: Guesty quote returned valid total; currency:",data.pricing.currency);
+                  process.exit(0);
+                }
+                console.warn("Quote attempt",attempt,"HTTP",res.status,"message:",String(data.message||"No message").slice(0,180));
+                if(![429,500,502,503,504].includes(res.status)){
+                  console.error("Non-transient quote verification failure");
+                  process.exit(1);
+                }
+              }catch(error){
+                console.warn("Quote attempt",attempt,"network/timeout:",error.name);
+              }
+              if(attempt<3)await new Promise(resolve=>setTimeout(resolve,attempt*4000));
             }
-            console.log("Guesty quote OK, currency:",body.pricing.currency);
+            console.error("Live quote verification unsuccessful after 3 attempts; last HTTP status:",lastStatus);
+            console.error("Worker was deployed; investigate Guesty upstream availability and quote route before further releases.");
+            process.exit(1);
           '
