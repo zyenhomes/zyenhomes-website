@@ -1,0 +1,54 @@
+name: Backup Zyen Homes Booking D1
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: zyenhomes-booking-d1-migrations
+  cancel-in-progress: false
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    environment: cloudflare-production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Wrangler
+        run: npm install --no-save wrangler@4
+      - name: Validate Cloudflare account ID
+        env:
+          RAW_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module -e '
+            import {appendFileSync} from "node:fs";
+            const id=(process.env.RAW_ID||"").trim();
+            if(!/^[0-9a-fA-F]{32}$/.test(id))throw Error("Invalid Cloudflare account ID");
+            appendFileSync(process.env.GITHUB_ENV,"CLOUDFLARE_ACCOUNT_ID="+id+"\n");
+          '
+      - name: Export production D1 to SQL file (read only)
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          mkdir -p ../backup-output
+          ../node_modules/.bin/wrangler d1 export zyenhomes-booking-requests --remote --config wrangler.toml --output ../backup-output/zyenhomes-booking-d1.sql
+      - name: Verify backup content and record checksum
+        run: |
+          test -s backup-output/zyenhomes-booking-d1.sql
+          grep -q 'booking_requests' backup-output/zyenhomes-booking-d1.sql
+          sha256sum backup-output/zyenhomes-booking-d1.sql > backup-output/SHA256SUMS.txt
+          python3 - <<'PY'
+          import sqlite3
+          from pathlib import Path
+          sql=Path("backup-output/zyenhomes-booking-d1.sql").read_text()
+          db=sqlite3.connect(":memory:")
+          db.executescript(sql)
+          assert db.execute("SELECT COUNT(*) FROM sqlite_master WHERE name='booking_requests'").fetchone()[0]==1
+          print("Backup SQL restored successfully into disposable SQLite database.")
+          PY
+      - name: Upload private backup artifact (short retention)
+        uses: actions/upload-artifact@v4
+        with:
+          name: zyenhomes-booking-d1-backup
+          path: backup-output/
+          retention-days: 7
+          if-no-files-found: error
