@@ -20,11 +20,10 @@ assert db.execute("SELECT COUNT(*) FROM guesty_message_events").fetchone()[0] ==
 db.execute(sql,("msg_second","event_second","reservation.messageSent","reservation_test","conversation_test","2026-10-28T11:00:00Z",'{"synthetic":true}'))
 ordered = [r[0] for r in db.execute("SELECT svix_id FROM guesty_message_events ORDER BY occurred_at, received_at")]
 assert ordered == ["msg_second","msg_test"], ordered
-try:
-    db.execute(sql,("msg_invalid","event_invalid","reservation.deleted","reservation_test",None,None,"{}"))
-    raise AssertionError("Unexpected event accepted")
-except sqlite3.IntegrityError:
-    pass
+before = db.execute("SELECT COUNT(*) FROM guesty_message_events").fetchone()[0]
+db.execute(sql,("msg_invalid","event_invalid","reservation.deleted","reservation_test",None,None,"{}"))
+after = db.execute("SELECT COUNT(*) FROM guesty_message_events").fetchone()[0]
+assert after == before, "Unexpected event was stored"
 assert db.execute("SELECT COUNT(*) FROM booking_requests").fetchone()[0] == 0
 assert db.execute("SELECT COUNT(*) FROM guesty_message_events").fetchone()[0] == 2
 print("PASS: archive migration repeatable, schema correct, deduplication and ordering verified; booking table unchanged.")
