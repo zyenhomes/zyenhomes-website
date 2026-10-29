@@ -1,0 +1,10 @@
+# Read-only reconciliation preflight: same D1 database, isolated migration directory.
+name = "zyenhomes-booking-api"
+main = "worker.js"
+compatibility_date = "2026-10-24"
+
+[[d1_databases]]
+binding = "BOOKING_DB"
+database_name = "zyenhomes-booking-requests"
+database_id = "6669a8ef-2b3b-41d0-ad24-4e881873bd2e"
+migrations_dir = "reconcile-0001"

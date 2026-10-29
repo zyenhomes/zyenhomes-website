@@ -1,0 +1,20 @@
+name: Validate Isolated D1 Preflight
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/reconcile-booking-d1-0001.yml'
+      - 'cloudflare/wrangler.reconcile-0001.toml'
+      - 'cloudflare/reconcile-0001/**'
+      - '.github/workflows/validate-isolated-d1-preflight.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          cmp cloudflare/migrations/0001_booking_requests.sql cloudflare/reconcile-0001/0001_booking_requests.sql
+          grep -q 'migrations_dir = "reconcile-0001"' cloudflare/wrangler.reconcile-0001.toml
+          ! grep -q 'migrations apply' .github/workflows/reconcile-booking-d1-0001.yml
+          ! grep -q '\-\-migrations-dir' .github/workflows/reconcile-booking-d1-0001.yml
