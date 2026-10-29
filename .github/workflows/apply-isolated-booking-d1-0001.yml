@@ -39,13 +39,11 @@ jobs:
             if(!/^[a-fA-F0-9]{32}$/.test(id))throw Error("Invalid account ID");
             appendFileSync(process.env.GITHUB_ENV,"CLOUDFLARE_ACCOUNT_ID="+id+"\n");
           '
-      - name: Verify schema and booking count before migration
+      - name: Fail-closed production schema preflight
         working-directory: cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.reconcile-0001.toml --command "SELECT COUNT(*) AS booking_count_before FROM booking_requests;"
-          ../node_modules/.bin/wrangler d1 execute zyenhomes-booking-requests --remote --config wrangler.reconcile-0001.toml --command "SELECT name FROM sqlite_master WHERE name IN ('booking_requests','marketing_opt_ins','idx_requests_created','idx_requests_email','idx_requests_guesty_sync') ORDER BY name;"
+        run: node ../scripts/verify-booking-d1-before-0001.mjs
       - name: Apply only migration 0001 using isolated config
         working-directory: cloudflare
         env:
