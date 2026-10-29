@@ -1,0 +1,28 @@
+name: Verify Wrangler D1 JSON Output (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    environment: cloudflare-production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Wrangler
+        run: npm install --no-save wrangler@4
+      - name: Validate account configuration
+        env:
+          RAW_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module -e '
+            import {appendFileSync} from "node:fs";
+            const id=(process.env.RAW_ID||"").trim();
+            if(!/^[a-fA-F0-9]{32}$/.test(id))throw Error("Invalid account ID");
+            appendFileSync(process.env.GITHUB_ENV,"CLOUDFLARE_ACCOUNT_ID="+id+"\n");
+          '
+      - name: Run fail-closed D1 schema verification (read only)
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node ../scripts/verify-booking-d1-before-0001.mjs
