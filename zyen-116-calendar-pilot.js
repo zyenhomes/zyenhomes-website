@@ -38,6 +38,22 @@
     else {input.readOnly=true;input.placeholder="Click";input.style.cursor="pointer";}
     label.append(input);controls.append(label);fields[name]=input;
   }
+  // Enforce the individual property's licensed guest capacity.
+  const maxGuests = Number(window.ZYEN_PROPERTIES?.find(p => p.id === propertyId)?.guests) || 20;
+  fields.Guests.max = String(maxGuests);
+  fields.Guests.setAttribute("aria-label","Guests (maximum "+maxGuests+")");
+  const guestLimit = document.createElement("small");
+  guestLimit.textContent = "Maximum "+maxGuests+" guests";
+  guestLimit.style.cssText = "font-size:12px;color:#52685d";
+  fields.Guests.parentElement.appendChild(guestLimit);
+  function enforceGuestLimit(){
+    const value = Number(fields.Guests.value);
+    if (!Number.isFinite(value) || value < 1) fields.Guests.value = "1";
+    else if (value > maxGuests) fields.Guests.value = String(maxGuests);
+  }
+  fields.Guests.addEventListener("input",enforceGuestLimit);
+  fields.Guests.addEventListener("change",enforceGuestLimit);
+  enforceGuestLimit();
   const today = new Date();
   const iso = d => [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
   const todayISO = iso(today);
