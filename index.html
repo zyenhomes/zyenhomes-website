@@ -61,6 +61,37 @@ body > .hero,body > main .hero{position:relative}
  body > .site-header{height:68px!important;min-height:68px!important;padding:4px 16px!important}
  body > main .hero-copy{padding-top:72px!important}
 }
+</style><style>
+/* Floating navigation follows scrolling while keeping the hero visible. */
+body > .site-header{
+ position:fixed!important;
+ top:0!important;left:0!important;right:0!important;
+ z-index:1000!important;
+ background:rgba(14,43,36,.06)!important;
+ background-color:rgba(14,43,36,.06)!important;
+ -webkit-backdrop-filter:blur(3px);
+ backdrop-filter:blur(3px);
+ border:0!important;
+ box-shadow:none!important;
+ transition:background-color .25s ease,backdrop-filter .25s ease;
+}
+body > .site-header.zy-scrolled{
+ background:rgba(14,43,36,.18)!important;
+ background-color:rgba(14,43,36,.18)!important;
+ -webkit-backdrop-filter:blur(8px);
+ backdrop-filter:blur(8px);
+}
+body > .site-header .menu{
+ color:white!important;
+ text-shadow:0 1px 5px rgba(0,0,0,.65);
+}
+body > .site-header .brand-logo img{
+ filter:drop-shadow(0 1px 4px rgba(0,0,0,.3));
+}
+@media(max-width:700px){
+ body > .site-header{height:68px!important;min-height:68px!important}
+ body > .site-header nav.open{background:rgba(15,48,39,.95)!important}
+}
 </style></head>
 <body>
 <header class="site-header"><a class="brand brand-logo" href="#top" aria-label="Zyen Homes Property Management"><img fetchpriority="high" loading="eager" decoding="async" src="Zyen Homes Logo(2).webp" alt="Zyen Homes Property Management"></a><button class="menu" aria-label="Open menu">☰</button><nav><a href="#top">Home</a><a href="#management">Property Management</a><a href="#ski-community">Ski Community</a><a href="about.html">About Us</a><div class="nav-contact">
@@ -426,5 +457,13 @@ body > .hero,body > main .hero{position:relative}
  const stop=()=>{clearInterval(timer);timer=null};
  document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
  start();
+})();
+</script><script>
+(function(){
+ const header=document.querySelector('body > .site-header');
+ if(!header)return;
+ const update=()=>header.classList.toggle('zy-scrolled',window.scrollY>30);
+ window.addEventListener('scroll',update,{passive:true});
+ update();
 })();
 </script></body></html>
