@@ -6,7 +6,7 @@
 <meta name="description" content="Book professionally managed Blue Mountains chalet rentals and Ontario vacation homes with Zyen Homes. Full-service vacation rental management for property owners and investors.">
 <link rel="canonical" href="https://www.zyenhomes.com/">
 <link rel="preload" as="image" href="Serene Lakeside Retreat with Red Chairs.webp" fetchpriority="high">
-<link rel="stylesheet" href="styles.css?v=20261030-hero-slides">
+<link rel="stylesheet" href="styles.css?v=20261030-mobile-hero2">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
 <style>.zy-guesty-search{max-width:1080px;margin:18px auto 8px;padding:16px;background:#fff;border:1px solid #dce6e1;border-radius:16px}.zy-guesty-heading{margin:0 0 12px;font-weight:700;color:#173f35;text-align:center}@media(max-width:700px){.zy-guesty-search{padding:12px;margin:12px auto}}</style>
 <style>
@@ -18,6 +18,30 @@
 .hero .hero-copy{position:relative;z-index:2}
 @media(max-width:700px){.hero .zy-hero-slide{background-position:center center}}
 @media(prefers-reduced-motion:reduce){.hero .zy-hero-slide{transition:none}}
+</style><style>
+/* Mobile-first hero refinement: compact logo header and first-screen search. */
+@media (max-width:700px){
+ body .site-header{height:68px!important;min-height:68px!important;padding:4px 16px!important}
+ body .site-header .brand img{width:58px!important;height:58px!important;max-width:58px!important;transform:none!important;object-fit:contain!important}
+ body .site-header nav{top:68px!important}
+ body .site-header .menu{font-size:26px!important;min-width:42px!important;min-height:42px!important}
+ body .hero{height:440px!important;min-height:440px!important;max-height:none!important;padding:0 0 90px!important;box-sizing:border-box!important}
+ body .hero-copy{padding:15px 18px 40px!important;max-width:100%!important}
+ body .hero-copy .eyebrow{font-size:10px!important;letter-spacing:1.3px!important;margin-bottom:10px!important}
+ body .hero-copy h1{font-size:clamp(31px,8vw,39px)!important;line-height:1.02!important;margin-bottom:12px!important}
+ body .hero-copy .hero-support{font-size:14px!important;line-height:1.35!important;margin-bottom:0!important}
+ body .hero-copy .actions{margin-top:12px!important}
+ body #stays.search{margin:-112px auto 0!important;width:calc(100% - 28px)!important;padding:10px!important;border-radius:16px!important;box-shadow:0 8px 22px #0002!important}
+ body #stays .booking-search{padding:9px!important;row-gap:8px!important;column-gap:9px!important;min-height:0!important;height:auto!important}
+ body #stays .booking-search label{font-size:12px!important;margin-bottom:4px!important}
+ body #stays .booking-search input,body #stays .booking-search button{height:41px!important}
+ body #stays .large-group-search-link{margin:7px 0 0!important;font-size:11px!important}
+}
+@media (max-width:370px){
+ body .hero{height:420px!important;min-height:420px!important}
+ body .hero-copy h1{font-size:30px!important}
+ body #stays.search{margin-top:-105px!important}
+}
 </style></head>
 <body>
 <header class="site-header"><a class="brand brand-logo" href="#top" aria-label="Zyen Homes Property Management"><img fetchpriority="high" loading="eager" decoding="async" src="Zyen Homes Logo(2).webp" alt="Zyen Homes Property Management"></a><button class="menu" aria-label="Open menu">☰</button><nav><a href="#top">Home</a><a href="#management">Property Management</a><a href="#ski-community">Ski Community</a><a href="about.html">About Us</a><div class="nav-contact">
@@ -28,11 +52,11 @@
     <a href="ski-community.html">Ski Community</a>
     <a href="property-management-inquiry.html">Property Management</a>
   </div>
-</div><a class="btn small" href="#stays">FIND A VACATION RENTAL</a></nav></header>
+</div></nav></header>
 <main id="top">
 <section class="hero">
 <div class="hero-bg zy-hero-slides" aria-hidden="true"><div class="zy-hero-slide is-active" style="background-image:url('Serene Lakeside Retreat with Red Chairs.webp')"></div><div class="zy-hero-slide" style="background-image:url('116 Tyrolean Lane Print (7).webp')"></div><div class="zy-hero-slide" style="background-image:url('116 Tyrolean Lane Print (28).webp')"></div></div>
-<div class="hero-shade"></div><div class="hero-copy"><p class="eyebrow">BLUE MOUNTAINS • WATERFRONT COTTAGES • ONTARIO</p><h1><span class="hero-main">Exceptional Vacation Homes.</span><span class="hero-managed"><br>Professionally Managed.</span></h1><p class="hero-support"><span class="desktop-copy">Memorable stays for guests. Hands-off property management for owners.</span><span class="mobile-copy">Professionally managed. Designed for memorable stays.</span></p><div class="actions"><a class="btn" href="#stays">Find a Vacation Rental</a><a class="btn outline owner-hero-btn" href="#management">List Your Property With Us</a></div></div>
+<div class="hero-shade"></div><div class="hero-copy"><p class="eyebrow">BLUE MOUNTAINS • WATERFRONT COTTAGES • ONTARIO</p><h1><span class="hero-main">Exceptional Vacation Homes.</span><span class="hero-managed"><br>Professionally Managed.</span></h1><p class="hero-support"><span class="desktop-copy">Memorable stays for guests. Hands-off property management for owners.</span><span class="mobile-copy">Professionally managed. Designed for memorable stays.</span></p><div class="actions"><a class="btn outline owner-hero-btn" href="#management">List Your Property With Us</a></div></div>
 </section>
 <section class="search" id="stays">
 <form class="booking-search" id="booking-search">
