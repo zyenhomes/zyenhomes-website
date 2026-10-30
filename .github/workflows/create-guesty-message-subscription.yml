@@ -1,0 +1,26 @@
+name: Create Guesty Messaging Subscription (Explicit Approval)
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type CREATE_GUESTY_MESSAGE_SUBSCRIPTION only after secret handoff plan is ready"
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: guesty-message-subscription-creation
+  cancel-in-progress: false
+jobs:
+  create:
+    if: ${{ inputs.confirmation == 'CREATE_GUESTY_MESSAGE_SUBSCRIPTION' }}
+    runs-on: ubuntu-latest
+    environment: guesty-webhook-activation
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create exactly one Guesty messaging subscription
+        env:
+          ACTIVATION_CONFIRMATION: ${{ inputs.confirmation }}
+          GUESTY_OPEN_API_CLIENT_ID: ${{ secrets.GUESTY_OPEN_API_CLIENT_ID }}
+          GUESTY_OPEN_API_CLIENT_SECRET: ${{ secrets.GUESTY_OPEN_API_CLIENT_SECRET }}
+        run: node scripts/create-guesty-message-subscription.mjs
