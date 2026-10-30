@@ -1,0 +1,12 @@
+name: Guesty Messaging Activation Readiness (No Writes)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate safe activation prerequisites in repository
+        run: node scripts/verify-guesty-activation-readiness.mjs
