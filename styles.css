@@ -3869,3 +3869,11 @@ section.management {
  #booking-search input[type=date]::-webkit-calendar-picker-indicator{width:14px!important;margin:0!important;padding:0!important;}
  #stays.search .large-group-search-link{margin:12px 0 0!important;font-size:12px!important;}
 }
+
+/* Bring Featured Vacation Rentals divider and heading closer to the hero search on mobile. */
+@media(max-width:700px){
+ #stays.search{margin-bottom:0!important;}
+ #rentals.featured-rentals{padding-top:12px!important;}
+ #rentals::before{margin-top:0!important;margin-bottom:18px!important;}
+ #rentals.featured-rentals .eyebrow{margin-bottom:12px!important;}
+}
