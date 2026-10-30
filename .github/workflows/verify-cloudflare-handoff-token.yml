@@ -1,0 +1,15 @@
+name: Verify Guesty Handoff Cloudflare Token (Read Only)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    environment: guesty-webhook-activation
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify short-lived Cloudflare token without writes
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/verify-cloudflare-handoff-token.mjs
