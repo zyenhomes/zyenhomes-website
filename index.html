@@ -5,11 +5,20 @@
 <title>Blue Mountains Chalet Rentals & Property Management | Zyen Homes</title>
 <meta name="description" content="Book professionally managed Blue Mountains chalet rentals and Ontario vacation homes with Zyen Homes. Full-service vacation rental management for property owners and investors.">
 <link rel="canonical" href="https://www.zyenhomes.com/">
-<link rel="preload" as="image" href="zyenhomes-hero-optimized.webp" fetchpriority="high">
-<link rel="stylesheet" href="styles.css?v=20261016-hero-jpeg">
+<link rel="preload" as="image" href="Serene Lakeside Retreat with Red Chairs.webp" fetchpriority="high">
+<link rel="stylesheet" href="styles.css?v=20261030-hero-slides">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
 <style>.zy-guesty-search{max-width:1080px;margin:18px auto 8px;padding:16px;background:#fff;border:1px solid #dce6e1;border-radius:16px}.zy-guesty-heading{margin:0 0 12px;font-weight:700;color:#173f35;text-align:center}@media(max-width:700px){.zy-guesty-search{padding:12px;margin:12px auto}}</style>
-</head>
+<style>
+/* Calm single-image hero slideshow; text and search remain stationary. */
+.hero .zy-hero-slides{position:absolute!important;inset:0!important;background:none!important;overflow:hidden;z-index:0}
+.hero .zy-hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.5s ease-in-out;will-change:opacity}
+.hero .zy-hero-slide.is-active{opacity:1}
+.hero .hero-shade{background:linear-gradient(180deg,rgba(7,28,24,.30),rgba(7,28,24,.24) 45%,rgba(7,28,24,.40))!important;z-index:1}
+.hero .hero-copy{position:relative;z-index:2}
+@media(max-width:700px){.hero .zy-hero-slide{background-position:center center}}
+@media(prefers-reduced-motion:reduce){.hero .zy-hero-slide{transition:none}}
+</style></head>
 <body>
 <header class="site-header"><a class="brand brand-logo" href="#top" aria-label="Zyen Homes Property Management"><img fetchpriority="high" loading="eager" decoding="async" src="Zyen Homes Logo(2).webp" alt="Zyen Homes Property Management"></a><button class="menu" aria-label="Open menu">☰</button><nav><a href="#top">Home</a><a href="#management">Property Management</a><a href="#ski-community">Ski Community</a><a href="about.html">About Us</a><div class="nav-contact">
   <button class="nav-contact-toggle" type="button" aria-expanded="false">Contact <span>⌄</span></button>
@@ -22,7 +31,7 @@
 </div><a class="btn small" href="#stays">FIND A VACATION RENTAL</a></nav></header>
 <main id="top">
 <section class="hero">
-<div class="hero-bg"><div class="season winter"></div><div class="season summer"></div></div>
+<div class="hero-bg zy-hero-slides" aria-hidden="true"><div class="zy-hero-slide is-active" style="background-image:url('Serene Lakeside Retreat with Red Chairs.webp')"></div><div class="zy-hero-slide" style="background-image:url('116 Tyrolean Lane Print (7).webp')"></div><div class="zy-hero-slide" style="background-image:url('116 Tyrolean Lane Print (28).webp')"></div></div>
 <div class="hero-shade"></div><div class="hero-copy"><p class="eyebrow">BLUE MOUNTAINS • WATERFRONT COTTAGES • ONTARIO</p><h1><span class="hero-main">Exceptional Vacation Homes.</span><span class="hero-managed"><br>Professionally Managed.</span></h1><p class="hero-support"><span class="desktop-copy">Memorable stays for guests. Hands-off property management for owners.</span><span class="mobile-copy">Professionally managed. Designed for memorable stays.</span></p><div class="actions"><a class="btn" href="#stays">Find a Vacation Rental</a><a class="btn outline owner-hero-btn" href="#management">List Your Property With Us</a></div></div>
 </section>
 <section class="search" id="stays">
@@ -359,4 +368,20 @@
 })();
 </script>
 <script src="script.js?v=20261013-linksfix2"></script>
-</body></html>
+<script>
+(function(){
+ const slides=[...document.querySelectorAll('.zy-hero-slide')];
+ if(slides.length<2||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ let current=0;
+ let timer;
+ const advance=()=>{
+   slides[current].classList.remove('is-active');
+   current=(current+1)%slides.length;
+   slides[current].classList.add('is-active');
+ };
+ const start=()=>{if(!timer)timer=setInterval(advance,6000)};
+ const stop=()=>{clearInterval(timer);timer=null};
+ document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
+ start();
+})();
+</script></body></html>
