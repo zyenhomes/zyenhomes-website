@@ -1,0 +1,15 @@
+name: Validate Gmail Admin D1 Sessions (Offline)
+on:
+  pull_request:
+    paths:
+      - 'gmail-archive-oauth/migrations/0002_admin_sessions.sql'
+      - 'scripts/test-gmail-admin-d1-sessions.py'
+      - '.github/workflows/test-gmail-admin-d1-sessions.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/test-gmail-admin-d1-sessions.py
