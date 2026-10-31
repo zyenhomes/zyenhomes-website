@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const script=readFileSync("scripts/test-isolated-wrangler-version-only.mjs","utf8");
+const workflow=readFileSync(".github/workflows/test-isolated-wrangler-version-only.yml","utf8");
+assert.match(script,/const name="zyenhomes-webhook-test"/);
+assert.doesNotMatch(script,/zyenhomes-booking-api/);
+assert.match(script,/\["versions","secret","put",secretName/);
+assert.doesNotMatch(script,/\["secret","put"/);
+assert.match(script,/TEST_ISOLATED_VERSION_ONLY/);
+assert.match(script,/TEST_PRESERVE_VARIABLE/);
+assert.match(script,/TEST_DUMMY_SECRET/);
+assert.match(workflow,/workflow_dispatch:/);
+assert.match(workflow,/environment: guesty-webhook-activation/);
+assert.match(workflow,/inputs.confirmation == 'TEST_ISOLATED_VERSION_ONLY'/);
+console.log("PASS: isolated version-only test targets no production Worker and requires manual approval.");
