@@ -1,0 +1,7 @@
+name = "zyenhomes-gmail-archive-oauth"
+main = "worker.js"
+compatibility_date = "2026-10-24"
+workers_dev = true
+
+[vars]
+GMAIL_ARCHIVE_ENABLED = "false"
