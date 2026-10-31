@@ -110,3 +110,8 @@ This confirms the isolated Worker baseline exists. It does **not** prove that `w
 ## Isolated Worker version history inspection — 2026-10-31
 
 Operator shared successful run #1 of `Inspect Isolated Worker Version History (Read Only)`. The logs report HTTP 200 for both versions and deployments, **6 version entries** and **4 deployment entries**. This was GET-only and did not create versions, install secrets, or deploy anything. Counts alone cannot establish which version is deployed, whether version-only secret installation preserves bindings, or when the two fictional test secrets appeared. Next diagnostic should compare deployed-version identity and relevant version metadata without exposing secrets or modifying Cloudflare.
+
+
+## Isolated deployment reference inspection — 2026-10-31
+
+The operator shared successful run #1 of `Inspect Isolated Worker Deployment References (Read Only)`: HTTP 200 for versions and deployments, 6 version entries, 4 deployment entries, 4 deployment-version references, and **0 references absent from the returned version listing**. This confirms that the four returned deployment references match entries in the returned version page. It does not establish active traffic allocations, explain existing fictional test-secret bindings, or verify preservation of bindings in a new undeployed version. The workflow made no changes.
