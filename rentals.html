@@ -58,7 +58,7 @@ const addresses={
 '109-plater':'109 Plater Street, The Blue Mountains, Ontario, Canada',
 '147-campbell':'147 Campbell Crescent, The Blue Mountains, Ontario, Canada',
 '940-seven-oaks':'940 Seven Oaks Dr, Bailieboro, ON K0L 1B0, Canada',
-'873235-5th-line-ehs':'873235 5th Line EHS, Mono, Ontario, Canada'
+'873235-5th-line-ehs':'873235 5 Line E, Mono, Ontario L9W 2Z2, Canada'
 };
 const ZY_FEATURES={
  '116-tyrolean':{hotTub:true,sauna:true},
@@ -151,10 +151,10 @@ async function locateProperties(){
    const data=await response.json();
    // Some rural street addresses are missing from OpenStreetMap.
    // Use an approximate Bailieboro-area marker if this address cannot be found.
-   const approximate=home.id==='940-seven-oaks' && !data.length;
+   const approximate=(home.id==='940-seven-oaks'||home.id==='873235-5th-line-ehs') && !data.length;
    const pos=data.length
     ? L.latLng(Math.round(Number(data[0].lat)*100)/100,Math.round(Number(data[0].lon)*100)/100)
-    : approximate ? L.latLng(44.13,-78.35) : null;
+    : approximate ? (home.id==='873235-5th-line-ehs'?L.latLng(44.03,-80.07):L.latLng(44.13,-78.35)) : null;
    if(pos){
     locations.set(home.id,pos);
     const marker=L.marker(pos,{propertyId:home.id}).addTo(markers);
@@ -165,7 +165,7 @@ async function locateProperties(){
     const anchor=document.createElement('a');anchor.href=link;anchor.textContent='View property →';popup.append(anchor);
     marker.bindPopup(popup);
    }
-  }catch(error){console.warn('Unable to locate',home.name,error);if(home.id==='940-seven-oaks'){const pos=L.latLng(44.13223,-78.35351);locations.set(home.id,pos);const marker=L.marker(pos,{propertyId:home.id}).addTo(markers);marker.bindPopup('<strong>940 Seven Oaks Drive</strong><br><small>Approximate Bailieboro area</small><br><a href="property.html?id=940-seven-oaks">View property →</a>');}}
+  }catch(error){console.warn('Unable to locate',home.name,error);if(home.id==='940-seven-oaks'||home.id==='873235-5th-line-ehs'){const pos=home.id==='873235-5th-line-ehs'?L.latLng(44.03,-80.07):L.latLng(44.13,-78.35);locations.set(home.id,pos);const marker=L.marker(pos,{propertyId:home.id}).addTo(markers);const popup=document.createElement('div');const title=document.createElement('strong');title.textContent=home.name;popup.append(title,document.createElement('br'));const note=document.createElement('small');note.textContent='Approximate area only — exact address provided after booking';popup.append(note,document.createElement('br'));const link=document.createElement('a');link.href='property.html?id='+encodeURIComponent(home.id);link.textContent='View property →';popup.append(link);marker.bindPopup(popup);}}
   await new Promise(resolve=>setTimeout(resolve,1100));
  }
  if(markers.getLayers().length){
