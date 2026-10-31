@@ -5,7 +5,10 @@ import {mkdtempSync,writeFileSync,rmSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
 const name="zyenhomes-webhook-test";
-const secretName="TEST_VERSION_ONLY_SECRET_2026_B";
+// One fictional binding per GitHub Actions run; never overwrite an existing name.
+const runId=process.env.GITHUB_RUN_ID;
+if(!/^[1-9][0-9]{4,19}$/.test(runId||""))throw Error("Missing valid GitHub run identifier");
+const secretName="TEST_VERSION_ONLY_"+runId;
 if(process.env.TEST_CONFIRMATION!=="TEST_ISOLATED_VERSION_ONLY")throw Error("Explicit isolated version-only confirmation required");
 const account=process.env.CLOUDFLARE_ACCOUNT_ID,token=process.env.CLOUDFLARE_API_TOKEN;
 if(!token||!/^[a-fA-F0-9]{32}$/.test(account||""))throw Error("Missing Cloudflare credentials");
@@ -23,6 +26,17 @@ function baseline(bindings){
  if(variable?.text!=="keep-this-value"||dummy?.type!=="secret_text")throw Error("Isolated baseline invalid");
  if(bindings.some(b=>b.name===secretName))throw Error("Selected test secret already exists in Worker settings; stop");
 }
+// A version-only operation must not change the deployment history.
+async function deploymentFingerprint(){
+ const endpoint=`https://api.cloudflare.com/client/v4/accounts/${account}/workers/scripts/${name}/deployments`;
+ const response=await fetch(endpoint,{method:"GET",headers:{Authorization:"Bearer "+token,Accept:"application/json"},signal:AbortSignal.timeout(20000)});
+ if(!response.ok)throw Error("Cannot inspect isolated deployments");
+ const payload=await response.json();
+ const entries=Array.isArray(payload?.result)?payload.result:payload?.result?.deployments;
+ if(payload?.success!==true||!Array.isArray(entries))throw Error("Unexpected deployment response");
+ return JSON.stringify(entries.map(x=>({id:x.id,versions:x.versions})));
+}
+const beforeDeployment=await deploymentFingerprint();
 const before=await inspect();
 baseline(before);
 const dir=mkdtempSync(join(tmpdir(),"zyenhomes-version-only-"));
@@ -39,9 +53,11 @@ try{
  if(child.status!==0)throw Error("Isolated version-only secret command failed");
 }finally{rmSync(dir,{recursive:true,force:true});}
 const after=await inspect();
+const afterDeployment=await deploymentFingerprint();
+if(beforeDeployment!==afterDeployment)throw Error("Isolated Worker deployment history changed; stop");
 baseline(after);
 const beforeNames=before.map(x=>x.name+":"+x.type).sort();
 const afterNames=after.map(x=>x.name+":"+x.type).sort();
 if(JSON.stringify(beforeNames)!==JSON.stringify(afterNames))throw Error("Deployed binding names/types changed");
 console.log("PASS: isolated version-only command completed; deployed settings retain baseline bindings.");
-console.log("LIMITATION: undeployed version bindings and deployed version ID were not independently inspected.");
+console.log("LIMITATION: undeployed version bindings were not independently inspected; deployment list may be paginated.");
