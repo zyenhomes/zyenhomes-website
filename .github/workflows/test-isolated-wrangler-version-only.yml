@@ -1,0 +1,31 @@
+name: Test Wrangler Version-Only Secret (Isolated Worker)
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type TEST_ISOLATED_VERSION_ONLY; creates an undeployed version on zyenhomes-webhook-test"
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: zyenhomes-isolated-version-only-test
+  cancel-in-progress: false
+jobs:
+  test:
+    if: ${{ inputs.confirmation == 'TEST_ISOLATED_VERSION_ONLY' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    environment: guesty-webhook-activation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save wrangler@4
+      - name: Test isolated undeployed secret version
+        env:
+          TEST_CONFIRMATION: ${{ inputs.confirmation }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/test-isolated-wrangler-version-only.mjs
