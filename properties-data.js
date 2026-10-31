@@ -11,7 +11,7 @@ window.ZYEN_PROPERTIES=[
 {id:"100-pilsen",name:"The Alpine Haven",location:"Blue Mountains",beds:8,baths:6.5,guests:16,feature:"Hot Tub · Mountain Views · Pool Table · Foosball · Gas Fireplace",image:"property-photos/100-Pilsen/100-Pilsen-1.webp"},
 {id:"873235-5th-line-ehs",name:"The Countryside Estate",location:"Orangeville, Ontario",beds:5,baths:3.5,guests:14,feature:"Seasonal Heated Outdoor Pool · Hot Tub · Pool & Ping Pong Table · 9 beds",image:"property-photos/873235-5th-line/5th-line-8.webp"},
 {id:"39-snowbridge",name:"The Snowbridge Retreat",location:"Blue Mountains",beds:3,baths:3.5,guests:8,feature:"Seasonal Heated Outdoor Pool · Private Sauna · Pool Table · Foosball",image:"property-photos/39-171-snowbridge/39-171-snowbridge-60.webp"},
-{id:"102-patricia",name:"The Cozy Ski Chalet",location:"Blue Mountains",beds:6,baths:2,guests:14,feature:"Cozy Ski Chalet · Hot Tub · Walk to Ski Slopes & Village",image:""},
+{id:"102-patricia",name:"The Cozy Ski Chalet",location:"Blue Mountains",beds:6,baths:2,guests:14,feature:"Cozy Ski Chalet · Hot Tub · Walk to Ski Slopes & Village",image:"property-photos/102-Patricia/102patricia_3.png"},
 {id:"503-466-e-liberty",name:"The Liberty Village Suite",location:"Liberty Village, Toronto",beds:2,baths:1.5,guests:6,feature:"2-Bedroom Condo · Liberty Village · Walk to CNE, BMO Field & CN Tower · 1 Parking Spot",image:""},
 {id:"117-125-fairway",name:"The Fairway Village Retreat",location:"Blue Mountains",beds:2,baths:2,guests:6,feature:"5-Minute Walk to Village & Skiing · Seasonal Community Pool · Year-Round Community Hot Tub · Walk to Golf",image:""},
 ];
