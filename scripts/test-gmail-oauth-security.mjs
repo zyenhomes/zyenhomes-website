@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import {randomUrlSafe,pkceChallenge,callbackError} from "../gmail-archive-oauth/oauth-security.js";
+const state=randomUrlSafe();const verifier=randomUrlSafe(48);
+assert.match(state,/^[0-9a-f]{64}$/);
+assert.match(await pkceChallenge(verifier),/^[A-Za-z0-9_-]{43}$/);
+const origin="https://example.test";
+assert.equal(callbackError(new URL(origin+"/oauth/google/callback?state="+state+"&code=fake"),origin),null);
+assert.equal(callbackError(new URL(origin+"/oauth/google/callback?state="+state+"&state="+state+"&code=fake"),origin),"invalid_state");
+assert.equal(callbackError(new URL(origin+"/oauth/google/callback?state="+state+"&error=access_denied"),origin),"oauth_denied");
+assert.equal(callbackError(new URL("https://evil.test/oauth/google/callback?state="+state+"&code=fake"),origin),"origin_mismatch");
+console.log("PASS: synthetic OAuth state, PKCE and callback parameter checks. No network requests.");
