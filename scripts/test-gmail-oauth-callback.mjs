@@ -15,7 +15,8 @@ assert.deepEqual(await processOAuthCallback(deps),{status:200,reason:"authorized
 assert.equal(consumed,1);assert.equal(saved,1);
 assert.deepEqual(await processOAuthCallback({...deps,verifyMailbox:async()=>"admin@zyenhomes.com"}),{status:403,reason:"wrong_mailbox"});
 assert.equal(saved,1);
-assert.deepEqual(await processOAuthCallback({...deps,exchangeCode:async()=>({accessToken:"fake",scope:"https://www.googleapis.com/auth/gmail.insert"})}),{status:409,reason:"refresh_token_missing"});
+assert.deepEqual(await processOAuthCallback({...deps,exchangeCode:async()=>({accessToken:"fake",idToken:"fictional-id-token",scope:"https://www.googleapis.com/auth/gmail.insert"})}),{status:409,reason:"refresh_token_missing"});
+assert.deepEqual(await processOAuthCallback({...deps,exchangeCode:async()=>({accessToken:"fake",scope:"https://www.googleapis.com/auth/gmail.insert"})}),{status:502,reason:"missing_identity_token"});
 assert.deepEqual(await processOAuthCallback({...deps,request:new Request(origin+"/oauth/google/callback?code=fictional")}),{status:400,reason:"invalid_state"});
 console.log("PASS: synthetic OAuth callback orchestration, mailbox/scope/refresh-token checks.");
 console.log("No live OAuth token exchange, persistent storage or Gmail access.");
