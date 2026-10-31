@@ -105,7 +105,7 @@ body > .site-header .brand-logo img{
 </div></nav></header>
 <main id="top">
 <section class="hero">
-<div class="hero-bg zy-hero-slides" aria-hidden="true"><div class="zy-hero-slide is-active" style="background-image:url('Serene Lakeside Retreat with Red Chairs.webp')"></div><div class="zy-hero-slide" style="background-image:url('116 Tyrolean Lane Print (7).webp')"></div><div class="zy-hero-slide" style="background-image:url('116 Tyrolean Lane Print (28).webp')"></div></div>
+<div class="hero-bg zy-hero-slides" aria-hidden="true"></div>
 <div class="hero-shade"></div><div class="hero-copy"><p class="eyebrow">BLUE MOUNTAINS • WATERFRONT COTTAGES • ONTARIO</p><h1><span class="hero-main">Exceptional Vacation Homes.</span><span class="hero-managed"><br>Professionally Managed.</span></h1><p class="hero-support"><span class="desktop-copy">Memorable stays for guests. Hands-off property management for owners.</span><span class="mobile-copy">Professionally managed. Designed for memorable stays.</span></p><div class="actions"><a class="btn outline owner-hero-btn" href="#management">List Your Property With Us</a></div></div>
 </section>
 <section class="search" id="stays">
@@ -444,10 +444,21 @@ body > .site-header .brand-logo img{
 <script src="script.js?v=20261013-linksfix2"></script>
 <script>
 (function(){
- const slides=[...document.querySelectorAll('.zy-hero-slide')];
+ const winter=["property-photos/Snowy Hot Tub Deck in Winter Sun.png","property-photos/Snowy Deck Hot Tub Retreat.png","property-photos/Winter Chalet Dining Room Retreat.png"];
+ const summer=["Serene Lakeside Retreat with Red Chairs.webp","Sunny Backyard Firepit and Hot Tub.webp","property-photos/109-plater/Lively Dual-Zone Swim Spa Gathering.webp","property-photos/37-snowbridge/171_snowbridge_way_unit_37_54.webp","property-photos/109-plater/109 Plater Street Web (81B).webp","property-photos/940-Sevenoaks/940_Seven_Oaks_35.webp","property-photos/940-Sevenoaks/940_Seven_Oaks_50.webp"];
+ const month=Number(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',month:'numeric'}).format(new Date()));
+ const sources=(month>=10||month<=3)?[...winter,...summer]:[...summer,...winter];
+ const container=document.querySelector('.zy-hero-slides');
+ if(!container)return;
+ sources.forEach((src,i)=>{
+   const slide=document.createElement('div');
+   slide.className='zy-hero-slide'+(i===0?' is-active':'');
+   slide.style.backgroundImage='url("'+encodeURI(src).replace(/"/g,'%22')+'")';
+   container.appendChild(slide);
+ });
+ const slides=[...container.querySelectorAll('.zy-hero-slide')];
  if(slides.length<2||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- let current=0;
- let timer;
+ let current=0,timer;
  const advance=()=>{
    slides[current].classList.remove('is-active');
    current=(current+1)%slides.length;
