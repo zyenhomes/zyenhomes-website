@@ -1,0 +1,14 @@
+name = "zyenhomes-gmail-archive-oauth"
+main = "worker.js"
+compatibility_date = "2026-10-24"
+workers_dev = true
+
+[vars]
+GMAIL_ARCHIVE_ENABLED = "false"
+
+# Dedicated Gmail authorization storage. Do not reuse the booking database.
+[[d1_databases]]
+binding = "GMAIL_OAUTH_DB"
+database_name = "zyenhomes-gmail-oauth"
+database_id = "8768f450-512a-4150-b165-1d750db4cdac"
+migrations_dir = "migrations"

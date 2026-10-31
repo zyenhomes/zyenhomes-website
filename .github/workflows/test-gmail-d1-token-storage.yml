@@ -1,0 +1,18 @@
+name: Validate Gmail D1 Encrypted Token Adapter (Offline)
+on:
+  pull_request:
+    paths:
+      - 'gmail-archive-oauth/d1-token-storage.js'
+      - 'scripts/test-gmail-d1-token-storage.mjs'
+      - '.github/workflows/test-gmail-d1-token-storage.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/test-gmail-d1-token-storage.mjs
