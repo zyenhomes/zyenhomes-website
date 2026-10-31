@@ -1062,6 +1062,38 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
           body: JSON.stringify({ listingId, checkInDateLocalized: checkIn, checkOutDateLocalized: checkOut, guestsCount: count })
         });
         if (!response.ok) {
+          // Only verify calendar availability after a quote fails. A failed quote
+          // alone is not proof of blocked dates, minimum stays or unavailable inventory.
+          let availability = "unknown";
+          try {
+            const calendarUrl = new URL("https://booking.guesty.com/api/listings/" +
+              encodeURIComponent(listingId) + "/calendar");
+            calendarUrl.searchParams.set("from", checkIn);
+            calendarUrl.searchParams.set("to", checkOut);
+            const calendarResponse = await fetch(calendarUrl, {
+              headers: { Authorization: "Bearer " + token, Accept: "application/json" }
+            });
+            if (calendarResponse.ok) {
+              const calendarData = await calendarResponse.json();
+              const rawDays = Array.isArray(calendarData) ? calendarData
+                : Array.isArray(calendarData?.results) ? calendarData.results
+                : Array.isArray(calendarData?.results?.days) ? calendarData.results.days
+                : Array.isArray(calendarData?.days) ? calendarData.days : [];
+              const stayDates = Array.from({length: nights}, (_, i) =>
+                new Date(Date.parse(checkIn) + i * 86400000).toISOString().slice(0, 10));
+              const daysByDate = new Map(rawDays.map(day =>
+                [day?.date ?? day?.day ?? day?.startDate, day]));
+              // Conservative: only explicit blocked/unavailable day statuses qualify.
+              // Missing or ambiguous calendar data remains unknown.
+              if (stayDates.some(date => {
+                const day = daysByDate.get(date);
+                return day && ["blocked", "unavailable", "booked"].includes(
+                  String(day.status ?? "").toLowerCase());
+              })) availability = "unavailable";
+            }
+          } catch (calendarError) {
+            console.warn("Calendar availability verification unavailable");
+          }
           // Report only the upstream HTTP status and a vetted machine-readable error code.
           // Never forward upstream response bodies: they may contain sensitive details.
           const knownStatus = [400, 401, 403, 404, 409, 422, 429, 500, 502, 503, 504];
@@ -1078,7 +1110,8 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
             success: false,
             message: "Guesty quote unavailable",
             errorCode: category,
-            guestyStatus: upstreamStatus
+            guestyStatus: upstreamStatus,
+            availability
           }, 502);
         }
         const payload = await response.json();
