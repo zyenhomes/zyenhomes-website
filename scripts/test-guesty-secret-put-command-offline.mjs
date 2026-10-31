@@ -1,0 +1,19 @@
+// Offline-only test: verifies command construction without executing Wrangler.
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const script=readFileSync("scripts/install-guesty-signing-secret.mjs","utf8");
+const config=readFileSync("cloudflare/wrangler.toml","utf8");
+const workflow=readFileSync(".github/workflows/install-guesty-signing-secret.yml","utf8");
+assert.match(script,/ISOLATED_WORKER_SECRET_PUT_VERIFIED/);
+assert.match(script,/spawnSync\("\.\.\/node_modules\/\.bin\/wrangler"/);
+assert.match(script,/\["secret","put","GUESTY_WEBHOOK_SECRET","--name","zyenhomes-booking-api","--config","wrangler.toml"\]/);
+assert.match(script,/cwd:"cloudflare"/);
+assert.match(script,/input:payload\.secret\+"\\n"/);
+assert.match(script,/maxBuffer:100000/);
+assert.match(workflow,/environment: guesty-webhook-activation/);
+assert.match(workflow,/npm install --no-save wrangler@4/);
+assert.match(config,/keep_vars = true/);
+assert.match(config,/GUESTY_WEBHOOKS_ENABLED = "false"/);
+assert.match(config,/BOOKING_REQUESTS_ENABLED = "false"/);
+console.log("PASS: expected Wrangler secret-put command and safety gates found (offline only).");
+console.log("UNVERIFIED: executable resolution, real Wrangler behavior, production binding preservation.");
