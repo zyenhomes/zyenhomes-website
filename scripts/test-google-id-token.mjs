@@ -14,6 +14,7 @@ const jwt=await signed(claims);
 assert.equal((await verifyGoogleIdToken(jwt,{jwks:{keys:[jwk]},clientId,nonce,nowSeconds:now})).mailbox,"info@zyenhomes.com");
 await assert.rejects(()=>verifyGoogleIdToken(jwt.slice(0,-3)+"abc",{jwks:{keys:[jwk]},clientId,nonce,nowSeconds:now}));
 await assert.rejects(()=>verifyGoogleIdToken(jwt,{jwks:{keys:[]},clientId,nonce,nowSeconds:now}));
-await assert.rejects(()=>verifyGoogleIdToken(await signed({...claims,email:"admin@zyenhomes.com"}),{jwks:{keys:[jwk]},clientId,nonce,nowSeconds:now}));
+const wrongMailboxJwt=await signed({...claims,email:"admin@zyenhomes.com"});
+await assert.rejects(()=>verifyGoogleIdToken(wrongMailboxJwt,{jwks:{keys:[jwk]},clientId,nonce,nowSeconds:now}));
 console.log("PASS: fictional RSA-signed JWT, tampering, untrusted key and wrong mailbox rejection.");
 console.log("No Google JWKS fetch, OAuth exchange, Gmail access or production deployment.");
