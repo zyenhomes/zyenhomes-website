@@ -1,0 +1,21 @@
+name: Validate Isolated Worker Version History Inspection (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/inspect-isolated-worker-version-history.mjs'
+      - 'scripts/validate-isolated-worker-version-history-offline.mjs'
+      - '.github/workflows/inspect-isolated-worker-version-history.yml'
+      - '.github/workflows/validate-isolated-worker-version-history-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/inspect-isolated-worker-version-history.mjs
+      - run: node scripts/validate-isolated-worker-version-history-offline.mjs
