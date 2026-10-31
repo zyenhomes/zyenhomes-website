@@ -54,3 +54,10 @@ The current handoff script requires `ISOLATED_WORKER_SECRET_PUT_VERIFIED=true` b
 An existing workflow, `.github/workflows/inspect-guesty-worker-settings.yml`, can request current binding names and confirm the webhook flag is disabled without modifying the Worker. It is a manually dispatched workflow in the protected `guesty-webhook-activation` environment; **it has not been run as part of this review**. Its output is not proof of `wrangler secret put` binding preservation, and it cannot identify whether an isolated disposable Worker exists.
 
 Do not dispatch the workflow or change environment approval settings without explicit operator authorization. Any future read-only run should confirm the Cloudflare token is active and narrowly scoped, then report only binding presence and disabled state.
+
+
+## Production read-only inspection evidence — 2026-10-31
+
+The operator ran `Inspect Guesty Worker Production Bindings (Read Only)` workflow #3. The shared GitHub Actions log reports HTTP 200 from the Cloudflare settings endpoint, and confirms these binding names: `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, `GUESTY_CLIENT_ID`, `GUESTY_CLIENT_SECRET`, `GUESTY_WEBHOOKS_ENABLED`. The inspection script verified `GUESTY_WEBHOOKS_ENABLED` equals `false`, then reported `PASS: Production bindings present and webhook receiver disabled.`
+
+This was read-only and does **not** prove that `wrangler secret put` preserves live bindings, nor that a Guesty subscription exists. Do not mark the installation compatibility gate as verified on this basis.
