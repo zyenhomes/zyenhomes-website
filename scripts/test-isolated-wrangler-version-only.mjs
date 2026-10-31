@@ -5,7 +5,7 @@ import {mkdtempSync,writeFileSync,rmSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
 const name="zyenhomes-webhook-test";
-const secretName="TEST_VERSION_ONLY_SECRET_2026";
+const secretName="TEST_VERSION_ONLY_SECRET_2026_B";
 if(process.env.TEST_CONFIRMATION!=="TEST_ISOLATED_VERSION_ONLY")throw Error("Explicit isolated version-only confirmation required");
 const account=process.env.CLOUDFLARE_ACCOUNT_ID,token=process.env.CLOUDFLARE_API_TOKEN;
 if(!token||!/^[a-fA-F0-9]{32}$/.test(account||""))throw Error("Missing Cloudflare credentials");
@@ -21,7 +21,7 @@ function baseline(bindings){
  const variable=bindings.find(b=>b.name==="TEST_PRESERVE_VARIABLE");
  const dummy=bindings.find(b=>b.name==="TEST_DUMMY_SECRET");
  if(variable?.text!=="keep-this-value"||dummy?.type!=="secret_text")throw Error("Isolated baseline invalid");
- if(bindings.some(b=>b.name===secretName))throw Error("Version-only test secret already deployed; stop");
+ if(bindings.some(b=>b.name===secretName))throw Error("Selected test secret already exists in Worker settings; stop");
 }
 const before=await inspect();
 baseline(before);
