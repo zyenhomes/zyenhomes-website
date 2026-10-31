@@ -29,7 +29,7 @@ for (const sql of [migration1, migration2]) {
   }
 }
 
-}
+
 assert.match(migration1,/CREATE TABLE IF NOT EXISTS oauth_sessions/);
 assert.match(migration1,/CREATE TABLE IF NOT EXISTS oauth_tokens/);
 assert.match(migration2,/CREATE TABLE IF NOT EXISTS admin_sessions/);
