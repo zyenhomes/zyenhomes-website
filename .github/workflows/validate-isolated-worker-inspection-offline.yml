@@ -1,0 +1,20 @@
+name: Validate Isolated Worker Inspection (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/inspect-isolated-guesty-worker-readonly.mjs'
+      - 'scripts/test-isolated-worker-inspection-offline.mjs'
+      - '.github/workflows/inspect-isolated-guesty-worker-readonly.yml'
+      - '.github/workflows/validate-isolated-worker-inspection-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/test-isolated-worker-inspection-offline.mjs
