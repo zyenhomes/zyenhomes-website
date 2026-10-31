@@ -33,7 +33,7 @@ const db={
 };
 let clock=1_800_000_000_000;
 const adapter=createAdminLoginStateAdapter(db,key,{now:()=>clock});
-const make=(c)=>({state:c.repeat(64),verifier:"v".repeat(64),nonce:"n".repeat(64),createdAt:clock,ttlSeconds:600});
+const make=(c)=>({state:c.repeat(64),verifier:"v".repeat(64),nonce:"b".repeat(64),createdAt:clock,ttlSeconds:600});
 const first=make("a");
 await adapter.persistLoginState(first);
 assert.equal(rows.size,1);
