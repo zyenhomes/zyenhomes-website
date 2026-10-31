@@ -11,4 +11,5 @@ window.ZYEN_PROPERTIES=[
 {id:"100-pilsen",name:"100 Pilsen Way",location:"Blue Mountains",beds:8,baths:6.5,guests:16,feature:"Hot Tub · Mountain Views · Pool Table · Foosball · Gas Fireplace",image:"property-photos/100-Pilsen/100-Pilsen-1.webp"},
 {id:"873235-5th-line-ehs",name:"873235 5th Line EHS",location:"Orangeville, Ontario",beds:5,baths:3.5,guests:14,feature:"Seasonal Heated Outdoor Pool · Hot Tub · Pool & Ping Pong Table · 9 beds",image:"property-photos/873235-5th-line/5th-line-8.webp"},
 {id:"39-snowbridge",name:"39-171 Snowbridge Way",location:"Blue Mountains",beds:3,baths:3.5,guests:8,feature:"Seasonal Heated Outdoor Pool · Private Sauna · Pool Table · Foosball",image:"property-photos/39-171-snowbridge/39-171-snowbridge-60.webp"},
+{id:"102-patricia",name:"102 Patricia",location:"Blue Mountains",beds:6,baths:2,guests:14,feature:"Cozy Ski Chalet · Hot Tub · Walk to Ski Slopes & Village",image:""},
 ];
