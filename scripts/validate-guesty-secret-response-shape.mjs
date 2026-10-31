@@ -18,4 +18,12 @@ function shape(payload){
 assert.deepEqual(shape({secret:fake}),{kind:"object",fieldCount:1,recognized:[["secret","signing_secret_format"]]});
 assert.deepEqual(shape({data:{secret:fake}}),{kind:"object",fieldCount:1,recognized:[["data","object"]]});
 assert.deepEqual(shape({}),{kind:"object",fieldCount:0,recognized:[]});
+// Guesty has not confirmed the secret field name or the whsec_ prefix.
+// Classify plausible responses for diagnostic use only; never authorize installation.
+assert.deepEqual(shape({secret:"opaque-secret-value"}),{kind:"object",fieldCount:1,recognized:[["secret","string_other"]]});
+assert.deepEqual(shape({signingSecret:"opaque-secret-value"}),{kind:"object",fieldCount:1,recognized:[["signingSecret","string_other"]]});
+assert.deepEqual(shape({webhookSecret:"opaque-secret-value"}),{kind:"object",fieldCount:1,recognized:[["webhookSecret","string_other"]]});
+assert.deepEqual(shape({secret:fake,extra:"ignored"}),{kind:"object",fieldCount:2,recognized:[["secret","signing_secret_format"]]});
+assert.deepEqual(shape("opaque-secret-value"),{kind:"string_other"});
+assert.deepEqual(shape(null),{kind:"null"});
 console.log("PASS: Synthetic response-shape classifier. Actual Guesty response remains unknown.");
