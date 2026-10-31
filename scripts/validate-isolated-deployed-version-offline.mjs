@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const script=readFileSync("scripts/inspect-isolated-deployed-version.mjs","utf8");
+const workflow=readFileSync(".github/workflows/inspect-isolated-deployed-version.yml","utf8");
+assert.match(script,/workers\/scripts\/zyenhomes-webhook-test/);
+assert.match(script,/get\("\/versions"\)/);
+assert.match(script,/get\("\/deployments"\)/);
+assert.match(script,/method:"GET"/);
+assert.doesNotMatch(script,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/i);
+assert.doesNotMatch(script,/spawnSync|execSync|wrangler/);
+assert.doesNotMatch(script,/zyenhomes-booking-api/);
+assert.match(workflow,/workflow_dispatch:/);
+assert.match(workflow,/environment: guesty-webhook-activation/);
+console.log("PASS: isolated deployed-version comparison is read-only.");
