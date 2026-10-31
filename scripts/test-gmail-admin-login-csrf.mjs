@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import {issueLoginCsrf,validateLoginCsrf} from "../gmail-archive-oauth/admin-login-csrf.js";
+const origin="https://example.test",path=origin+"/admin/google/start";
+const {token,cookie}=issueLoginCsrf();
+assert.match(cookie,/HttpOnly; SameSite=Strict/);
+const make=(csrf=token,ck=token,method="POST",from=origin)=>new Request(path,{method,headers:{"Origin":from,"X-Zyen-CSRF":csrf,"Cookie":"__Host-zyen_login_csrf="+ck}});
+assert.equal(validateLoginCsrf(make(),origin),true);
+assert.equal(validateLoginCsrf(make("b".repeat(64)),origin),false);
+assert.equal(validateLoginCsrf(make(token,"c".repeat(64)),origin),false);
+assert.equal(validateLoginCsrf(make(token,token,"POST","https://evil.test"),origin),false);
+assert.equal(validateLoginCsrf(make(token,token,"GET"),origin),false);
+assert.equal(validateLoginCsrf(new Request(path,{method:"POST",headers:{"Origin":origin,"X-Zyen-CSRF":token}}),origin),false);
+assert.equal(validateLoginCsrf(new Request(path,{method:"POST",headers:{"Origin":origin,"X-Zyen-CSRF":token,"Cookie":"__Host-zyen_login_csrf="+token+"; __Host-zyen_login_csrf="+token}}),origin),false);
+console.log("PASS: offline login CSRF token and cookie matching, origin and duplicate rejection.");
+console.log("Token issuance is not yet connected to a live Worker.");
