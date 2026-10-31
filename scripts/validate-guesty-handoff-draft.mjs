@@ -8,6 +8,7 @@ assert.match(handoff,/INSTALL_GUESTY_SIGNING_SECRET/);
 assert.match(handoff,/GUESTY_WEBHOOK_SECRET/);
 assert.match(handoff,/webhooks-v2\/secret/);
 assert.match(handoff,/spawnSync/);
+assert.match(handoff,/\["versions","secret","put","GUESTY_WEBHOOK_SECRET"/);
 assert.match(handoff,/Object\.keys\(payload\)\.length!==1/);
 assert.match(workflow,/environment: guesty-webhook-activation/);
 assert.match(workflow,/secrets\.CLOUDFLARE_API_TOKEN/);
