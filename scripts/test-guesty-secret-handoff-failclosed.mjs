@@ -14,5 +14,7 @@ function check(env,expected){
 }
 check({},/Explicit handoff confirmation required/);
 check({HANDOFF_CONFIRMATION:"INSTALL_GUESTY_SIGNING_SECRET"},/Isolated Worker secret installation has not been verified/);
-check({HANDOFF_CONFIRMATION:"INSTALL_GUESTY_SIGNING_SECRET",ISOLATED_WORKER_SECRET_PUT_VERIFIED:"true"},/Missing required credentials\/configuration/);
+check({HANDOFF_CONFIRMATION:"INSTALL_GUESTY_SIGNING_SECRET",ISOLATED_WORKER_SECRET_PUT_VERIFIED:"true"},/Guesty subscription identity has not been verified/);
+check({HANDOFF_CONFIRMATION:"INSTALL_GUESTY_SIGNING_SECRET",ISOLATED_WORKER_SECRET_PUT_VERIFIED:"true",GUESTY_SUBSCRIPTION_VERIFIED:"true"},/Guesty signing-secret schema has not been verified/);
+check({HANDOFF_CONFIRMATION:"INSTALL_GUESTY_SIGNING_SECRET",ISOLATED_WORKER_SECRET_PUT_VERIFIED:"true",GUESTY_SUBSCRIPTION_VERIFIED:"true",GUESTY_SECRET_SCHEMA_VERIFIED:"true"},/Missing required credentials\/configuration/);
 console.log("PASS: secret handoff refuses unapproved, unverified, or unconfigured execution.");
