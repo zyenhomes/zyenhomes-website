@@ -1,0 +1,21 @@
+name: Validate Isolated Version-Only Test (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/test-isolated-wrangler-version-only.mjs'
+      - 'scripts/validate-isolated-version-only-offline.mjs'
+      - '.github/workflows/test-isolated-wrangler-version-only.yml'
+      - '.github/workflows/validate-isolated-version-only-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/test-isolated-wrangler-version-only.mjs
+      - run: node scripts/validate-isolated-version-only-offline.mjs
