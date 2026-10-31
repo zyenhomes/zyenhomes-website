@@ -29,7 +29,8 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
   if(x.id==='102-patricia'){
     Object.keys(categories).forEach(key=>delete categories[key]);
     for(const category of ['Featured Photos','Hot Tub & Outdoor','Living, Kitchen & Dining','Bedrooms & Bathrooms','Entertainment','View All Photos'])categories[category]=[];
-    // Photo filenames will be supplied for this property; never reuse another property's images.
+    categories['Featured Photos']=["102patricia_3.png","102patricia_28.png","102patricia_35.png","102patricia_1.jpg","102patricia_10.png","102patricia_30.png","102patricia_53.png","102patricia_17.png","102patricia_42.png","102patricia_43.png","102patricia_52.png","102patricia_54.png","102patricia_61.png","102patricia_46.png","102patricia_62.png","102patricia_6.png"];
+    categories['View All Photos']=[...categories['Featured Photos']];
   }
   if(x.id==='109-plater') {
     const featured=["109 Plater Street Web (21) - Copy.webp","Lively Dual-Zone Swim Spa Gathering.webp","109 Plater Street Web (71).webp","109 Plater Street Web (7).webp","109 Plater Street Web (14).webp","109 Plater Street Web (15).webp","ChatGPT Image Sep 13, 2026, 10_12_24 PM.webp","109 Plater Street Web (81B).webp","20250603_131402.webp","20250603_131522.webp","109 Plater Street Web (51) - Copy.webp","109 Plater Street Web (28) - Copy.webp","Rustic Modern Living Room with Fireplace.webp","109 Plater Street Web (68a).webp"];
