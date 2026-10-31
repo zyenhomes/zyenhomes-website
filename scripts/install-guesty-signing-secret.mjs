@@ -1,5 +1,6 @@
 // Guesty -> Cloudflare signing-secret handoff. DO NOT RUN until subscription exists.
 // No secret/token/body logging. Fail closed if response shape is unrecognized.
+// Version-only command: do not deploy or activate the new version automatically.
 import {spawnSync} from "node:child_process";
 const endpoint="https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/webhooks/guesty/messages";
 const id=process.env.GUESTY_OPEN_API_CLIENT_ID;
@@ -23,7 +24,7 @@ const payload=await response.json();
 // Guesty public docs show {} rather than a concrete response schema.
 // Only accept a single explicit top-level 'secret' key until verified.
 if(!payload||typeof payload!=="object"||Array.isArray(payload)||Object.keys(payload).length!==1||typeof payload.secret!=="string"||!/^whsec_[A-Za-z0-9+/=]{20,}$/.test(payload.secret))throw Error("Unrecognized Guesty signing-secret response; no Cloudflare changes made");
-const child=spawnSync("../node_modules/.bin/wrangler",["secret","put","GUESTY_WEBHOOK_SECRET","--name","zyenhomes-booking-api","--config","wrangler.toml"],{
+const child=spawnSync("../node_modules/.bin/wrangler",["versions","secret","put","GUESTY_WEBHOOK_SECRET","--name","zyenhomes-booking-api","--config","wrangler.toml"],{
   cwd:"cloudflare",input:payload.secret+"\n",encoding:"utf8",
   env:{...process.env,CLOUDFLARE_API_TOKEN:cloudflare,CLOUDFLARE_ACCOUNT_ID:account},
   timeout:30000,maxBuffer:100000
