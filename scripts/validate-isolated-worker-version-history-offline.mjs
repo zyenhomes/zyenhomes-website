@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const script=readFileSync("scripts/inspect-isolated-worker-version-history.mjs","utf8");
+const workflow=readFileSync(".github/workflows/inspect-isolated-worker-version-history.yml","utf8");
+assert.match(script,/workers\/scripts\/zyenhomes-webhook-test/);
+assert.match(script,/read\("\/versions"\)/);
+assert.match(script,/read\("\/deployments"\)/);
+assert.match(script,/method:"GET"/);
+assert.doesNotMatch(script,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/i);
+assert.doesNotMatch(script,/spawnSync|execSync|secret put|wrangler/);
+assert.doesNotMatch(script,/zyenhomes-booking-api/);
+assert.match(workflow,/workflow_dispatch:/);
+assert.match(workflow,/environment: guesty-webhook-activation/);
+console.log("PASS: isolated version-history diagnostic contains GET-only operations.");
