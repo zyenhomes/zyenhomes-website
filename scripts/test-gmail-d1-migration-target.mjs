@@ -10,10 +10,25 @@ assert.match(config,/database_name = "zyenhomes-gmail-oauth"/);
 assert.match(config,/database_id = "8768f450-512a-4150-b165-1d750db4cdac"/);
 assert.match(config,/GMAIL_ARCHIVE_ENABLED = "false"/);
 assert.ok(!config.includes("zyenhomes-booking-requests"));
-for(const sql of [migration1,migration2]){
- assert.ok(/\bCREATE\s+(?:TABLE|INDEX)\s+IF\s+NOT\s+EXISTS\b/i.test(sql));
-assert.ok(!/\b(?:DROP|DELETE|ALTER|UPDATE|INSERT)\b/i.test(sql));
- assert.ok(!sql.includes("zyenhomes-booking-requests"));
+
+for (const sql of [migration1, migration2]) {
+  const statements = sql
+    .replace(/--[^\r\n]*/g, "")
+    .split(";")
+    .map(statement => statement.trim())
+    .filter(Boolean);
+
+  assert.ok(statements.length > 0);
+
+  for (const statement of statements) {
+    assert.match(
+      statement,
+      /^CREATE\s+(?:TABLE|INDEX)\s+IF\s+NOT\s+EXISTS\b/i
+    );
+    assert.ok(!statement.includes("zyenhomes-booking-requests"));
+  }
+}
+
 }
 assert.match(migration1,/CREATE TABLE IF NOT EXISTS oauth_sessions/);
 assert.match(migration1,/CREATE TABLE IF NOT EXISTS oauth_tokens/);
