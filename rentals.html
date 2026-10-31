@@ -119,7 +119,6 @@ function setupCardGalleries(){
 }
 function render(){
  const visible=ZYEN_PROPERTIES.filter(x=>{
-  if(blueMountainsOnly&&x.location!=='Blue Mountains')return false;
   if(!eligible(x))return false;
   if(!mapReady)return true;
   const pos=locations.get(x.id);
@@ -164,15 +163,13 @@ async function locateProperties(){
  }
  const pending=[];
  for(const home of ZYEN_PROPERTIES){
-  if(blueMountainsOnly&&home.location!=='Blue Mountains')continue;
   const coords=known[home.id]||cached[home.id];
   if(coords)addPin(home,coords);
   else if(addresses[home.id])pending.push(home);
  }
  function refresh(){
   if(!markers.getLayers().length)return;
-  if(blueMountainsOnly)map.setView([44.504,-80.313],13);
-  else map.fitBounds(markers.getBounds().pad(.15),{maxZoom:11});
+  if(!blueMountainsOnly)map.fitBounds(markers.getBounds().pad(.15),{maxZoom:11});
   mapReady=true;render();
  }
  refresh();
