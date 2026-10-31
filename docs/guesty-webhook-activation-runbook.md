@@ -98,3 +98,10 @@ The operator ran `Verify Guesty Open API Webhook Access (Read Only)` workflow #5
 - No subscriptions created
 
 This verifies authentication and the top-level array response for the current subscription-list request. It is a point-in-time observation, **not** authorization to create a subscription. Recheck immediately before any future approved creation, and never blindly retry an ambiguous POST.
+
+
+## Isolated Worker baseline inspection — 2026-10-31
+
+Operator shared successful GitHub Actions run #1 of `Inspect Isolated Guesty Test Worker (Read Only)`. Log reports `Isolated Worker settings HTTP status: 200` and `PASS: isolated Worker exists with expected baseline binding names.` The script checks for `TEST_PRESERVE_VARIABLE` and `TEST_DUMMY_SECRET` in `zyenhomes-webhook-test` using GET only.
+
+This confirms the isolated Worker baseline exists. It does **not** prove that `wrangler versions secret put` preserves bindings or creates a safely undeployed version. No secret installation was attempted.
