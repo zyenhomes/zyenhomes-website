@@ -87,3 +87,14 @@ PR #74 commit `625f576` passed all seven GitHub Actions checks. These checks est
 3. After separately approved creation of the first subscription, classify the signing-secret response without logging values; only then update the strict parser and test a signed delivery.
 
 Until these are resolved, keep the installation workflow blocked and PR #74 in Draft.
+
+
+## Guesty Open API read-only verification — 2026-10-31
+
+The operator ran `Verify Guesty Open API Webhook Access (Read Only)` workflow #5. The shared successful GitHub Actions log reports:
+- Open API token request: successful
+- GET `/v1/webhooks` HTTP status: 200
+- Subscription count: **0**
+- No subscriptions created
+
+This verifies authentication and the top-level array response for the current subscription-list request. It is a point-in-time observation, **not** authorization to create a subscription. Recheck immediately before any future approved creation, and never blindly retry an ambiguous POST.
