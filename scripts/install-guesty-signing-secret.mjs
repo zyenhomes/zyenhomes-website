@@ -6,7 +6,10 @@ const id=process.env.GUESTY_OPEN_API_CLIENT_ID;
 const secret=process.env.GUESTY_OPEN_API_CLIENT_SECRET;
 const cloudflare=process.env.CLOUDFLARE_API_TOKEN;
 const account=process.env.CLOUDFLARE_ACCOUNT_ID;
+// Additional fail-closed gate: activation requires separate confirmation that
+// secret installation was tested against an isolated Worker. Do not set until verified.
 if(process.env.HANDOFF_CONFIRMATION!=="INSTALL_GUESTY_SIGNING_SECRET")throw Error("Explicit handoff confirmation required");
+if(process.env.ISOLATED_WORKER_SECRET_PUT_VERIFIED!=="true")throw Error("Isolated Worker secret installation has not been verified; stop");
 if(!id||!secret||!cloudflare||!/^[a-fA-F0-9]{32}$/.test(account||""))throw Error("Missing required credentials/configuration");
 const auth=await fetch("https://open-api.guesty.com/oauth2/token",{method:"POST",headers:{Accept:"application/json","Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({grant_type:"client_credentials",scope:"open-api",client_id:id,client_secret:secret}),signal:AbortSignal.timeout(20000)});
 if(!auth.ok)throw Error("Guesty authentication failed: HTTP "+auth.status);
