@@ -8,10 +8,13 @@ export async function processOAuthCallback({request,origin,consumeState,exchange
  if(error)return {status:400,reason:error};
  // consumeState MUST atomically consume server-side state and decrypt verifier.
  const session=await consumeState(url.searchParams.get("state"));
- if(!session||typeof session.verifier!=="string")return {status:400,reason:"invalid_session"};
+ if(!session||typeof session.verifier!=="string"||typeof session.nonce!=="string"||!session.nonce)return {status:400,reason:"invalid_session"};
  const tokens=await exchangeCode({code:url.searchParams.get("code"),verifier:session.verifier});
  if(!tokens||typeof tokens.accessToken!=="string"||!tokens.accessToken)return {status:502,reason:"invalid_token_response"};
- const mailbox=await verifyMailbox(tokens.accessToken);
+ if(typeof tokens.idToken!=="string"||!tokens.idToken)return {status:502,reason:"missing_identity_token"};
+ // verifyMailbox MUST cryptographically verify the Google ID token with trusted JWKS,
+ // issuer, audience, expiration and the one-time session nonce before returning mailbox.
+ const mailbox=await verifyMailbox(tokens.idToken,session.nonce);
  if(mailbox!=="info@zyenhomes.com")return {status:403,reason:"wrong_mailbox"};
  const scopes=new Set((tokens.scope||"").split(/\s+/).filter(Boolean));
  if(!scopes.has("https://www.googleapis.com/auth/gmail.insert"))return {status:403,reason:"missing_scope"};
