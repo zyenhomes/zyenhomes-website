@@ -5,9 +5,9 @@ const request=new Request(origin+"/oauth/google/callback?state="+state+"&code=fi
 let consumed=0,saved=0;
 const deps={
  request,origin,
- consumeState:async()=>{consumed++;return {verifier:"v".repeat(64)};},
- exchangeCode:async()=>({accessToken:"fake",refreshToken:"fictional-refresh",scope:"https://www.googleapis.com/auth/gmail.insert"}),
- verifyMailbox:async()=> "info@zyenhomes.com",
+ consumeState:async()=>{consumed++;return {verifier:"v".repeat(64),nonce:"fictional-nonce"};},
+ exchangeCode:async()=>({accessToken:"fake",idToken:"fictional-id-token",refreshToken:"fictional-refresh",scope:"https://www.googleapis.com/auth/gmail.insert"}),
+ verifyMailbox:async(token,nonce)=>{assert.equal(token,"fictional-id-token");assert.equal(nonce,"fictional-nonce");return "info@zyenhomes.com";},
  encryptRefreshToken:async()=>({ciphertext:"fictional-encrypted"}),
  saveEncryptedToken:async()=>{saved++;}
 };
