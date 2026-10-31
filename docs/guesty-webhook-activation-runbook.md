@@ -105,3 +105,8 @@ This verifies authentication and the top-level array response for the current su
 Operator shared successful GitHub Actions run #1 of `Inspect Isolated Guesty Test Worker (Read Only)`. Log reports `Isolated Worker settings HTTP status: 200` and `PASS: isolated Worker exists with expected baseline binding names.` The script checks for `TEST_PRESERVE_VARIABLE` and `TEST_DUMMY_SECRET` in `zyenhomes-webhook-test` using GET only.
 
 This confirms the isolated Worker baseline exists. It does **not** prove that `wrangler versions secret put` preserves bindings or creates a safely undeployed version. No secret installation was attempted.
+
+
+## Isolated Worker version history inspection — 2026-10-31
+
+Operator shared successful run #1 of `Inspect Isolated Worker Version History (Read Only)`. The logs report HTTP 200 for both versions and deployments, **6 version entries** and **4 deployment entries**. This was GET-only and did not create versions, install secrets, or deploy anything. Counts alone cannot establish which version is deployed, whether version-only secret installation preserves bindings, or when the two fictional test secrets appeared. Next diagnostic should compare deployed-version identity and relevant version metadata without exposing secrets or modifying Cloudflare.
