@@ -68,3 +68,10 @@ This was read-only and does **not** prove that `wrangler secret put` preserves l
 Cloudflare's official Workers documentation confirms that `wrangler secret put` **creates and immediately deploys a new Worker version**. In contrast, `wrangler versions secret put` creates a new version **without deploying it**. See https://developers.cloudflare.com/workers/configuration/secrets/ and https://developers.cloudflare.com/workers/wrangler/commands/workers/.
 
 **Do not execute the current PR #74 handoff script:** it still invokes `wrangler secret put` against the production booking Worker, and thus can cause an immediate deployment. A future reviewed change should prefer the version-only command, explicitly verify version behavior and binding preservation, and keep actual deployment as a separate approval-gated action. No command has been run against Cloudflare during this documentation update.
+
+
+## Wrangler version-only CLI check — 2026-10-31
+
+GitHub Actions `Validate Wrangler Version-Only Secret Command (Offline)` completed successfully on PR #74 commit `d9bb191`. The workflow installed Wrangler 4 locally, verified the executable existed, and successfully invoked `wrangler versions secret put --help` without Cloudflare authentication. This confirms command recognition only.
+
+It does **not** establish behavior against a real Worker, binding preservation, secret response compatibility, or permission to create/deploy a version. Keep the isolated-Worker verification gate closed.
