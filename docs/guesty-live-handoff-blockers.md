@@ -12,3 +12,17 @@ Status: NOT AUTHORIZED FOR EXECUTION.
 8. The temporary Cloudflare token expires after seven days; verify it is active at execution time and revoke it when activation is complete.
 
 Do not merge or execute the draft installation workflow based solely on passing offline checks. Next engineering step: validate Wrangler secret-put behavior in a disposable Worker and establish a safe, private way to recognize the actual Guesty response structure during the coordinated activation window.
+
+
+## Guesty Support clarification — 2026-10-31
+
+Guesty support confirmed that this integration has **no webhook subscriptions yet**, so there is **no signing secret to retrieve**. The first subscription must be created before attempting GET /v1/webhooks-v2/secret. Guesty confirmed a unique signing key per subscribed endpoint, but **did not confirm** the JSON response schema or a `whsec_` prefix.
+
+Consequences:
+- The handoff script's single-field `secret` and `whsec_` assumptions are unverified. Do **not** loosen the parser to accept arbitrary data, and do **not** execute the installation workflow yet.
+- First verify the isolated receiver, endpoint URL, event allowlist, webhook signature algorithm, and safe secret installation procedure. Preserve disabled processing.
+- During an explicitly approved activation window, create exactly one subscription using the existing guarded workflow, check subscription existence before any retry, and use the redacted shape diagnostic to determine the returned secret schema without exposing the value.
+- Only after independent confirmation of the schema and signature format should the handoff parser be updated, tested with synthetic fixtures, and used to install the endpoint-specific secret.
+- Verify existing Worker bindings and flags after secret installation, then test a signed delivery before considering live processing.
+
+No subscription, secret retrieval, or production Worker write is authorized by this documentation update.
