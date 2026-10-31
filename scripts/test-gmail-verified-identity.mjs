@@ -15,8 +15,11 @@ const fetchImpl=async(url)=>{count++;assert.equal(url,"https://www.googleapis.co
 const opts={clientId,fetchImpl,nowSeconds:now};
 assert.equal(await verifyArchiveIdentity(await jwt({}),nonce,opts),"info@zyenhomes.com");
 assert.equal(count,1);
-await assert.rejects(()=>verifyArchiveIdentity(await jwt({email:"admin@zyenhomes.com"}),nonce,opts),/Wrong archive mailbox/);
-await assert.rejects(()=>verifyArchiveIdentity(await jwt({}),"wrong-nonce",opts),/nonce mismatch/);
-await assert.rejects(()=>verifyArchiveIdentity(await jwt({exp:now-1}),nonce,opts),/Expired/);
+const wrongMailboxToken=await jwt({email:"admin@zyenhomes.com"});
+await assert.rejects(()=>verifyArchiveIdentity(wrongMailboxToken,nonce,opts),/Wrong archive mailbox/);
+const validTokenForWrongNonce=await jwt({});
+await assert.rejects(()=>verifyArchiveIdentity(validTokenForWrongNonce,"wrong-nonce",opts),/nonce mismatch/);
+const expiredToken=await jwt({exp:now-1});
+await assert.rejects(()=>verifyArchiveIdentity(expiredToken,nonce,opts),/Expired/);
 console.log("PASS: mocked trusted JWKS retrieval and cryptographic mailbox identity verification");
 console.log("No real Google API calls, tokens or production changes");
