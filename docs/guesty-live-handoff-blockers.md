@@ -39,3 +39,18 @@ The merged subscription workflow is **manual-only** and checks that GET /v1/webh
 These assumptions must be confirmed against Guesty's actual API documentation or a safe read-only preflight. A non-201 result is **not** proof that creation failed; check the subscription list before any retry.
 
 **Activation gate:** Do not dispatch PR #71's manual workflow until the secret-response discovery procedure, secure installation method, receiver signature compatibility, production binding preservation, and rollback plan have been reviewed and explicitly approved. The new support reply does not by itself authorize the POST.
+
+
+## Official Guesty documentation verification — 2026-10-31
+
+Reviewed https://open-api-docs.guesty.com/docs/webhooks and https://open-api-docs.guesty.com/reference/svixsecretapicontroller_getsecret.
+
+Confirmed:
+- Messaging event identifiers `reservation.messageReceived` and `reservation.messageSent` are documented.
+- Subscriptions use a publicly reachable HTTPS URL on port 443 and an `events` array; avoid duplicate URLs.
+- Guesty documents a unique signing key per endpoint and explicitly directs developers to Svix signature validation.
+- Secret retrieval uses GET `/v1/webhooks-v2/secret` with required `url` query parameter.
+- Non-2xx webhook responses are failures and may be retried; a receiver should acknowledge accepted events with 2xx within 15 seconds.
+- Recreating a subscription can change the signing secret.
+
+Still unverified: GET `/v1/webhooks` response shape, exact POST success status, secret retrieval JSON field name and prefix, real production bindings, and signed delivery compatibility. Never infer these from synthetic tests. No live API writes are authorized.
