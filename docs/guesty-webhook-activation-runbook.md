@@ -38,3 +38,12 @@ Status: **DRAFT / NOT AUTHORIZED TO RUN**. This runbook does not grant permissio
 - End-to-end signed delivery and retry/rollback operations are not yet verified.
 
 No live action is authorized by this document.
+
+
+## Existing booking Worker risk — configuration review
+
+The target Worker is `zyenhomes-booking-api`, not a disposable test Worker. Its `cloudflare/wrangler.toml` declares `BOOKING_DB` (booking-request D1), `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, and disabled `BOOKING_REQUESTS_ENABLED` / `GUESTY_WEBHOOKS_ENABLED` flags. `keep_vars = true` appears in repository configuration but does **not** by itself prove live secret-put preserves all existing bindings.
+
+**Do not run `wrangler secret put` against `zyenhomes-booking-api` as an experiment.** First validate installation and binding preservation on an isolated, already-approved disposable Worker, or obtain independently verified Cloudflare guidance. Compare before/after binding names and disabled flags without printing values. Do not create a paid Cloudflare resource merely to satisfy this test.
+
+The current handoff script requires `ISOLATED_WORKER_SECRET_PUT_VERIFIED=true` but that variable is only an operator assertion, not independent proof. Do not set it until actual evidence has been reviewed.
