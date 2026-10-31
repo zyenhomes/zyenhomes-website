@@ -15,5 +15,5 @@ export async function exchangeGoogleCode({code,verifier,clientId,clientSecret,re
  const data=await response.json();
  if(typeof data.access_token!=="string"||!data.access_token||!Number.isFinite(data.expires_in)||data.expires_in<=0)throw Error("Invalid Google token response");
  // Never log or return a raw HTTP response. Caller must encrypt refresh token immediately.
- return {accessToken:data.access_token,refreshToken:typeof data.refresh_token==="string"?data.refresh_token:null,expiresIn:data.expires_in,scope:typeof data.scope==="string"?data.scope:""};
+ return {accessToken:data.access_token,refreshToken:typeof data.refresh_token==="string"?data.refresh_token:null,expiresIn:data.expires_in,scope:typeof data.scope==="string"?data.scope:"",idToken:typeof data.id_token==="string"?data.id_token:null};
 }
