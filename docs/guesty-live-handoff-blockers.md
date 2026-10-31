@@ -26,3 +26,16 @@ Consequences:
 - Verify existing Worker bindings and flags after secret installation, then test a signed delivery before considering live processing.
 
 No subscription, secret retrieval, or production Worker write is authorized by this documentation update.
+
+
+## PR #71 subscription workflow preflight review
+
+The merged subscription workflow is **manual-only** and checks that GET /v1/webhooks returns an empty array before making a single POST. Its implementation currently assumes:
+- GET /v1/webhooks responds as a top-level array.
+- POST /v1/webhooks accepts the chosen `url` and `events` payload and returns exactly HTTP 201.
+- `reservation.messageReceived` and `reservation.messageSent` are valid subscription event identifiers.
+- The subscription target is the existing booking Worker, whose webhook receiver remains disabled.
+
+These assumptions must be confirmed against Guesty's actual API documentation or a safe read-only preflight. A non-201 result is **not** proof that creation failed; check the subscription list before any retry.
+
+**Activation gate:** Do not dispatch PR #71's manual workflow until the secret-response discovery procedure, secure installation method, receiver signature compatibility, production binding preservation, and rollback plan have been reviewed and explicitly approved. The new support reply does not by itself authorize the POST.
