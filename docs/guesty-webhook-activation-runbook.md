@@ -61,3 +61,10 @@ Do not dispatch the workflow or change environment approval settings without exp
 The operator ran `Inspect Guesty Worker Production Bindings (Read Only)` workflow #3. The shared GitHub Actions log reports HTTP 200 from the Cloudflare settings endpoint, and confirms these binding names: `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, `GUESTY_CLIENT_ID`, `GUESTY_CLIENT_SECRET`, `GUESTY_WEBHOOKS_ENABLED`. The inspection script verified `GUESTY_WEBHOOKS_ENABLED` equals `false`, then reported `PASS: Production bindings present and webhook receiver disabled.`
 
 This was read-only and does **not** prove that `wrangler secret put` preserves live bindings, nor that a Guesty subscription exists. Do not mark the installation compatibility gate as verified on this basis.
+
+
+## Cloudflare official command semantics — 2026-10-31
+
+Cloudflare's official Workers documentation confirms that `wrangler secret put` **creates and immediately deploys a new Worker version**. In contrast, `wrangler versions secret put` creates a new version **without deploying it**. See https://developers.cloudflare.com/workers/configuration/secrets/ and https://developers.cloudflare.com/workers/wrangler/commands/workers/.
+
+**Do not execute the current PR #74 handoff script:** it still invokes `wrangler secret put` against the production booking Worker, and thus can cause an immediate deployment. A future reviewed change should prefer the version-only command, explicitly verify version behavior and binding preservation, and keep actual deployment as a separate approval-gated action. No command has been run against Cloudflare during this documentation update.
