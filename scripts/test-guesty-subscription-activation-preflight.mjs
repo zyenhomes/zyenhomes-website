@@ -1,0 +1,24 @@
+// Offline structural safety checks only. No Guesty or Cloudflare requests.
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const subscription=readFileSync("scripts/create-guesty-message-subscription.mjs","utf8");
+const workflow=readFileSync(".github/workflows/create-guesty-message-subscription.yml","utf8");
+const handoff=readFileSync("scripts/install-guesty-signing-secret.mjs","utf8");
+const receiver=readFileSync("cloudflare/guesty-webhooks.js","utf8");
+const wrangler=readFileSync("cloudflare/wrangler.toml","utf8");
+assert.match(workflow,/workflow_dispatch:/);
+assert.match(workflow,/CREATE_GUESTY_MESSAGE_SUBSCRIPTION/);
+assert.match(workflow,/environment: guesty-webhook-activation/);
+assert.match(subscription,/ACTIVATION_CONFIRMATION/);
+assert.match(subscription,/subscriptions\.length!==0/);
+assert.match(subscription,/method:"POST"/);
+assert.match(subscription,/created\.status!==201/);
+assert.match(handoff,/INSTALL_GUESTY_SIGNING_SECRET/);
+assert.match(handoff,/Unrecognized Guesty signing-secret response/);
+assert.match(receiver,/GUESTY_WEBHOOKS_ENABLED!=="true"/);
+assert.match(receiver,/verifyGuestySvix/);
+assert.match(wrangler,/GUESTY_WEBHOOKS_ENABLED = "false"/);
+assert.match(wrangler,/BOOKING_REQUESTS_ENABLED = "false"/);
+assert.ok(!subscription.includes("console.log(token)"));
+console.log("PASS: offline activation gates are present.");
+console.log("UNVERIFIED: Guesty response schema, event names, signing format, and live Worker bindings.");
