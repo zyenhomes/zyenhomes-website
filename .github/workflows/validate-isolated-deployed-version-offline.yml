@@ -1,0 +1,21 @@
+name: Validate Isolated Deployed Version Inspection (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/inspect-isolated-deployed-version.mjs'
+      - 'scripts/validate-isolated-deployed-version-offline.mjs'
+      - '.github/workflows/inspect-isolated-deployed-version.yml'
+      - '.github/workflows/validate-isolated-deployed-version-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/inspect-isolated-deployed-version.mjs
+      - run: node scripts/validate-isolated-deployed-version-offline.mjs
