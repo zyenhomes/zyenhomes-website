@@ -75,3 +75,15 @@ Cloudflare's official Workers documentation confirms that `wrangler secret put` 
 GitHub Actions `Validate Wrangler Version-Only Secret Command (Offline)` completed successfully on PR #74 commit `d9bb191`. The workflow installed Wrangler 4 locally, verified the executable existed, and successfully invoked `wrangler versions secret put --help` without Cloudflare authentication. This confirms command recognition only.
 
 It does **not** establish behavior against a real Worker, binding preservation, secret response compatibility, or permission to create/deploy a version. Keep the isolated-Worker verification gate closed.
+
+
+## Offline review checkpoint — 2026-10-31
+
+PR #74 commit `625f576` passed all seven GitHub Actions checks. These checks establish only repository-level safeguards and Wrangler CLI command recognition. They do not establish production readiness.
+
+**Next evidence needed (not more static checks):**
+1. Verified read-only Guesty subscription listing with its response structure; do not create a subscription as part of this check.
+2. Verified isolated Worker behavior for `wrangler versions secret put`, including whether existing bindings are preserved; do not test on the booking Worker.
+3. After separately approved creation of the first subscription, classify the signing-secret response without logging values; only then update the strict parser and test a signed delivery.
+
+Until these are resolved, keep the installation workflow blocked and PR #74 in Draft.
