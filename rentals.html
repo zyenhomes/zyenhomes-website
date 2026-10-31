@@ -141,50 +141,43 @@ f.addEventListener('submit',event=>{
  const query=new URLSearchParams(new FormData(f));history.replaceState(null,'','?'+query);render();
 });
 render();
-async function locateProperties(){
- // Public OpenStreetMap geocoding, paced to respect its usage policy.
+function locateProperties(){
+ // Approximate public pins are stored locally; no sequential geocoding requests.
+ // Exact property addresses are shared privately with booked guests.
+ const approximatePositions={
+  '116-tyrolean':[44.51,-80.32],
+  '105-pilsen':[44.51,-80.32],
+  '37-snowbridge':[44.50,-80.30],
+  '109-plater':[44.50,-80.31],
+  '147-campbell':[44.50,-80.31],
+  '940-seven-oaks':[44.13,-78.35],
+  '106-birch-view':[44.50,-80.31],
+  '197-arlberg':[44.51,-80.31],
+  '149-tyrolean':[44.51,-80.32],
+  '100-pilsen':[44.51,-80.32],
+  '873235-5th-line-ehs':[43.96,-80.01],
+  '39-snowbridge':[44.50,-80.30],
+  '102-patricia':[44.50,-80.31],
+  '503-466-e-liberty':[43.64,-79.42],
+  '117-125-fairway':[44.50,-80.31]
+ };
  for(const home of ZYEN_PROPERTIES){
-  try{
-   const query=addresses[home.id];
-   if(!query)continue;
-   if(home.id==='873235-5th-line-ehs'){
-     // Deliberately approximate the supplied pin to protect the exact location.
-     const pos=L.latLng(43.96,-80.01);
-     locations.set(home.id,pos);
-     const marker=L.marker(pos,{propertyId:home.id}).addTo(markers);
-     const popup=document.createElement('div');
-     const title=document.createElement('strong');title.textContent=home.name;
-     const note=document.createElement('small');note.textContent='Approximate area only — exact address provided after booking';
-     const link=document.createElement('a');link.href='property.html?id='+encodeURIComponent(home.id);link.textContent='View property →';
-     popup.append(title,document.createElement('br'),note,document.createElement('br'),link);
-     marker.bindPopup(popup);
-     continue;
-   }
-   const response=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(query),{headers:{'Accept':'application/json'}});
-   if(!response.ok)throw new Error('Geocoding unavailable');
-   const data=await response.json();
-   // Some rural street addresses are missing from OpenStreetMap.
-   // Use an approximate Bailieboro-area marker if this address cannot be found.
-   const approximate=(home.id==='940-seven-oaks'||home.id==='873235-5th-line-ehs') && !data.length;
-   const pos=data.length
-    ? L.latLng(Math.round(Number(data[0].lat)*100)/100,Math.round(Number(data[0].lon)*100)/100)
-    : approximate ? (home.id==='873235-5th-line-ehs'?L.latLng(44.03,-80.07):L.latLng(44.13,-78.35)) : null;
-   if(pos){
-    locations.set(home.id,pos);
-    const marker=L.marker(pos,{propertyId:home.id}).addTo(markers);
-    const link='property.html?id='+encodeURIComponent(home.id);
-    const popup=document.createElement('div');
-    const title=document.createElement('strong');title.textContent=home.name;popup.append(title,document.createElement('br'));
-    if(approximate){const note=document.createElement('small');note.textContent='Approximate area only — exact address provided after booking';popup.append(note,document.createElement('br'));}
-    const anchor=document.createElement('a');anchor.href=link;anchor.textContent='View property →';popup.append(anchor);
-    marker.bindPopup(popup);
-   }
-  }catch(error){console.warn('Unable to locate',home.name,error);if(home.id==='940-seven-oaks'||home.id==='873235-5th-line-ehs'){const pos=home.id==='873235-5th-line-ehs'?L.latLng(44.03,-80.07):L.latLng(44.13,-78.35);locations.set(home.id,pos);const marker=L.marker(pos,{propertyId:home.id}).addTo(markers);const popup=document.createElement('div');const title=document.createElement('strong');title.textContent=home.name;popup.append(title,document.createElement('br'));const note=document.createElement('small');note.textContent='Approximate area only — exact address provided after booking';popup.append(note,document.createElement('br'));const link=document.createElement('a');link.href='property.html?id='+encodeURIComponent(home.id);link.textContent='View property →';popup.append(link);marker.bindPopup(popup);}}
-  await new Promise(resolve=>setTimeout(resolve,1100));
+  const coords=approximatePositions[home.id];
+  if(!coords)continue;
+  const pos=L.latLng(coords[0],coords[1]);
+  locations.set(home.id,pos);
+  const marker=L.marker(pos,{propertyId:home.id}).addTo(markers);
+  const popup=document.createElement('div');
+  const title=document.createElement('strong');title.textContent=home.name;
+  const note=document.createElement('small');note.textContent='Approximate area only — exact address provided after booking';
+  const link=document.createElement('a');link.href='property.html?id='+encodeURIComponent(home.id);link.textContent='View property →';
+  popup.append(title,document.createElement('br'),note,document.createElement('br'),link);
+  marker.bindPopup(popup);
  }
  if(markers.getLayers().length){
   map.fitBounds(markers.getBounds().pad(.3),{maxZoom:11});
-  mapReady=true;render();
+  mapReady=true;
+  render();
  }else document.querySelector('.zy-map-help').textContent='Map locations are temporarily unavailable. All properties are listed on the left.';
 }
 locateProperties();
