@@ -14,6 +14,7 @@ assert.match(subscription,/subscriptions\.length!==0/);
 assert.match(subscription,/method:"POST"/);
 assert.match(subscription,/created\.status!==201/);
 assert.match(handoff,/INSTALL_GUESTY_SIGNING_SECRET/);
+assert.match(handoff,/ISOLATED_WORKER_SECRET_PUT_VERIFIED/);
 assert.match(handoff,/Unrecognized Guesty signing-secret response/);
 assert.match(receiver,/GUESTY_WEBHOOKS_ENABLED!=="true"/);
 assert.match(receiver,/verifyGuestySvix/);
