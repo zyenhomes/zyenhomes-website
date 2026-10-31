@@ -50,8 +50,8 @@ await assert.rejects(adapter.consumeLoginState(second.state),/missing, expired o
 await assert.rejects(adapter.persistLoginState({...make("c"),ttlSeconds:601}),/Invalid login state/);
 await assert.rejects(adapter.consumeLoginState("invalid"),/Invalid OAuth state/);
 // A different encryption key must never decrypt an existing record.
-const third=make("d");
 clock-=601000;
+const third=make("d");
 await adapter.persistLoginState(third);
 const wrongKey=await importEncryptionKey(webcrypto.getRandomValues(new Uint8Array(32)));
 const wrongAdapter=createAdminLoginStateAdapter(db,wrongKey,{now:()=>clock});
