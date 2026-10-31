@@ -6,7 +6,7 @@ const config=readFileSync("cloudflare/wrangler.toml","utf8");
 const workflow=readFileSync(".github/workflows/install-guesty-signing-secret.yml","utf8");
 assert.match(script,/ISOLATED_WORKER_SECRET_PUT_VERIFIED/);
 assert.match(script,/spawnSync\("\.\.\/node_modules\/\.bin\/wrangler"/);
-assert.match(script,/\["secret","put","GUESTY_WEBHOOK_SECRET","--name","zyenhomes-booking-api","--config","wrangler.toml"\]/);
+assert.match(script,/\["versions","secret","put","GUESTY_WEBHOOK_SECRET","--name","zyenhomes-booking-api","--config","wrangler.toml"\]/);
 assert.match(script,/cwd:"cloudflare"/);
 assert.match(script,/input:payload\.secret\+"\\n"/);
 assert.match(script,/maxBuffer:100000/);
@@ -19,5 +19,6 @@ assert.match(workflow,/ISOLATED_WORKER_SECRET_PUT_VERIFIED: \$\{\{ inputs\.isola
 assert.match(config,/keep_vars = true/);
 assert.match(config,/GUESTY_WEBHOOKS_ENABLED = "false"/);
 assert.match(config,/BOOKING_REQUESTS_ENABLED = "false"/);
-console.log("PASS: expected Wrangler secret-put command and safety gates found (offline only).");
+assert.doesNotMatch(script,/\["secret","put","GUESTY_WEBHOOK_SECRET"/);
+console.log("PASS: expected Wrangler version-only secret-put command and safety gates found (offline only).");
 console.log("UNVERIFIED: executable resolution, real Wrangler behavior, production binding preservation.");
