@@ -43,6 +43,8 @@ body>.zy-wrap,body>main.zy-wrap{padding-top:75px!important;margin-top:0!importan
 const f=document.querySelector('#filters');
 const params=new URLSearchParams(location.search);
 const blueMountainsOnly=params.get('area')==='blue-mountains';
+const waterfrontStart=params.get('area')==='waterfront';
+const destinationStart=blueMountainsOnly?[44.504,-80.313]:waterfrontStart?[44.13223,-78.35351]:null;
 for(const k of ['checkin','checkout','guests','bedrooms','beds'])if(params.has(k))f.elements[k].value=params.get(k);
 for(const k of ['hotTub','sauna','waterfront','pool'])f.elements[k].checked=params.get(k)==='yes';
 const today=new Date().toISOString().slice(0,10);
@@ -135,8 +137,8 @@ function render(){
  markers.eachLayer(marker=>{const x=ZYEN_PROPERTIES.find(home=>home.id===marker.options.propertyId);if(x)marker.setOpacity(eligible(x)?1:0.3)});
 }
 map.on('moveend',()=>{mapReady=true;render()});
-if(blueMountainsOnly)map.setView([44.504,-80.313],13);
-document.getElementById('reset-map').addEventListener('click',()=>{if(blueMountainsOnly)map.setView([44.504,-80.313],13);else if(markers.getLayers().length)map.fitBounds(markers.getBounds().pad(.3),{maxZoom:11});else map.setView([44.3,-80],8);});
+if(destinationStart)map.setView(destinationStart,waterfrontStart?13:13);
+document.getElementById('reset-map').addEventListener('click',()=>{if(destinationStart)map.setView(destinationStart,13);else if(markers.getLayers().length)map.fitBounds(markers.getBounds().pad(.3),{maxZoom:11});else map.setView([44.3,-80],8);});
 f.addEventListener('submit',event=>{
  event.preventDefault();
  if(f.elements.checkin.value&&f.elements.checkout.value&&f.elements.checkout.value<=f.elements.checkin.value){alert('Check-out must be after check-in.');return}
@@ -169,7 +171,7 @@ async function locateProperties(){
  }
  function refresh(){
   if(!markers.getLayers().length)return;
-  if(!blueMountainsOnly)map.fitBounds(markers.getBounds().pad(.15),{maxZoom:11});
+  if(!destinationStart)map.fitBounds(markers.getBounds().pad(.15),{maxZoom:11});
   mapReady=true;render();
  }
  refresh();
