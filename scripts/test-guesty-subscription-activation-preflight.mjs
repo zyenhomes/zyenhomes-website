@@ -20,5 +20,15 @@ assert.match(receiver,/verifyGuestySvix/);
 assert.match(wrangler,/GUESTY_WEBHOOKS_ENABLED = "false"/);
 assert.match(wrangler,/BOOKING_REQUESTS_ENABLED = "false"/);
 assert.ok(!subscription.includes("console.log(token)"));
+// Require a read-only list check before the only subscription creation call.
+const listPosition=subscription.indexOf('fetch("https://open-api.guesty.com/v1/webhooks",{headers');
+const duplicateGate=subscription.indexOf("subscriptions.length!==0");
+const postPosition=subscription.indexOf('fetch("https://open-api.guesty.com/v1/webhooks",{method:"POST"');
+assert.ok(listPosition>=0&&duplicateGate>listPosition&&postPosition>duplicateGate,"Missing ordered duplicate prevention");
+assert.equal(subscription.split('method:"POST"').length-1,2,"Unexpected POST count (OAuth and subscription only)");
+assert.match(subscription,/Creation not confirmed; check Guesty subscriptions before any retry/);
+assert.doesNotMatch(subscription,/console\.log\((?:secret|access|payload|responseBody)\)/);
+assert.match(handoff,/Object\.keys\(payload\)\.length!==1/);
+assert.match(handoff,/\^whsec_/);
 console.log("PASS: offline activation gates are present.");
 console.log("UNVERIFIED: Guesty response schema, event names, signing format, and live Worker bindings.");
