@@ -47,3 +47,10 @@ The target Worker is `zyenhomes-booking-api`, not a disposable test Worker. Its 
 **Do not run `wrangler secret put` against `zyenhomes-booking-api` as an experiment.** First validate installation and binding preservation on an isolated, already-approved disposable Worker, or obtain independently verified Cloudflare guidance. Compare before/after binding names and disabled flags without printing values. Do not create a paid Cloudflare resource merely to satisfy this test.
 
 The current handoff script requires `ISOLATED_WORKER_SECRET_PUT_VERIFIED=true` but that variable is only an operator assertion, not independent proof. Do not set it until actual evidence has been reviewed.
+
+
+## Read-only Cloudflare inspection option
+
+An existing workflow, `.github/workflows/inspect-guesty-worker-settings.yml`, can request current binding names and confirm the webhook flag is disabled without modifying the Worker. It is a manually dispatched workflow in the protected `guesty-webhook-activation` environment; **it has not been run as part of this review**. Its output is not proof of `wrangler secret put` binding preservation, and it cannot identify whether an isolated disposable Worker exists.
+
+Do not dispatch the workflow or change environment approval settings without explicit operator authorization. Any future read-only run should confirm the Cloudflare token is active and narrowly scoped, then report only binding presence and disabled state.
