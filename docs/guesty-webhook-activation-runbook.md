@@ -122,3 +122,17 @@ The operator shared successful run #1 of `Inspect Isolated Worker Deployment Ref
 Review of the pre-PR #88 test code found that `baseline(after)` repeated the **same secret-absence assertion** used by `baseline(before)`. Thus the error `Selected test secret already exists in Worker settings; stop` could occur **after** a successful `wrangler versions secret put` invocation. Earlier conclusions that this error necessarily occurred before Wrangler ran were not supported by the error message alone.
 
 PR #88 separated the preflight collision check from post-test baseline validation. Until the failed run's step logs and isolated Worker version/deployment metadata are correlated, do **not** claim no version was created or that the command preserved bindings. Do not rerun the write test merely to resolve this ambiguity. No production booking Worker write is authorized.
+
+
+## Verified GitHub Actions run #41247324968 — execution order
+
+The original workflow run was checked directly using its GitHub Actions job logs and the script at the run's exact head SHA `7c4a8491361992ac688fae7079451cd069a586f7`.
+
+- The first `baseline(before)` call (line 27) returned successfully.
+- The `wrangler versions secret put` subprocess ran (lines 33–39) and exited with status zero; otherwise the script would have thrown on line 39.
+- The script then successfully fetched the Worker settings again (line 41).
+- The second `baseline(after)` call (line 42) threw because the fictional secret was now present. That assertion was inappropriate after secret creation and has since been corrected in PR #88.
+
+**Supported conclusion:** the isolated Wrangler version-only command completed successfully and the secret binding appeared in the subsequent settings response. **Not yet supported:** that a version was definitely undeployed, that every binding was preserved, or that the live production booking Worker would behave identically. No further write test is required to establish command execution. Compare timestamped version and deployment metadata, preferably from an existing audit trail, before any activation decision.
+
+Evidence: https://github.com/zyenhomes/zyenhomes-website/actions/runs/41247324968
