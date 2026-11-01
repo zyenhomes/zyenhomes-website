@@ -429,8 +429,8 @@ body > .site-header .brand-logo img{
   if(!checkin||!checkout||typeof flatpickr!=='function')return;
   checkin.type='text';
   checkout.type='text';
-  checkin.placeholder='Select check-in and check-out';
-  checkout.placeholder='Select check-out';
+  checkin.placeholder='Check-in';
+  checkout.placeholder='Check-out';
   checkin.readOnly=true;
   checkout.readOnly=true;
   const picker=flatpickr(checkin,{
