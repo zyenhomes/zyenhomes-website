@@ -542,4 +542,25 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
  // This also lets guests open the full-screen description on every device.
  button.hidden=false;
 })();
+</script><script>
+/* Reconcile property action buttons after both independent widgets initialize. */
+(function(){
+ function alignPropertyActions(){
+  const root=document.getElementById('property');
+  const detail=root?.querySelector('.zy-detail > div:last-child');
+  const booking=root?.querySelector('.zy-request-book');
+  const amenities=root?.querySelector('.zy-amenities-toggle');
+  if(!detail||!booking||!amenities)return;
+  let row=detail.querySelector('.zy-property-actions');
+  if(!row){
+   row=document.createElement('div');
+   row.className='zy-property-actions';
+  }
+  if(row.parentElement!==detail)booking.before(row);
+  row.replaceChildren(booking,amenities);
+  row.style.cssText='display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:10px!important;width:100%!important;margin:16px 0 20px!important';
+ }
+ alignPropertyActions();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',alignPropertyActions,{once:true});
+})();
 </script><script src="zyen-116-calendar-pilot.js?v=20261101-calendar-fix-id" defer></script><script src="zyen-connected-calendar.js?v=20261101-calendar-immediate" defer></script></body></html>
