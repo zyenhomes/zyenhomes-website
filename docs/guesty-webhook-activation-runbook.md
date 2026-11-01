@@ -162,3 +162,10 @@ Operator provided the successful GitHub Actions `Inspect Isolated Worker Version
 - Script reported `PASS: latest version preserves deployed binding names and types.`
 
 This is evidence of binding name/type preservation in the **isolated test Worker** across the version-only secret updates. The earlier Cloudflare dashboard also showed the original active deployment remained selected. It does **not** prove preservation of production D1/KV/rate-limit bindings, unchanged secret values, or compatibility with Guesty's unverified signing-secret response schema. Keep the production installation workflow gated and PR #74 in Draft.
+
+
+## Subscription-before-secret delivery hazard — 2026-11-01
+
+Current `main` code confirms `cloudflare/worker.js` routes `/api/webhooks/guesty/messages` to `receiveGuestyMessageWebhook`. That receiver returns HTTP **503** whenever `GUESTY_WEBHOOKS_ENABLED` is not `"true"`; it also returns 503 if the signing secret or D1 binding is unavailable. The existing manual subscription workflow targets this endpoint and immediately creates a subscription after a zero-count check, without a separate receiver-readiness check.
+
+**Do not run the subscription-creation workflow yet.** A new subscription could receive Guesty deliveries while the receiver returns 503, triggering retries. Before creation, define a short coordinated activation window with a confirmed signing-secret retrieval/installation method, verified receiver compatibility, operational monitoring, and an approved rollback for the subscription. This is a workflow sequencing blocker, not an invitation to bypass signature verification or enable unverified processing.
