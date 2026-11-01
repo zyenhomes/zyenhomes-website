@@ -88,7 +88,7 @@ const params=new URLSearchParams(location.search);
 const blueMountainsOnly=params.get('area')==='blue-mountains';
 const waterfrontStart=params.get('area')==='waterfront';
 const destinationStart=blueMountainsOnly?[44.504,-80.313]:waterfrontStart?[44.1987974,-78.3000175]:null;
-let selectedArea=null;
+let selectedArea=['blue-mountains','waterfront','other'].includes(params.get('area'))?params.get('area'):null;
 const belongsToArea=(home,area)=>area==='blue-mountains'?home.location==='Blue Mountains':area==='waterfront'?home.id==='940-seven-oaks':area==='other'?home.location!=='Blue Mountains'&&home.id!=='940-seven-oaks':true;
 const areaMarkers=new Map();
 
@@ -213,6 +213,8 @@ function chooseArea(area){
  render();
 }
 document.querySelectorAll('.zy-area-buttons button').forEach(button=>button.addEventListener('click',()=>chooseArea(button.dataset.area)));
+// Reflect the homepage destination selection immediately on page load.
+document.querySelectorAll('.zy-area-buttons button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.area===selectedArea)));
 map.on('moveend',()=>{mapReady=true;render()});
 map.on('dragstart',()=>{if(!selectedArea)mapAreaFiltering=true});
 map.on('zoomstart',()=>{if(!selectedArea&&mapPanel.classList.contains('zy-map-open')&&mapReady)mapAreaFiltering=true});
@@ -266,7 +268,7 @@ async function locateProperties(){
  }
  function refresh(){
   if(!markers.getLayers().length)return;
-  if(!destinationStart&&!selectedArea&&!mapPanel.classList.contains('zy-map-open'))map.fitBounds(defaultOntarioBounds,{padding:[16,16]});
+  if(!selectedArea&&!mapPanel.classList.contains('zy-map-open'))map.fitBounds(defaultOntarioBounds,{padding:[16,16]});
   mapReady=true;render();
  }
  refresh();
