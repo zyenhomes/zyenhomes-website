@@ -182,7 +182,7 @@ function render(){
  document.getElementById('count').textContent=visible.length+' propert'+(visible.length===1?'y':'ies')+' in this area for your group';
  document.getElementById('results').innerHTML=visible.map(x=>{
   const query=new URLSearchParams({checkin:f.elements.checkin.value,checkout:f.elements.checkout.value,guests:f.elements.guests.value||2});
-  const url='property.html?id='+encodeURIComponent(x.id)+'&'+query;
+  const url=ZYEN_PROPERTY_URL(x)+'&'+query;
   return '<article class="zy-card"><div class="zy-card-gallery" data-gallery-id="'+x.id+'"><a href="'+url+'"><img loading="lazy" decoding="async" src="'+encodeURI(x.image)+'" alt="'+x.name+'"></a><button class="zy-card-arrow zy-card-prev" type="button" aria-label="Previous photo">‹</button><button class="zy-card-arrow zy-card-next" type="button" aria-label="Next photo">›</button><span class="zy-card-counter"></span></div><div class="zy-card-body"><p class="zy-tag">'+x.location+'</p><h2>'+x.name+'</h2><p class="zy-muted">'+x.beds+' bedrooms · '+x.baths+' bathrooms · Sleeps '+x.guests+'</p><p>'+x.feature+'</p>'+'<div class="zy-live-card-price" data-price-id="'+x.id+'" aria-live="polite"></div><a class="zy-button" href="'+url+'">View Property →</a></div></article>';
  }).join('')||'<p>No matching properties in this map area. Zoom out or select Show all.</p>';
  setupCardGalleries();
@@ -256,7 +256,7 @@ async function locateProperties(){
   if(!selectedArea||belongsToArea(home,selectedArea))marker.addTo(markers);
   const popup=document.createElement('div');
   const title=document.createElement('strong');title.textContent=home.name;
-  const link=document.createElement('a');link.href='property.html?id='+encodeURIComponent(home.id);link.textContent='View property →';
+  const link=document.createElement('a');link.href=ZYEN_PROPERTY_URL(home);link.textContent='View property →';
   popup.append(title,document.createElement('br'),link);
   marker.bindPopup(popup);
  }
