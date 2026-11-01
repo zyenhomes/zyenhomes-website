@@ -53,7 +53,7 @@ body .zy-wrap{padding-top:94px!important}
 
 /* Six-line preview for the About section, expandable on demand. */
 .zy-about-preview{position:relative;line-height:1.7}
-.zy-about-preview:not(.is-expanded){max-height:calc(1.7em * 6);overflow:hidden}
+.zy-about-preview:not(.is-expanded){max-height:calc(1.7em * 7);overflow:hidden}
 .zy-about-preview:not(.is-expanded)::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1.8em;background:linear-gradient(transparent,#fff);pointer-events:none}
 .zy-about-more{display:inline-flex;align-items:center;margin:10px 0 16px;padding:7px 0;border:0;background:transparent;color:#174f41;font:inherit;font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 /* Full-screen About description overlay. */
@@ -482,9 +482,14 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
   nodes.push(current);current=current.nextElementSibling;
  }
  if(!nodes.length)return;
+ // Keep feature cards and section headings visible in their normal layout.
+ // Only collapse the descriptive paragraphs.
+ const descriptionNodes=nodes.filter(node=>node.matches('p.zy-info-intro, p'));
+ if(!descriptionNodes.length)return;
  const preview=document.createElement('div');preview.className='zy-about-preview';
- about.after(preview);
- nodes.forEach(node=>preview.append(node));
+ const lastSection=nodes.filter(node=>!descriptionNodes.includes(node)).pop();
+ (lastSection||about).after(preview);
+ descriptionNodes.forEach(node=>preview.append(node));
  const button=document.createElement('button');button.type='button';button.className='zy-about-more';
  button.textContent='Show more ↓';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-expanded','false');
  preview.after(button);
