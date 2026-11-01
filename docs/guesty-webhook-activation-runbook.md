@@ -115,3 +115,10 @@ Operator shared successful run #1 of `Inspect Isolated Worker Version History (R
 ## Isolated deployment reference inspection — 2026-10-31
 
 The operator shared successful run #1 of `Inspect Isolated Worker Deployment References (Read Only)`: HTTP 200 for versions and deployments, 6 version entries, 4 deployment entries, 4 deployment-version references, and **0 references absent from the returned version listing**. This confirms that the four returned deployment references match entries in the returned version page. It does not establish active traffic allocations, explain existing fictional test-secret bindings, or verify preservation of bindings in a new undeployed version. The workflow made no changes.
+
+
+## Correction to isolated version-test interpretation — 2026-10-31
+
+Review of the pre-PR #88 test code found that `baseline(after)` repeated the **same secret-absence assertion** used by `baseline(before)`. Thus the error `Selected test secret already exists in Worker settings; stop` could occur **after** a successful `wrangler versions secret put` invocation. Earlier conclusions that this error necessarily occurred before Wrangler ran were not supported by the error message alone.
+
+PR #88 separated the preflight collision check from post-test baseline validation. Until the failed run's step logs and isolated Worker version/deployment metadata are correlated, do **not** claim no version was created or that the command preserved bindings. Do not rerun the write test merely to resolve this ambiguity. No production booking Worker write is authorized.
