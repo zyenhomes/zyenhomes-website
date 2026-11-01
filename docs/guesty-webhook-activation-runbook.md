@@ -150,3 +150,15 @@ This is strong evidence that the three isolated Wrangler test attempts created W
 The operator supplied a Cloudflare `zyenhomes-webhook-test` Deployments screenshot showing **Active deployment version `0514e419`** (deployed about one day prior), with the three newer Wrangler-created secret-update versions `8482caf6`, `d5c1f361`, and `42b76d47` listed separately as `Ready`. This is strong direct evidence that the version-only secret operations did **not** replace the active deployment. The dashboard also displays **0% traffic** for `0514e419`; do not infer a 100% traffic allocation or identify other traffic-serving versions from this screenshot alone.
 
 The evidence validates isolated version creation without changing the displayed active deployment, **not** full preservation of bindings in the newly created versions or behavior against the production booking Worker. Keep production secret installation gated.
+
+
+## Isolated version binding preservation verified — 2026-11-01
+
+Operator provided the successful GitHub Actions `Inspect Isolated Worker Version Bindings (Read Only)` output:
+- Latest listed version differs from the latest deployment's single referenced version.
+- Deployed version: 3 bindings; latest version: 6 bindings.
+- Missing or type-changed deployed binding names/types: **0**.
+- Additional bindings: **3**.
+- Script reported `PASS: latest version preserves deployed binding names and types.`
+
+This is evidence of binding name/type preservation in the **isolated test Worker** across the version-only secret updates. The earlier Cloudflare dashboard also showed the original active deployment remained selected. It does **not** prove preservation of production D1/KV/rate-limit bindings, unchanged secret values, or compatibility with Guesty's unverified signing-secret response schema. Keep the production installation workflow gated and PR #74 in Draft.
