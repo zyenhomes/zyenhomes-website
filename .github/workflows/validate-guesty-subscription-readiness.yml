@@ -1,0 +1,20 @@
+name: Validate Guesty Subscription Readiness Gate (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/create-guesty-message-subscription.mjs'
+      - '.github/workflows/create-guesty-message-subscription.yml'
+      - 'scripts/test-guesty-subscription-readiness-offline.mjs'
+      - '.github/workflows/validate-guesty-subscription-readiness.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/test-guesty-subscription-readiness-offline.mjs
