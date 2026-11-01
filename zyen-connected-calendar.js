@@ -87,7 +87,9 @@
     // Include the following month to support stays crossing month boundaries.
     const to=iso(new Date(month.getFullYear(),month.getMonth()+2,1));
     if(to<=from){render();return;}
-    result.textContent="Loading Guesty calendar…";
+    result.textContent="Loading Guesty availability…";
+    // Draw the month immediately. Until availability is verified, dates remain disabled.
+    render();
     try {
       const url="https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/public/calendar/"+encodeURIComponent(propertyId)+"?from="+from+"&to="+to;
       const response=await fetch(url);
