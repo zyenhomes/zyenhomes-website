@@ -70,6 +70,11 @@ body .zy-wrap{padding-top:94px!important}
 .zy-about-modal-content p{font-size:16px;line-height:1.8}
 body.zy-about-locked{overflow:hidden}
 @media(max-width:600px){.zy-about-modal-head{min-height:65px;padding:10px 16px}.zy-about-modal-head strong{font-size:20px}.zy-about-modal-content{padding:18px 18px 60px}}
+/* Match the site's floating translucent green header inside Show More. */
+.zy-about-modal-head{position:sticky!important;top:0!important;z-index:10!important;background:rgba(23,63,53,.78)!important;border-bottom:1px solid rgba(255,255,255,.22)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important}
+.zy-about-modal-head strong{color:#fff!important}
+.zy-about-modal-head .zy-about-close{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.55)!important;color:#fff!important}
+.zy-about-modal-head .zy-about-close:hover{background:rgba(255,255,255,.28)!important}
 /* Align booking and amenities as equal-width property actions. */
 .zy-property-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0 20px;width:100%}
 .zy-property-actions .zy-request-book,.zy-property-actions .zy-amenities-toggle{display:flex!important;align-items:center;justify-content:center;text-align:center;box-sizing:border-box;width:100%!important;max-width:none!important;min-height:49px;margin:0!important;padding:12px 10px!important;border-radius:10px;font-size:15px;text-decoration:none}
