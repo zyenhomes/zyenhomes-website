@@ -20,11 +20,11 @@ async function inspect(){
  if(payload?.success!==true||!Array.isArray(payload.result?.bindings))throw Error("Unexpected isolated Worker settings");
  return payload.result.bindings;
 }
-function baseline(bindings){
+function baseline(bindings,{requireUnused=false}={}){
  const variable=bindings.find(b=>b.name==="TEST_PRESERVE_VARIABLE");
  const dummy=bindings.find(b=>b.name==="TEST_DUMMY_SECRET");
  if(variable?.text!=="keep-this-value"||dummy?.type!=="secret_text")throw Error("Isolated baseline invalid");
- if(bindings.some(b=>b.name===secretName))throw Error("Selected test secret already exists in Worker settings; stop");
+ if(requireUnused&&bindings.some(b=>b.name===secretName))throw Error("Selected test secret already exists in Worker settings; stop");
 }
 // A version-only operation must not change the deployment history.
 async function deploymentFingerprint(){
@@ -38,7 +38,7 @@ async function deploymentFingerprint(){
 }
 const beforeDeployment=await deploymentFingerprint();
 const before=await inspect();
-baseline(before);
+baseline(before,{requireUnused:true});
 const dir=mkdtempSync(join(tmpdir(),"zyenhomes-version-only-"));
 try{
  const config=join(dir,"wrangler.toml");
