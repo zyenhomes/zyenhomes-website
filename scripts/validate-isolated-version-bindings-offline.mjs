@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const script=readFileSync("scripts/inspect-isolated-version-bindings.mjs","utf8");
+const workflow=readFileSync(".github/workflows/inspect-isolated-version-bindings.yml","utf8");
+assert.match(script,/workers\/scripts\/zyenhomes-webhook-test/);
+assert.match(script,/method:"GET"/);
+assert.match(script,/resources\?\.bindings/);
+assert.match(script,/missing.length/);
+assert.doesNotMatch(script,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/i);
+assert.doesNotMatch(script,/spawnSync|execSync|wrangler/);
+assert.doesNotMatch(script,/zyenhomes-booking-api/);
+assert.match(workflow,/workflow_dispatch:/);
+assert.match(workflow,/environment: guesty-webhook-activation/);
+console.log("PASS: isolated version-binding inspection is read-only.");
