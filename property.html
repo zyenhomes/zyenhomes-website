@@ -516,7 +516,7 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
  about.after(preview);
  nodes.forEach(node=>preview.append(node));
  const button=document.createElement('button');button.type='button';button.className='zy-about-more';
- button.textContent='Show more ↓';button.setAttribute('aria-expanded','false');
+ button.textContent='Show more ↓';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-expanded','false');
  preview.after(button);
  const overlay=document.createElement('div');
  overlay.className='zy-about-overlay';overlay.hidden=true;
@@ -531,16 +531,15 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
  nodes.forEach(node=>body.append(node.cloneNode(true)));
  overlay.append(head,body);document.body.append(overlay);
  const close=()=>{
-  overlay.hidden=true;document.body.classList.remove('zy-about-locked');button.focus();
+  overlay.hidden=true;button.setAttribute('aria-expanded','false');document.body.classList.remove('zy-about-locked');button.focus();
  };
  button.addEventListener('click',()=>{
-  overlay.hidden=false;overlay.scrollTop=0;document.body.classList.add('zy-about-locked');closeButton.focus();
+  overlay.hidden=false;overlay.scrollTop=0;button.setAttribute('aria-expanded','true');document.body.classList.add('zy-about-locked');closeButton.focus();
  });
  closeButton.addEventListener('click',close);
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!overlay.hidden)close()});
- // Keep the six-line preview; hide the action when all content already fits.
- requestAnimationFrame(()=>{
-  if(preview.scrollHeight<=preview.clientHeight+3)button.hidden=true;
- });
+ // Keep Show more available even when a browser miscalculates preview height.
+ // This also lets guests open the full-screen description on every device.
+ button.hidden=false;
 })();
 </script><script src="zyen-116-calendar-pilot.js?v=20261101-calendar-fix-id" defer></script><script src="zyen-connected-calendar.js?v=20261101-calendar-immediate" defer></script></body></html>
