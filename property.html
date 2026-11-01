@@ -56,6 +56,17 @@ body .zy-wrap{padding-top:94px!important}
 .zy-about-preview:not(.is-expanded){max-height:calc(1.7em * 6);overflow:hidden}
 .zy-about-preview:not(.is-expanded)::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1.8em;background:linear-gradient(transparent,#fff);pointer-events:none}
 .zy-about-more{display:inline-flex;align-items:center;margin:10px 0 16px;padding:7px 0;border:0;background:transparent;color:#174f41;font:inherit;font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+/* Full-screen About description overlay. */
+.zy-about-overlay[hidden]{display:none!important}
+.zy-about-overlay{position:fixed;inset:0;z-index:3500;background:#fff;overflow-y:auto;overscroll-behavior:contain}
+.zy-about-modal-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;gap:18px;min-height:74px;padding:12px max(20px,calc((100vw - 900px)/2));background:rgba(255,255,255,.96);border-bottom:1px solid #dce6df;backdrop-filter:blur(8px)}
+.zy-about-close{display:grid;place-items:center;width:42px;height:42px;flex:none;border:1px solid #cad9cf;border-radius:50%;background:#f2f6f3;color:#173f35;font-size:27px;cursor:pointer}
+.zy-about-modal-head strong{font:700 23px Georgia,serif;color:#173f35}
+.zy-about-modal-content{max-width:900px;margin:0 auto;padding:30px 22px 75px;color:#334c40;line-height:1.8}
+.zy-about-modal-content h2{font:700 clamp(24px,4vw,36px) Georgia,serif;color:#173f35;margin:24px 0 15px}
+.zy-about-modal-content p{font-size:16px;line-height:1.8}
+body.zy-about-locked{overflow:hidden}
+@media(max-width:600px){.zy-about-modal-head{min-height:65px;padding:10px 16px}.zy-about-modal-head strong{font-size:20px}.zy-about-modal-content{padding:18px 18px 60px}}
 /* Align booking and amenities as equal-width property actions. */
 .zy-property-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0 20px;width:100%}
 .zy-property-actions .zy-request-book,.zy-property-actions .zy-amenities-toggle{display:flex!important;align-items:center;justify-content:center;text-align:center;box-sizing:border-box;width:100%!important;max-width:none!important;min-height:49px;margin:0!important;padding:12px 10px!important;border-radius:10px;font-size:15px;text-decoration:none}
@@ -507,17 +518,29 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
  const button=document.createElement('button');button.type='button';button.className='zy-about-more';
  button.textContent='Show more ↓';button.setAttribute('aria-expanded','false');
  preview.after(button);
- const update=()=>{
-  const expanded=preview.classList.toggle('is-expanded');
-  button.textContent=expanded?'Show less ↑':'Show more ↓';
-  button.setAttribute('aria-expanded',String(expanded));
+ const overlay=document.createElement('div');
+ overlay.className='zy-about-overlay';overlay.hidden=true;
+ overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
+ overlay.setAttribute('aria-label','Full property description');
+ const head=document.createElement('div');head.className='zy-about-modal-head';
+ const closeButton=document.createElement('button');closeButton.type='button';closeButton.className='zy-about-close';
+ closeButton.textContent='×';closeButton.setAttribute('aria-label','Close description');
+ const title=document.createElement('strong');title.textContent=about.textContent.trim();
+ head.append(closeButton,title);
+ const body=document.createElement('div');body.className='zy-about-modal-content';
+ nodes.forEach(node=>body.append(node.cloneNode(true)));
+ overlay.append(head,body);document.body.append(overlay);
+ const close=()=>{
+  overlay.hidden=true;document.body.classList.remove('zy-about-locked');button.focus();
  };
- button.addEventListener('click',update);
- // Avoid showing an unnecessary toggle for short descriptions.
+ button.addEventListener('click',()=>{
+  overlay.hidden=false;overlay.scrollTop=0;document.body.classList.add('zy-about-locked');closeButton.focus();
+ });
+ closeButton.addEventListener('click',close);
+ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!overlay.hidden)close()});
+ // Keep the six-line preview; hide the action when all content already fits.
  requestAnimationFrame(()=>{
-  if(preview.scrollHeight<=preview.clientHeight+3){
-   preview.classList.add('is-expanded');button.hidden=true;
-  }
+  if(preview.scrollHeight<=preview.clientHeight+3)button.hidden=true;
  });
 })();
 </script><script src="zyen-116-calendar-pilot.js?v=20261101-calendar-fix-id" defer></script><script src="zyen-connected-calendar.js?v=20261101-calendar-immediate" defer></script></body></html>
