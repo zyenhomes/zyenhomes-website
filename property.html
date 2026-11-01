@@ -17,6 +17,14 @@ body .site-header nav a,body .site-header .zy-header-back{color:#fff!important}
 body .zy-wrap{padding-top:94px!important}
 @media(max-width:850px){body .zy-wrap{padding-top:90px!important}}
 @media(max-width:550px){body .zy-wrap{padding-top:85px!important}}
+
+/* Request-to-book: dates and guest count above the always-visible calendar. */
+.zy-book-dialog .zy-116-booking>h2{display:none}
+.zy-book-dialog .zy-116-booking{padding:14px!important;background:#fff!important;border:0!important}
+.zy-book-dialog .zy-116-controls{margin:8px 0 14px!important}
+.zy-book-dialog .zy-116-calendar{max-width:100%!important;width:100%!important;display:block!important}
+.zy-book-dialog .zy-116-calendar[hidden]{display:block!important}
+@media(max-width:600px){.zy-book-dialog{padding:18px}.zy-book-dialog h2{font-size:27px}.zy-book-dialog .zy-116-booking{padding:4px!important}}
 /* Clean property view: booking tools open only on request. */
 .zy-request-book{display:block;width:100%;max-width:330px;margin:18px 0;padding:15px 22px;border:0;border-radius:10px;background:#174f41;color:white;font:inherit;font-weight:700;cursor:pointer}
 .zy-book-overlay[hidden]{display:none!important}.zy-book-overlay{position:fixed;inset:0;z-index:3000;background:rgba(9,30,23,.68);display:flex;align-items:center;justify-content:center;padding:16px}
@@ -389,4 +397,4 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
   el.style.display='none';
  });
 })();
-</script><script src="zyen-116-calendar-pilot.js?v=20261030-guest-limits" defer></script><script src="zyen-connected-calendar.js?v=20261030-guest-limits" defer></script></body></html>
+</script><script src="zyen-116-calendar-pilot.js?v=20261101-calendar-visible" defer></script><script src="zyen-connected-calendar.js?v=20261101-calendar-visible" defer></script></body></html>
