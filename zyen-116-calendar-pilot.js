@@ -39,7 +39,7 @@
     label.append(input);controls.append(label);fields[name]=input;
   }
   // Enforce the individual property's licensed guest capacity.
-  const maxGuests = Number(window.ZYEN_PROPERTIES?.find(p => p.id === propertyId)?.guests) || 20;
+  const maxGuests = Number(window.ZYEN_PROPERTIES?.find(p => p.id === "116-tyrolean")?.guests) || 20;
   fields.Guests.max = String(maxGuests);
   fields.Guests.setAttribute("aria-label","Guests (maximum "+maxGuests+")");
   const guestLimit = document.createElement("small");
