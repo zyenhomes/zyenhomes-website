@@ -11,6 +11,12 @@
 .zy-amenities-panel li::before{content:"✓";color:#247b59;font-weight:800;margin-right:9px}
 @media(max-width:600px){.zy-amenities-panel ul{grid-template-columns:1fr}.zy-amenities-toggle{width:100%;justify-content:center}}
 </style><style>
+/* Consistent floating transparent navigation on every property detail page. */
+body .site-header{position:fixed!important;top:0;left:0;right:0;z-index:1100;background:rgba(23,63,53,.76)!important;border-bottom:1px solid rgba(255,255,255,.20)!important;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);color:#fff!important}
+body .site-header nav a,body .site-header .zy-header-back{color:#fff!important}
+body .zy-wrap{padding-top:94px!important}
+@media(max-width:850px){body .zy-wrap{padding-top:90px!important}}
+@media(max-width:550px){body .zy-wrap{padding-top:85px!important}}
 /* Clean property view: booking tools open only on request. */
 .zy-request-book{display:block;width:100%;max-width:330px;margin:18px 0;padding:15px 22px;border:0;border-radius:10px;background:#174f41;color:white;font:inherit;font-weight:700;cursor:pointer}
 .zy-book-overlay[hidden]{display:none!important}.zy-book-overlay{position:fixed;inset:0;z-index:3000;background:rgba(9,30,23,.68);display:flex;align-items:center;justify-content:center;padding:16px}
