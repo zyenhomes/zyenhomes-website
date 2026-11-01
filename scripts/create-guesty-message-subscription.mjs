@@ -3,6 +3,7 @@
 // Never log credentials, tokens, webhook URLs, response bodies or guest information.
 const confirmation=process.env.ACTIVATION_CONFIRMATION;
 if(confirmation!=="CREATE_GUESTY_MESSAGE_SUBSCRIPTION")throw Error("Explicit confirmation required");
+if(process.env.RECEIVER_ACTIVATION_READY!=="true")throw Error("Coordinated receiver activation readiness not approved; stop");
 const id=process.env.GUESTY_OPEN_API_CLIENT_ID,secret=process.env.GUESTY_OPEN_API_CLIENT_SECRET;
 if(!id||!secret)throw Error("Missing Open API environment secrets");
 const endpoint="https://zyenhomes-booking-api.brendan-nguyen-90f.workers.dev/api/webhooks/guesty/messages";
