@@ -68,7 +68,11 @@ body>.zy-wrap,body>main.zy-wrap{padding-top:75px!important;margin-top:0!importan
 .zy-area-buttons button{border:1px solid #b6cbc0;background:white;color:#174f41;border-radius:999px;padding:11px 18px;font:inherit;font-weight:650;cursor:pointer}
 .zy-area-buttons button[aria-pressed="true"]{background:#174f41;color:white;border-color:#174f41}
 @media(max-width:600px){.zy-area-buttons{gap:7px}.zy-area-buttons button{font-size:12px;padding:10px 12px}}
-</style></head><body><header class="site-header"><a class="brand brand-logo" href="index.html"><img src="Zyen Homes Logo(2).webp" alt="Zyen Homes"></a><a class="zy-scroll-top" href="#page-top" aria-label="Back to top">↑ Back to Top</a></header><main class="zy-wrap" id="page-top"><div class="zy-intro"><h1 class="zy-title">Explore All Properties</h1></div><form id="filters" class="zy-form"><label>Check-in<input type="text" name="checkin" placeholder="Select check-in" readonly aria-haspopup="dialog" autocomplete="off"></label><label>Check-out<input type="text" name="checkout" placeholder="Select check-out" readonly aria-haspopup="dialog" autocomplete="off"></label><label>Guests<input type="number" name="guests" min="1" value="2"></label><button class="zy-button" type="submit">Find Properties</button><div class="zy-more-filter-row"><button type="button" id="zy-more-toggle" aria-expanded="false" aria-controls="zy-more-filters">More Filters <span aria-hidden="true">⌄</span></button><button type="button" id="zy-clear-filters">Clear filters</button></div><div id="zy-more-filters" hidden><label>Bedrooms<select name="bedrooms"><option value="">Any bedrooms</option><option value="1">1 bedroom</option><option value="2">2 bedrooms</option><option value="3">3 bedrooms</option><option value="4">4 bedrooms</option><option value="5">5 bedrooms</option><option value="6">6+ bedrooms</option></select></label><label>Beds<select name="beds"><option value="">Any beds</option><option value="2">2+</option><option value="4">4+</option><option value="6">6+</option><option value="8">8+</option><option value="10">10+</option><option value="12">12+</option><option value="14">14+</option><option value="16">16+</option></select></label><label class="zy-filter-check"><input type="checkbox" name="hotTub" value="yes"><span>Hot Tub</span></label><label class="zy-filter-check"><input type="checkbox" name="sauna" value="yes"><span>Sauna</span></label><label class="zy-filter-check"><input type="checkbox" name="waterfront" value="yes"><span>Waterfront</span></label><label class="zy-filter-check"><input type="checkbox" name="pool" value="yes"><span>Swimming Pool</span></label><p class="zy-filter-note">Bed-count results include only properties with confirmed bed totals.</p></div></form><div class="zy-notice">Map results are filtered by guest capacity, not confirmed live availability. Check Guesty for booking availability.</div><div class="zy-area-buttons" role="group" aria-label="Filter properties by destination"><button type="button" data-area="blue-mountains" aria-pressed="false">Blue Mountains</button><button type="button" data-area="waterfront" aria-pressed="false">Waterfront Cottage</button><button type="button" data-area="other" aria-pressed="false">Toronto and Other Areas</button></div><button id="zy-map-toggle" class="zy-map-toggle" type="button" aria-expanded="false" aria-controls="property-map">Show Map</button><div class="zy-map-layout"><section class="zy-results-panel"><div class="zy-results-heading"><h2>Vacation Rentals</h2><button id="reset-map" type="button">Show all</button></div><p id="count" class="zy-muted"></p><div id="results" class="zy-grid"></div></section><aside class="zy-map-panel"><div id="property-map" role="region" aria-label="Map of Zyen Homes vacation rentals"></div><p class="zy-map-help">Map pins show property locations; addresses are not displayed. Zoom or move the map to filter properties.</p></aside></div></main><footer class="zy-foot">Zyen Homes Property Management · <a href="mailto:info@zyenhomes.com">Contact Us</a></footer><script src="properties-data.js?v=20261031-branded-names"></script><script src="featured-galleries.js?v=20261030"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+/* Destination filters remain on one horizontally scrollable row on phones. */
+.zy-area-buttons{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;-webkit-overflow-scrolling:touch;gap:7px}
+.zy-area-buttons button{flex:1 0 auto;white-space:nowrap}
+@media(max-width:600px){.zy-area-buttons button{font-size:11px;padding:10px 9px}}
+</style></head><body><header class="site-header"><a class="brand brand-logo" href="index.html"><img src="Zyen Homes Logo(2).webp" alt="Zyen Homes"></a><a class="zy-scroll-top" href="#page-top" aria-label="Back to top">↑ Back to Top</a></header><main class="zy-wrap" id="page-top"><div class="zy-intro"><h1 class="zy-title">Explore All Properties</h1></div><form id="filters" class="zy-form"><label>Check-in<input type="text" name="checkin" placeholder="Select check-in" readonly aria-haspopup="dialog" autocomplete="off"></label><label>Check-out<input type="text" name="checkout" placeholder="Select check-out" readonly aria-haspopup="dialog" autocomplete="off"></label><label>Guests<input type="number" name="guests" min="1" value="2"></label><button class="zy-button" type="submit">Find Properties</button><div class="zy-more-filter-row"><button type="button" id="zy-more-toggle" aria-expanded="false" aria-controls="zy-more-filters">More Filters <span aria-hidden="true">⌄</span></button><button type="button" id="zy-clear-filters">Clear filters</button></div><div id="zy-more-filters" hidden><label>Bedrooms<select name="bedrooms"><option value="">Any bedrooms</option><option value="1">1 bedroom</option><option value="2">2 bedrooms</option><option value="3">3 bedrooms</option><option value="4">4 bedrooms</option><option value="5">5 bedrooms</option><option value="6">6+ bedrooms</option></select></label><label>Beds<select name="beds"><option value="">Any beds</option><option value="2">2+</option><option value="4">4+</option><option value="6">6+</option><option value="8">8+</option><option value="10">10+</option><option value="12">12+</option><option value="14">14+</option><option value="16">16+</option></select></label><label class="zy-filter-check"><input type="checkbox" name="hotTub" value="yes"><span>Hot Tub</span></label><label class="zy-filter-check"><input type="checkbox" name="sauna" value="yes"><span>Sauna</span></label><label class="zy-filter-check"><input type="checkbox" name="waterfront" value="yes"><span>Waterfront</span></label><label class="zy-filter-check"><input type="checkbox" name="pool" value="yes"><span>Swimming Pool</span></label><p class="zy-filter-note">Bed-count results include only properties with confirmed bed totals.</p></div></form><div class="zy-notice">Map results are filtered by guest capacity, not confirmed live availability. Check Guesty for booking availability.</div><div class="zy-area-buttons" role="group" aria-label="Filter properties by destination"><button type="button" data-area="blue-mountains" aria-pressed="false">Blue Mountains</button><button type="button" data-area="waterfront" aria-pressed="false">Waterfront Cottages</button><button type="button" data-area="other" aria-pressed="false">Toronto and Other Areas</button></div><button id="zy-map-toggle" class="zy-map-toggle" type="button" aria-expanded="false" aria-controls="property-map">Show Map</button><div class="zy-map-layout"><section class="zy-results-panel"><div class="zy-results-heading"><h2>Vacation Rentals</h2><button id="reset-map" type="button">Show all</button></div><p id="count" class="zy-muted"></p><div id="results" class="zy-grid"></div></section><aside class="zy-map-panel"><div id="property-map" role="region" aria-label="Map of Zyen Homes vacation rentals"></div><p class="zy-map-help">Pins show approximate property areas, not exact addresses. All matching properties remain listed below.</p></aside></div></main><footer class="zy-foot">Zyen Homes Property Management · <a href="mailto:info@zyenhomes.com">Contact Us</a></footer><script src="properties-data.js?v=20261031-branded-names"></script><script src="featured-galleries.js?v=20261030"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
 const f=document.querySelector('#filters');
 const params=new URLSearchParams(location.search);
 const blueMountainsOnly=params.get('area')==='blue-mountains';
@@ -82,7 +86,7 @@ for(const k of ['checkin','checkout','guests','bedrooms','beds'])if(params.has(k
 for(const k of ['hotTub','sauna','waterfront','pool'])f.elements[k].checked=params.get(k)==='yes';
 const today=new Date().toISOString().slice(0,10);
 
-const map=L.map('property-map',{scrollWheelZoom:false}).setView([44.3,-80.0],8);
+const map=L.map('property-map',{scrollWheelZoom:false}).setView([44.3,-79.7],8);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
 const locations=new Map();
 const markers=L.featureGroup().addTo(map);
@@ -156,11 +160,9 @@ function render(){
  const visible=ZYEN_PROPERTIES.filter(x=>{
   if(!eligible(x))return false;
   if(selectedArea)return belongsToArea(x,selectedArea);
-  if(!mapReady)return true;
-  const pos=locations.get(x.id);
-  return !pos || map.getBounds().contains(pos);
+  return true; // A map viewport must not hide properties in Explore.
  });
- document.getElementById('count').textContent=visible.length+' propert'+(visible.length===1?'y':'ies')+' in this area for your group';
+ document.getElementById('count').textContent=visible.length+' propert'+(visible.length===1?'y':'ies')+' to explore'+(selectedArea?' in this destination':'');
  document.getElementById('results').innerHTML=visible.map(x=>{
   const query=new URLSearchParams({checkin:f.elements.checkin.value,checkout:f.elements.checkout.value,guests:f.elements.guests.value||2});
   const url='property.html?id='+encodeURIComponent(x.id)+'&'+query;
@@ -193,76 +195,62 @@ function chooseArea(area){
  render();
 }
 document.querySelectorAll('.zy-area-buttons button').forEach(button=>button.addEventListener('click',()=>chooseArea(button.dataset.area)));
-map.on('moveend',()=>{mapReady=true;render()});
+map.on('moveend',()=>{mapReady=true;});
 const mapToggle=document.getElementById('zy-map-toggle');
 const mapPanel=document.querySelector('.zy-map-panel');
 mapToggle.addEventListener('click',()=>{
  const opened=mapPanel.classList.toggle('zy-map-open');
  mapToggle.textContent=opened?'Hide Map':'Show Map';
  mapToggle.setAttribute('aria-expanded',String(opened));
- if(opened)requestAnimationFrame(()=>{map.invalidateSize();render()});
+ if(opened)requestAnimationFrame(()=>{map.invalidateSize();fitAllMapPins();});
 });
 
 if(destinationStart)map.setView(destinationStart,waterfrontStart?13:13);
-document.getElementById('reset-map').addEventListener('click',()=>{if(destinationStart)map.setView(destinationStart,13);else if(markers.getLayers().length)map.fitBounds(markers.getBounds().pad(.3),{maxZoom:11});else map.setView([44.3,-80],8);});
+document.getElementById('reset-map').addEventListener('click',()=>{selectedArea=null;document.querySelectorAll('.zy-area-buttons button').forEach(b=>b.setAttribute('aria-pressed','false'));syncAreaMarkers();fitAllMapPins();render();});
 f.addEventListener('submit',event=>{
  event.preventDefault();
  if(f.elements.checkin.value&&f.elements.checkout.value&&f.elements.checkout.value<=f.elements.checkin.value){alert('Check-out must be after check-in.');return}
  const query=new URLSearchParams(new FormData(f));history.replaceState(null,'','?'+query);render();
 });
 render();
-async function locateProperties(){
- // Use actual address coordinates for pins, while displaying only branded names.
- // Cache successful lookups to avoid repeat geocoding on subsequent visits.
- const known={'873235-5th-line-ehs':[43.961200125646286,-80.00537533722908],'940-seven-oaks':[44.198960,-78.300013]};
- const cacheKey='zyen-property-map-geocodes-v2';
- let cached={};
- try{cached=JSON.parse(localStorage.getItem(cacheKey)||'{}')}catch(e){}
- function addPin(home,coords){
-  if(!Array.isArray(coords)||coords.length!==2||!coords.every(Number.isFinite))return;
-  const pos=L.latLng(coords[0],coords[1]);
+// Regional overview: approximate pins deliberately protect exact guest addresses.
+// All listings receive a marker; no third-party address geocoding is needed.
+const mapRegions={
+ 'Blue Mountains':[44.505,-80.313],
+ 'Waterfront Cottage':[44.199,-78.300],
+ 'Orangeville, Ontario':[43.961,-80.005],
+ 'Liberty Village, Toronto':[43.639,-79.419]
+};
+function fitAllMapPins(){
+ const selected=ZYEN_PROPERTIES.filter(home=>!selectedArea||belongsToArea(home,selectedArea));
+ const points=selected.map(home=>locations.get(home.id)).filter(Boolean);
+ if(points.length)map.fitBounds(L.latLngBounds(points).pad(.22),{maxZoom:selectedArea?12:9,animate:false});
+ else map.setView([44.2,-79.6],8);
+}
+function locateProperties(){
+ const counters=new Map();
+ for(const home of ZYEN_PROPERTIES){
+  const region=mapRegions[home.location]||[44.505,-80.313];
+  const n=counters.get(home.location)||0;
+  counters.set(home.location,n+1);
+  // Small deterministic offsets indicate approximate area, not precise addresses.
+  const angle=n*2.3999632297;
+  const radius=home.location==='Blue Mountains'?0.007+0.003*Math.sqrt(n):0;
+  const pos=L.latLng(region[0]+Math.sin(angle)*radius,region[1]+Math.cos(angle)*radius);
   locations.set(home.id,pos);
   const marker=L.marker(pos,{propertyId:home.id});
   areaMarkers.set(home.id,marker);
-  if(!selectedArea||belongsToArea(home,selectedArea))marker.addTo(markers);
+  marker.addTo(markers);
   const popup=document.createElement('div');
   const title=document.createElement('strong');title.textContent=home.name;
+  const note=document.createElement('small');note.textContent='Approximate area';
   const link=document.createElement('a');link.href='property.html?id='+encodeURIComponent(home.id);link.textContent='View property →';
-  popup.append(title,document.createElement('br'),link);
+  popup.append(title,document.createElement('br'),note,document.createElement('br'),link);
   marker.bindPopup(popup);
  }
- const pending=[];
- for(const home of ZYEN_PROPERTIES){
-  const coords=known[home.id]||cached[home.id];
-  if(coords)addPin(home,coords);
-  else if(addresses[home.id])pending.push(home);
- }
- function refresh(){
-  if(!markers.getLayers().length)return;
-  if(!destinationStart)map.fitBounds(markers.getBounds().pad(.15),{maxZoom:11});
-  mapReady=true;render();
- }
- refresh();
- for(const home of pending){
-  try{
-   const response=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(addresses[home.id]),{headers:{Accept:'application/json'}});
-   if(response.ok){
-    const data=await response.json();
-    if(data.length){
-     const coords=[Number(data[0].lat),Number(data[0].lon)];
-     if(coords.every(Number.isFinite)){
-      cached[home.id]=coords;
-      try{localStorage.setItem(cacheKey,JSON.stringify(cached))}catch(e){}
-      addPin(home,coords);
-      refresh();
-     }
-    }
-   }
-  }catch(error){console.warn('Map lookup failed for property',home.id,error)}
-  // Respect the public geocoding service's request rate.
-  await new Promise(resolve=>setTimeout(resolve,1100));
- }
- if(!markers.getLayers().length)document.querySelector('.zy-map-help').textContent='Property map locations are temporarily unavailable.';
+ fitAllMapPins();
+ mapReady=true;
+ render();
 }
 locateProperties();
 </script><script>(function(){const h=document.querySelector('body>.site-header');if(!h)return;const update=()=>h.classList.toggle('zy-scrolled',window.scrollY>30);window.addEventListener('scroll',update,{passive:true});update();})();</script><script src="zyen-all-pricing.js?v=20261027-confirmed-unavailable" defer></script><script src="zyen-range-calendar.js?v=20261027-1" defer></script></body></html>
