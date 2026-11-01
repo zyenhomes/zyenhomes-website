@@ -16,3 +16,6 @@ window.ZYEN_PROPERTIES=[
 {id:"117-125-fairway",name:"The Fairway Village Retreat",location:"Blue Mountains",beds:2,baths:2,guests:6,feature:"5-Minute Walk to Village & Skiing · Seasonal Community Pool · Year-Round Community Hot Tub · Walk to Golf",image:""},
 {id:"9-elite-caledon",name:"The Caledon Golf Retreat",location:"Caledon, Ontario",beds:6,baths:3.5,guests:12,feature:"Hot Tub · Near TPC Toronto at Osprey Valley Golf Course · Approx. 14-Minute Drive",image:""},
 ];
+// Public-facing property URLs use the branded name, not the internal address-based ID.
+window.ZYEN_PROPERTY_SLUG=function(name){return String(name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')};
+window.ZYEN_PROPERTY_URL=function(home){return 'property.html?property='+encodeURIComponent(window.ZYEN_PROPERTY_SLUG(home.name))};
