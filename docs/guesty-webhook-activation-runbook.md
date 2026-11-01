@@ -178,3 +178,17 @@ The current signing-secret handoff script uses `wrangler versions secret put`, w
 A separate, explicitly authorized deployment/rollout of the reviewed version is required. Before any such rollout, independently verify the new version preserves production `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, existing secrets and flags, and that `GUESTY_WEBHOOKS_ENABLED` remains disabled. After rollout, re-inspect production bindings read-only. Enabling the webhook receiver is a **different** later change, requiring a real signed-event validation plan and monitoring.
 
 **Current unresolved coordination issue:** Guesty requires a subscription before its signing secret can be retrieved, but creating that subscription may cause deliveries while the receiver still returns 503. Do not attempt a blind subscription-then-install sequence without an explicitly approved short activation window, known retry behavior, and a verified rollback/cancellation procedure. No subscription, secret installation, or deployment is authorized by this runbook.
+
+
+## Guesty support follow-up — 2026-11-01
+
+Guesty support reports that:
+- A paused/inactive subscription creation mode is **not documented or confirmed**.
+- The webhook dashboard is read-only for monitoring, but clicking a subscribed endpoint URL may display its signing secret. This offers a potential manual alternative to the undocumented GET secret JSON schema. Never paste or log the signing secret into chat or GitHub.
+- Non-2xx responses, including 503, are failures. The receiver should return 2xx promptly (about 15 seconds). Retry guarantees remain unclear, and prolonged failures may lead to endpoint disablement after approximately five days.
+- The dashboard may permit replay of individual deliveries; do not assume this guarantees full recovery or ordering.
+- Duplicate and out-of-order events must be handled safely using Svix identifiers and Guesty event metadata, and source data should be re-fetched before reconciling state.
+
+**Security decision:** Do not change the receiver to acknowledge unauthenticated webhook payloads with 2xx merely to avoid retries. Continue fail-closed signature verification; consider only a separately reviewed secure buffering mechanism with strict bounds and no processing of unverified content.
+
+**Activation gate remains closed:** No first subscription until a coordinated plan addresses secret retrieval, version rollout, potential failed deliveries, rollback, and explicit operator approval. The dashboard's ability to display a secret does not make it safe to transmit that secret through chat or logs.
