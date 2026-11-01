@@ -378,7 +378,13 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
  if(!detail)return;
  const button=document.createElement('button');
  button.type='button';button.className='zy-request-book';button.textContent='Request to Book';
- detail.insertBefore(button,detail.children[4]||null);
+ const actions=root.querySelector('.zy-property-actions');
+ if(actions){
+  detail.insertBefore(actions,detail.children[4]||null);
+  actions.prepend(button);
+ }else{
+  detail.insertBefore(button,detail.children[4]||null);
+ }
  const overlay=document.createElement('div');overlay.className='zy-book-overlay';overlay.hidden=true;
  overlay.innerHTML='<div class="zy-book-dialog" role="dialog" aria-modal="true" aria-labelledby="zy-book-title"><button class="zy-book-close" type="button" aria-label="Close booking calendar">×</button><h2 id="zy-book-title">Request to Book</h2><div id="zy-book-content"></div></div>';
  document.body.append(overlay);
