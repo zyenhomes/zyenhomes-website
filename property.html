@@ -361,7 +361,20 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
   content.append(form);
  }
  button.addEventListener('click',()=>{
+  // The connected calendar scripts initialize asynchronously; locate the
+  // finished calendar before showing it, without replacing its Guesty logic.
+  const connectedSection=content.querySelector('.zy-116-booking')||root.querySelector('.zy-116-booking');
+  if(connectedSection&&connectedSection.parentElement!==content)content.append(connectedSection);
   overlay.hidden=false;document.body.classList.add('zy-book-locked');
+  if(connected.has(id)){
+   const checkin=content.querySelector('.zy-116-controls input[readonly]');
+   if(checkin){
+    // Trigger the existing synchronized availability calendar directly.
+    checkin.click();
+   }else{
+    content.textContent='Loading the availability calendar. Please close and try again in a moment.';
+   }
+  }
   overlay.querySelector('.zy-book-close').focus();
  });
  // Hide legacy booking notices and direct booking links from the clean property overview.
