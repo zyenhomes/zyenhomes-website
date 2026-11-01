@@ -358,12 +358,49 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
   if(existing){observer.disconnect();content.append(existing)}
  }else{
   const form=document.createElement('form');form.className='zy-book-fallback';
-  form.innerHTML='<p>Select your dates and guest count. Our team will confirm availability and pricing before booking.</p><label>Check-in<input name="checkin" type="date" required></label><label>Check-out<input name="checkout" type="date" required></label><label>Guests<input name="guests" type="number" min="1" max="'+home.guests+'" value="'+Math.min(2,home.guests)+'" required></label><button class="zy-button" type="submit">Request Availability &amp; Pricing</button>';
+  form.innerHTML='<p><strong>Request dates — availability not yet synchronized.</strong> Our team will confirm your stay before any booking is made.</p><div class="zy-116-controls" style="display:flex;flex-wrap:wrap;gap:12px"><label style="flex:1;min-width:115px">Check-in<input name="checkin" type="text" placeholder="Select date" readonly required></label><label style="flex:1;min-width:115px">Check-out<input name="checkout" type="text" placeholder="Select date" readonly required></label><label style="flex:1;min-width:115px">Guests<input name="guests" type="number" min="1" max="'+home.guests+'" value="'+Math.min(2,home.guests)+'" required></label></div><div class="zy-116-calendar" aria-label="Select requested dates" style="width:100%;background:#fff;border:1px solid #dce6e1;border-radius:12px;padding:12px"></div><p style="font-size:13px;color:#586b61">Dates are requests only; blocked dates are not yet available for this property.</p><button class="zy-button" type="submit">Request Availability &amp; Pricing</button>';
   const ci=form.elements.checkin,co=form.elements.checkout;
+  const calendar=form.querySelector('.zy-116-calendar');
   const today=new Date();today.setHours(0,0,0,0);
-  const min=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-  ci.min=min;co.min=min;
-  ci.addEventListener('change',()=>{co.min=ci.value||min;if(co.value&&co.value<=ci.value)co.value=''});
+  let month=new Date(today.getFullYear(),today.getMonth(),1);
+  const iso=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+  let selectingOut=false;
+  function renderRequestCalendar(){
+   calendar.replaceChildren();
+   const head=document.createElement('div');
+   head.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:12px';
+   const prev=document.createElement('button'),next=document.createElement('button'),label=document.createElement('strong');
+   prev.type=next.type='button';prev.textContent='‹';next.textContent='›';
+   prev.disabled=month.getFullYear()===today.getFullYear()&&month.getMonth()===today.getMonth();
+   label.textContent=month.toLocaleDateString('en-CA',{month:'long',year:'numeric'});
+   for(const btn of [prev,next])btn.style.cssText='border:1px solid #cad4cc;background:#fff;border-radius:7px;padding:7px 13px;cursor:pointer';
+   prev.onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()-1,1);renderRequestCalendar()};
+   next.onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()+1,1);renderRequestCalendar()};
+   head.append(prev,label,next);calendar.append(head);
+   const grid=document.createElement('div');
+   grid.style.cssText='display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center';
+   for(const day of ['Su','Mo','Tu','We','Th','Fr','Sa']){const el=document.createElement('span');el.textContent=day;grid.append(el)}
+   for(let n=0;n<new Date(month.getFullYear(),month.getMonth(),1).getDay();n++)grid.append(document.createElement('span'));
+   for(let n=1;n<=new Date(month.getFullYear(),month.getMonth()+1,0).getDate();n++){
+    const date=iso(new Date(month.getFullYear(),month.getMonth(),n));
+    const day=document.createElement('button');day.type='button';day.textContent=String(n);
+    day.disabled=date<iso(today)||(selectingOut&&date<=ci.value);
+    day.style.cssText='min-width:0;min-height:39px;border:0;border-radius:6px;background:#fff;color:#174f41;font:inherit;cursor:pointer';
+    if(day.disabled)day.style.cssText+=';background:#edf0ed;color:#9ca8a0;cursor:not-allowed';
+    if(date===ci.value||date===co.value)day.style.cssText+=';background:#174f41;color:#fff';
+    else if(ci.value&&co.value&&date>ci.value&&date<co.value)day.style.background='#d7ebe1';
+    day.onclick=()=>{
+     if(!selectingOut){ci.value=date;co.value='';selectingOut=true}
+     else{co.value=date;selectingOut=false}
+     renderRequestCalendar();
+    };
+    grid.append(day);
+   }
+   calendar.append(grid);
+  }
+  ci.addEventListener('click',()=>{selectingOut=false;ci.value='';co.value='';renderRequestCalendar()});
+  co.addEventListener('click',()=>{selectingOut=Boolean(ci.value);renderRequestCalendar()});
+  renderRequestCalendar();
   form.addEventListener('submit',e=>{
    e.preventDefault();if(!form.reportValidity())return;
    if(co.value<=ci.value){co.setCustomValidity('Check-out must be after check-in');co.reportValidity();return}
