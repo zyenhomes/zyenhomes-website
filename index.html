@@ -549,14 +549,11 @@ body > .site-header .brand-logo img{
    entries.forEach(entry=>entry.target.dataset.galleryVisible=entry.isIntersecting?'yes':'no');
   },{threshold:.15});
   galleries.forEach(({card})=>observer.observe(card));
-  let cursor=0;
+  // Advance all visible featured property galleries on the same timer.
   setInterval(()=>{
    if(document.hidden||!galleries.length)return;
-   const visible=galleries.filter(g=>g.card.dataset.galleryVisible==='yes');
-   if(!visible.length)return;
-   visible[cursor%visible.length].advance();
-   cursor++;
-  },2500);
+   galleries.filter(g=>g.card.dataset.galleryVisible==='yes').forEach(g=>g.advance());
+  },5000);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
