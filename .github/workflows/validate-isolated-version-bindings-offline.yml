@@ -1,0 +1,21 @@
+name: Validate Isolated Version Bindings Diagnostic (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/inspect-isolated-version-bindings.mjs'
+      - 'scripts/validate-isolated-version-bindings-offline.mjs'
+      - '.github/workflows/inspect-isolated-version-bindings.yml'
+      - '.github/workflows/validate-isolated-version-bindings-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/inspect-isolated-version-bindings.mjs
+      - run: node scripts/validate-isolated-version-bindings-offline.mjs
