@@ -4,7 +4,22 @@
 <title>Blue Mountains Vacation Rental Property Management | Zyen Homes</title>
 <meta name="description" content="Full-service Blue Mountains and Ontario vacation rental property management for homeowners and investors, including setup, pricing, guest support, cleaning and operations.">
 <link rel="canonical" href="https://www.zyenhomes.com/property-management.html">
-<link rel="stylesheet" href="styles.css?v=20261004-ownerpage2"></head>
+<link rel="stylesheet" href="styles.css?v=20261004-ownerpage2"><style>
+/* Consistent transparent Zyen Homes header over the property-management hero. */
+.owner-info-page .custom-page-header{
+ position:absolute!important;top:0;left:0;right:0;z-index:30;
+ background:rgba(23,63,53,.18)!important;
+ border-bottom:1px solid rgba(255,255,255,.22)!important;
+ color:#fff!important;
+ backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+}
+.owner-info-page .custom-page-header .custom-back{color:#fff!important}
+.owner-info-page .owner-hero{padding-top:185px!important}
+@media(max-width:760px){
+ .owner-info-page .owner-hero{padding-top:155px!important}
+ .owner-info-page .custom-page-header .custom-back{font-size:12px!important}
+}
+</style></head>
 <body class="custom-stay-page owner-info-page">
 <header class="site-header custom-page-header">
 <a class="brand brand-logo" href="index.html" aria-label="Zyen Homes Property Management"><img src="Zyen Homes Logo(2).webp" alt="Zyen Homes Property Management"></a>
