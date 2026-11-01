@@ -125,14 +125,17 @@ const ZY_FEATURES={
  '100-pilsen':{hotTub:true},
  '873235-5th-line-ehs':{hotTub:true,pool:true,beds:9},
  '39-snowbridge':{sauna:true,pool:true},
- '37-snowbridge':{sauna:true,pool:true}
+ '37-snowbridge':{sauna:true,pool:true},
+ '102-patricia':{hotTub:true},
+ '117-125-fairway':{hotTub:true,pool:true},
+ '9-elite-caledon':{hotTub:true}
 };
 const more=document.getElementById('zy-more-filters');
 const toggle=document.getElementById('zy-more-toggle');
 toggle.addEventListener('click',()=>{more.hidden=!more.hidden;toggle.setAttribute('aria-expanded',String(!more.hidden));});
 document.getElementById('zy-clear-filters').addEventListener('click',()=>{
  ['bedrooms','beds'].forEach(k=>f.elements[k].value='');
- ['hotTub','sauna'].forEach(k=>f.elements[k].checked=false);
+ ['hotTub','sauna','waterfront','pool'].forEach(k=>f.elements[k].checked=false);
  render();
 });
 if(['bedrooms','beds','hotTub','sauna','waterfront','pool'].some(k=>params.has(k)&&params.get(k))) {more.hidden=false;toggle.setAttribute('aria-expanded','true');}
@@ -224,6 +227,11 @@ mapToggle.addEventListener('click',()=>{
 
 if(destinationStart)map.setView(destinationStart,waterfrontStart?13:13);
 document.getElementById('reset-map').addEventListener('click',()=>{selectedArea=null;mapAreaFiltering=false;document.querySelectorAll('.zy-area-buttons button').forEach(button=>button.setAttribute('aria-pressed','false'));syncAreaMarkers();if(destinationStart)map.setView(destinationStart,13);else map.fitBounds(defaultOntarioBounds,{padding:[16,16]});render();});
+// Apply search and amenity filters as soon as a guest changes a control.
+f.addEventListener('change',event=>{
+ if(event.target.matches('input, select'))render();
+});
+f.elements.guests.addEventListener('input',()=>render());
 f.addEventListener('submit',event=>{
  event.preventDefault();
  if(f.elements.checkin.value&&f.elements.checkout.value&&f.elements.checkout.value<=f.elements.checkin.value){alert('Check-out must be after check-in.');return}
