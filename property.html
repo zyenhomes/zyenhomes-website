@@ -50,6 +50,13 @@ body .zy-wrap{padding-top:94px!important}
  .zy-book-dialog .zy-book-fallback{gap:8px!important}
  .zy-book-dialog .zy-book-fallback .zy-116-controls{margin:0!important}
 }
+
+/* Align booking and amenities as equal-width property actions. */
+.zy-property-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0 20px;width:100%}
+.zy-property-actions .zy-request-book,.zy-property-actions .zy-amenities-toggle{display:flex!important;align-items:center;justify-content:center;text-align:center;box-sizing:border-box;width:100%!important;max-width:none!important;min-height:49px;margin:0!important;padding:12px 10px!important;border-radius:10px;font-size:15px;text-decoration:none}
+.zy-property-actions .zy-amenities-toggle{background:#fff;color:#174f41;border:1px solid #174f41}
+.zy-property-actions .zy-amenities-toggle:hover{background:#f1f6f2}
+@media(max-width:420px){.zy-property-actions{gap:8px}.zy-property-actions .zy-request-book,.zy-property-actions .zy-amenities-toggle{font-size:13px;padding:11px 6px!important}}
 /* Clean property view: booking tools open only on request. */
 .zy-request-book{display:block;width:100%;max-width:330px;margin:18px 0;padding:15px 22px;border:0;border-radius:10px;background:#174f41;color:white;font:inherit;font-weight:700;cursor:pointer}
 .zy-book-overlay[hidden]{display:none!important}.zy-book-overlay{position:fixed;inset:0;z-index:3000;background:rgba(9,30,23,.68);display:flex;align-items:center;justify-content:center;padding:16px}
@@ -350,7 +357,16 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
  link.className='zy-amenities-toggle';
  link.href='amenities.html?id='+encodeURIComponent(id);
  link.textContent='Amenities  →';
- gallery.before(link);
+ let actions=root.querySelector('.zy-property-actions');
+ if(!actions){
+  actions=document.createElement('div');
+  actions.className='zy-property-actions';
+  const detail=root.querySelector('.zy-detail > div:last-child');
+  const booking=detail?.querySelector('.zy-request-book');
+  if(booking){booking.before(actions);actions.append(booking)}
+  else gallery.before(actions);
+ }
+ actions.append(link);
 })();
 </script><script>
 (function(){
