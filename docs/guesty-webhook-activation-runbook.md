@@ -169,3 +169,12 @@ This is evidence of binding name/type preservation in the **isolated test Worker
 Current `main` code confirms `cloudflare/worker.js` routes `/api/webhooks/guesty/messages` to `receiveGuestyMessageWebhook`. That receiver returns HTTP **503** whenever `GUESTY_WEBHOOKS_ENABLED` is not `"true"`; it also returns 503 if the signing secret or D1 binding is unavailable. The existing manual subscription workflow targets this endpoint and immediately creates a subscription after a zero-count check, without a separate receiver-readiness check.
 
 **Do not run the subscription-creation workflow yet.** A new subscription could receive Guesty deliveries while the receiver returns 503, triggering retries. Before creation, define a short coordinated activation window with a confirmed signing-secret retrieval/installation method, verified receiver compatibility, operational monitoring, and an approved rollback for the subscription. This is a workflow sequencing blocker, not an invitation to bypass signature verification or enable unverified processing.
+
+
+## Critical two-stage activation requirement — 2026-11-01
+
+The current signing-secret handoff script uses `wrangler versions secret put`, which creates an **undeployed** version. Successful completion does not make `GUESTY_WEBHOOK_SECRET` available to the **currently active** booking Worker. The receiver must not be enabled on the assumption that the secret is active merely because the version-only command succeeded.
+
+A separate, explicitly authorized deployment/rollout of the reviewed version is required. Before any such rollout, independently verify the new version preserves production `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, existing secrets and flags, and that `GUESTY_WEBHOOKS_ENABLED` remains disabled. After rollout, re-inspect production bindings read-only. Enabling the webhook receiver is a **different** later change, requiring a real signed-event validation plan and monitoring.
+
+**Current unresolved coordination issue:** Guesty requires a subscription before its signing secret can be retrieved, but creating that subscription may cause deliveries while the receiver still returns 503. Do not attempt a blind subscription-then-install sequence without an explicitly approved short activation window, known retry behavior, and a verified rollback/cancellation procedure. No subscription, secret installation, or deployment is authorized by this runbook.
