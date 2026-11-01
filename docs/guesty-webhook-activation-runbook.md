@@ -136,3 +136,10 @@ The original workflow run was checked directly using its GitHub Actions job logs
 **Supported conclusion:** the isolated Wrangler version-only command completed successfully and the secret binding appeared in the subsequent settings response. **Not yet supported:** that a version was definitely undeployed, that every binding was preserved, or that the live production booking Worker would behave identically. No further write test is required to establish command execution. Compare timestamped version and deployment metadata, preferably from an existing audit trail, before any activation decision.
 
 Evidence: https://github.com/zyenhomes/zyenhomes-website/actions/runs/41247324968
+
+
+## Cloudflare dashboard version history evidence — 2026-11-01
+
+Operator shared Cloudflare dashboard screenshot of isolated `zyenhomes-webhook-test` version/deployment history. Three Wrangler-origin entries show `Updated secret` and status `Ready`, with abbreviated version identifiers `8482caf6` (~15h prior), `d5c1f361` (~14h prior), and `42b76d47` (~13h prior). Earlier entries include a manually deployed version, `TEST_DUMMY_SECRET` creation, and `TEST_PRESERVE_VARIABLE` creation.
+
+This is strong evidence that the three isolated Wrangler test attempts created Worker versions despite their GitHub Actions failures. **Ready does not establish active traffic allocation**; the dashboard section label and relative timestamps alone do not prove that these versions were deployed to traffic. Do not repeat secret writes solely to prove version creation. Before concluding no deployment occurred, inspect the active deployment/traffic allocation separately. This screenshot does not establish undeployed-version binding preservation or production Worker safety.
