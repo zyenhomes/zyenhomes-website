@@ -131,7 +131,7 @@ if(bookingSearch){
 }
 
 
-// Email signup popup. Mailchimp connection will be added separately.
+// Email signup popup, submitted to Formspree for follow-up.
 const emailPopup=document.querySelector('#email-popup');
 const emailPopupForm=document.querySelector('#email-popup-form');
 if(emailPopup && emailPopupForm){
@@ -174,9 +174,28 @@ if(emailPopup && emailPopupForm){
   emailPopup.addEventListener('click',(e)=>{if(e.target===emailPopup) closePopup();});
   document.addEventListener('keydown',(e)=>{if(e.key==='Escape' && emailPopup.classList.contains('is-open')) closePopup();});
 
-  emailPopupForm.addEventListener('submit',(e)=>{
+  emailPopupForm.addEventListener('submit',async (e)=>{
     e.preventDefault();
-    status.textContent='Thanks! Mailing-list signup will be activated when we connect Mailchimp.';
+    if(!emailPopupForm.reportValidity())return;
+    const button=emailPopupForm.querySelector('[type="submit"]');
+    const original=button?.textContent;
+    const data=new FormData(emailPopupForm);
+    data.append('_subject','Zyen Homes Promotional Email Signup');
+    data.append('inquiryType','Promotional Email Signup');
+    data.append('signupSource','Homepage exclusive offers popup');
+    if(button){button.disabled=true;button.textContent='Sending...';}
+    status.textContent='';
+    try{
+      const response=await fetch('https://formspree.io/f/xaeqykbv',{method:'POST',body:data,headers:{Accept:'application/json'}});
+      if(!response.ok)throw new Error('Submission failed');
+      localStorage.setItem(subscribedKey,'true');
+      emailPopupForm.reset();
+      status.textContent='Thank you! Your signup has been received.';
+    }catch(error){
+      status.textContent='We could not send your signup. Please try again.';
+    }finally{
+      if(button){button.disabled=false;button.textContent=original;}
+    }
   });
 }
 
@@ -218,9 +237,28 @@ if(ownerPopup && ownerTrigger && ownerForm){
   ownerClose.addEventListener('click',closeOwnerPopup);
   ownerPopup.addEventListener('click',(e)=>{if(e.target===ownerPopup) closeOwnerPopup();});
   document.addEventListener('keydown',(e)=>{if(e.key==='Escape' && ownerPopup.classList.contains('is-open')) closeOwnerPopup();});
-  ownerForm.addEventListener('submit',(e)=>{
+  ownerForm.addEventListener('submit',async (e)=>{
     e.preventDefault();
-    ownerStatus.textContent='Thank you. Your property details are ready to be submitted once we connect the inquiry form.';
+    if(!ownerForm.reportValidity())return;
+    const button=ownerForm.querySelector('[type="submit"]');
+    const original=button?.textContent;
+    const data=new FormData(ownerForm);
+    data.append('_subject','Zyen Homes Homepage Property Management Inquiry');
+    data.append('inquiryType','Property Management Inquiry');
+    const reply=String(data.get('email')||'').trim();
+    if(reply)data.append('_replyto',reply);
+    if(button){button.disabled=true;button.textContent='Sending...';}
+    ownerStatus.textContent='';
+    try{
+      const response=await fetch('https://formspree.io/f/xaeqykbv',{method:'POST',body:data,headers:{Accept:'application/json'}});
+      if(!response.ok)throw new Error('Submission failed');
+      ownerForm.reset();
+      ownerStatus.textContent='Thank you! Your property inquiry has been sent to Zyen Homes.';
+    }catch(error){
+      ownerStatus.textContent='We could not send your inquiry. Please try again or email info@zyenhomes.com.';
+    }finally{
+      if(button){button.disabled=false;button.textContent=original;}
+    }
   });
 }
 
