@@ -192,3 +192,12 @@ Guesty support reports that:
 **Security decision:** Do not change the receiver to acknowledge unauthenticated webhook payloads with 2xx merely to avoid retries. Continue fail-closed signature verification; consider only a separately reviewed secure buffering mechanism with strict bounds and no processing of unverified content.
 
 **Activation gate remains closed:** No first subscription until a coordinated plan addresses secret retrieval, version rollout, potential failed deliveries, rollback, and explicit operator approval. The dashboard's ability to display a secret does not make it safe to transmit that secret through chat or logs.
+
+
+## Guesty API support escalation — 2026-11-01
+
+Guesty support confirmed the questions about paused/inactive subscriptions and the exact HTTP 503 retry/replay guarantees have been forwarded to the **human API support team**. No definitive answers have been supplied yet.
+
+Confirmed documentation guidance: subscriptions are managed through Open API; the dashboard provides read-only status/delivery logs and may expose the endpoint-specific signing secret; non-2xx responses (including 503 and redirects) are failed deliveries; individual events may be replayed from the dashboard. Guesty recommends prompt 2xx acknowledgements, deduplication using `svix-id` / `meta.eventId`, and handling out-of-order updates.
+
+Do not equate replay capability with guaranteed retention or delivery. Do not accept unauthenticated webhook payloads into trusted processing simply to return 2xx. **Activation remains blocked pending human support clarification and a reviewed receiver/secret rollout plan.**
