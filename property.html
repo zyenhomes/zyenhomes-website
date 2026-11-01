@@ -51,6 +51,11 @@ body .zy-wrap{padding-top:94px!important}
  .zy-book-dialog .zy-book-fallback .zy-116-controls{margin:0!important}
 }
 
+/* Six-line preview for the About section, expandable on demand. */
+.zy-about-preview{position:relative;line-height:1.7}
+.zy-about-preview:not(.is-expanded){max-height:calc(1.7em * 6);overflow:hidden}
+.zy-about-preview:not(.is-expanded)::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1.8em;background:linear-gradient(transparent,#fff);pointer-events:none}
+.zy-about-more{display:inline-flex;align-items:center;margin:10px 0 16px;padding:7px 0;border:0;background:transparent;color:#174f41;font:inherit;font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 /* Align booking and amenities as equal-width property actions. */
 .zy-property-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0 20px;width:100%}
 .zy-property-actions .zy-request-book,.zy-property-actions .zy-amenities-toggle{display:flex!important;align-items:center;justify-content:center;text-align:center;box-sizing:border-box;width:100%!important;max-width:none!important;min-height:49px;margin:0!important;padding:12px 10px!important;border-radius:10px;font-size:15px;text-decoration:none}
@@ -479,6 +484,40 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
  [...detail.querySelectorAll('.zy-notice, .zy-muted, a.zy-button')].forEach(el=>{
   if(el.classList.contains('zy-muted')&&el.previousElementSibling?.classList.contains('zy-sub'))return;
   el.style.display='none';
+ });
+})();
+</script><script>
+(function(){
+ const root=document.getElementById('property');
+ const section=root?.querySelector('.zy-info');
+ if(!section)return;
+ const headings=[...section.querySelectorAll('h2')];
+ const about=headings.find(h=>/^About (The |This )?(Chalet|Condo|Retreat|Home|Property|Cottage)/i.test(h.textContent.trim()));
+ if(!about)return;
+ const stop=/^(Sleeping Arrangements|Included in Your Stay|Important Guest Information|House Rules|Location|Amenities|Property Highlights)/i;
+ const nodes=[];
+ let current=about.nextElementSibling;
+ while(current&&!(current.tagName==='H2'&&stop.test(current.textContent.trim()))){
+  nodes.push(current);current=current.nextElementSibling;
+ }
+ if(!nodes.length)return;
+ const preview=document.createElement('div');preview.className='zy-about-preview';
+ about.after(preview);
+ nodes.forEach(node=>preview.append(node));
+ const button=document.createElement('button');button.type='button';button.className='zy-about-more';
+ button.textContent='Show more ↓';button.setAttribute('aria-expanded','false');
+ preview.after(button);
+ const update=()=>{
+  const expanded=preview.classList.toggle('is-expanded');
+  button.textContent=expanded?'Show less ↑':'Show more ↓';
+  button.setAttribute('aria-expanded',String(expanded));
+ };
+ button.addEventListener('click',update);
+ // Avoid showing an unnecessary toggle for short descriptions.
+ requestAnimationFrame(()=>{
+  if(preview.scrollHeight<=preview.clientHeight+3){
+   preview.classList.add('is-expanded');button.hidden=true;
+  }
  });
 })();
 </script><script src="zyen-116-calendar-pilot.js?v=20261101-calendar-fix-id" defer></script><script src="zyen-connected-calendar.js?v=20261101-calendar-immediate" defer></script></body></html>
