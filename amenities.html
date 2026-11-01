@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Property Amenities | Zyen Homes</title><link rel="stylesheet" href="styles.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f7f9f7;color:#173f35;font-family:Arial,sans-serif}
+.zy-amenity-header{position:fixed!important;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:8px clamp(16px,4vw,55px);min-height:78px;background:rgba(23,63,53,.76)!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.22)}
+.zy-amenity-header img{width:78px;height:62px;object-fit:contain}.zy-amenity-back{color:#fff;text-decoration:none;font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px}
+.zy-amenity-wrap{max-width:1050px;margin:auto;padding:112px 20px 70px}.zy-amenity-wrap h1{font-family:Georgia,serif;font-size:clamp(34px,5vw,52px);margin:0 0 10px}.zy-amenity-sub{color:#5d7167;margin:0 0 24px}
+.zy-amenity-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.zy-amenity-category{border:1px solid #d6e4dc;border-radius:12px;background:white;overflow:hidden}
+.zy-amenity-category summary{padding:18px 17px;font-weight:700;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:64px}
+.zy-amenity-category summary::-webkit-details-marker{display:none}.zy-amenity-category summary::after{content:'+';font-size:22px;color:#42765e}.zy-amenity-category[open] summary::after{content:'−'}
+.zy-amenity-category[open]{grid-column:span 3;border-color:#39745b}.zy-amenity-category[open] summary{background:#eaf2ed}
+.zy-amenity-content{padding:16px 20px 22px;line-height:1.65;color:#4e6359}.zy-amenity-content p{margin:0}.zy-amenity-content ul{margin:0;padding-left:20px}
+@media(max-width:700px){.zy-amenity-buttons{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.zy-amenity-category[open]{grid-column:span 2}.zy-amenity-category summary{padding:14px 12px;font-size:13px;min-height:60px}.zy-amenity-header img{width:65px}.zy-amenity-back{font-size:12px}}
+</style></head><body>
+<header class="zy-amenity-header"><a href="index.html" aria-label="Zyen Homes homepage"><img src="Zyen Homes Logo(2).webp" alt="Zyen Homes"></a><a class="zy-amenity-back" id="zy-amenity-back" href="rentals.html">← Back to Property</a></header>
+<main class="zy-amenity-wrap"><p class="zy-amenity-sub" id="zy-amenity-property">Zyen Homes Property Amenities</p><h1>Amenities</h1><p class="zy-amenity-sub">Select a category to view its amenities.</p><div class="zy-amenity-buttons" id="zy-amenity-categories">
+<details class="zy-amenity-category"><summary>Bathroom</summary><div class="zy-amenity-content" data-category="0"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Bedroom & Laundry</summary><div class="zy-amenity-content" data-category="1"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Entertainment</summary><div class="zy-amenity-content" data-category="2"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Family</summary><div class="zy-amenity-content" data-category="3"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Heating & Cooling</summary><div class="zy-amenity-content" data-category="4"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Home Safety</summary><div class="zy-amenity-content" data-category="5"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Internet & Office</summary><div class="zy-amenity-content" data-category="6"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Kitchen & Dining</summary><div class="zy-amenity-content" data-category="7"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Location Feature</summary><div class="zy-amenity-content" data-category="8"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Outdoor</summary><div class="zy-amenity-content" data-category="9"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Parking & Facilities</summary><div class="zy-amenity-content" data-category="10"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Services</summary><div class="zy-amenity-content" data-category="11"><p>Amenity details coming soon.</p></div></details>
+<details class="zy-amenity-category"><summary>Not Included</summary><div class="zy-amenity-content" data-category="12"><p>Amenity details coming soon.</p></div></details>
+</div></main>
+<script src="properties-data.js?v=20261101-amenities"></script>
+<script>
+(function(){
+ const id=new URLSearchParams(location.search).get('id');
+ const home=(window.ZYEN_PROPERTIES||[]).find(item=>item.id===id);
+ if(!home)return;
+ document.title=home.name+' Amenities | Zyen Homes';
+ document.getElementById('zy-amenity-property').textContent=home.name;
+ document.getElementById('zy-amenity-back').href='property.html?id='+encodeURIComponent(id);
+})();
+</script></body></html>
