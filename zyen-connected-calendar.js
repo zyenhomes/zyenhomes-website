@@ -65,9 +65,11 @@
   let checkIn = "", checkOut = "", selectingOut = false, sequence = 0;
   const known = new Map();
   const calendar = section.querySelector(".zy-116-calendar");
-  calendar.hidden=true;
-  calendar.style.display="none";
-  const setCalendarOpen = open => {calendar.hidden=!open;calendar.style.display=open?"block":"none";};
+  // Keep the synchronized availability calendar visible in Request to Book.
+  calendar.hidden=false;
+  calendar.style.display="block";
+  section.querySelector(".zy-116-controls").after(calendar);
+  const setCalendarOpen = open => {calendar.hidden=false;calendar.style.display="block";};
   const result = section.querySelector(".zy-116-result");
   const check = section.querySelector(".zy-116-check");
   const plus = (date,n) => new Date(Date.parse(date+"T00:00:00Z")+n*86400000).toISOString().slice(0,10);
@@ -149,7 +151,7 @@
       if(date===checkIn||date===checkOut)b.style.cssText+=";background:#174f41;color:white";
       b.onclick=()=>{
         if(!selectingOut){checkIn=date;checkOut="";selectingOut=true;}
-        else {checkOut=date;selectingOut=false;setCalendarOpen(false);}
+        else {checkOut=date;selectingOut=false;setCalendarOpen(true);}
         clearQuote();result.textContent="";refreshFields();render();
       };
       grid.append(b);
