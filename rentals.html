@@ -87,7 +87,7 @@ const f=document.querySelector('#filters');
 const params=new URLSearchParams(location.search);
 const blueMountainsOnly=params.get('area')==='blue-mountains';
 const waterfrontStart=params.get('area')==='waterfront';
-const destinationStart=blueMountainsOnly?[44.504,-80.313]:waterfrontStart?[44.198960,-78.300013]:null;
+const destinationStart=blueMountainsOnly?[44.504,-80.313]:waterfrontStart?[44.1987974,-78.3000175]:null;
 let selectedArea=null;
 const belongsToArea=(home,area)=>area==='blue-mountains'?home.location==='Blue Mountains':area==='waterfront'?home.id==='940-seven-oaks':area==='other'?home.location!=='Blue Mountains'&&home.id!=='940-seven-oaks':true;
 const areaMarkers=new Map();
@@ -204,7 +204,7 @@ function chooseArea(area){
  if(selectedArea){
   if(points.length)map.fitBounds(L.latLngBounds(points).pad(.15),{maxZoom:selectedArea==='waterfront'?13:12});
   else if(selectedArea==='blue-mountains')map.setView([44.504,-80.313],12);
-  else if(selectedArea==='waterfront')map.setView([44.198960,-78.300013],12);
+  else if(selectedArea==='waterfront')map.setView([44.1987974,-78.3000175],12);
   else map.setView([43.96,-79.75],8);
  }
  render();
@@ -233,7 +233,7 @@ render();
 async function locateProperties(){
  // Use actual address coordinates for pins, while displaying only branded names.
  // Cache successful lookups to avoid repeat geocoding on subsequent visits.
- const known={'873235-5th-line-ehs':[43.961200125646286,-80.00537533722908],'940-seven-oaks':[44.198960,-78.300013]};
+ const known={'873235-5th-line-ehs':[43.961200125646286,-80.00537533722908],'940-seven-oaks':[44.1987974,-78.3000175]};
  const cacheKey='zyen-property-map-geocodes-v2';
  let cached={};
  try{cached=JSON.parse(localStorage.getItem(cacheKey)||'{}')}catch(e){}
