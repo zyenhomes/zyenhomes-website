@@ -292,59 +292,15 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
 </script><script>
 (function(){
  const root=document.getElementById('property');
- if(!root||!window.ZYEN_PROPERTIES)return;
+ if(!root)return;
  const id=new URLSearchParams(location.search).get('id');
- const home=window.ZYEN_PROPERTIES.find(item=>item.id===id);
- if(!home)return;
+ if(!id)return;
  const gallery=root.querySelector('#live-gallery');
  if(!gallery)return;
- const items=[];
- const add=value=>{const text=String(value||'').trim().replace(/\\s+/g,' ');if(text&&!items.some(existing=>existing.toLowerCase()===text.toLowerCase()))items.push(text)};
- // Only list amenities actually stated in the property record or details.
- const feature=home.feature||'';
- feature.split(' · ').forEach(value=>{if(value.trim())add(value)});
- const info=root.querySelector('.zy-info');
- if(info){
-  const included=[...info.querySelectorAll('h2')].find(h=>h.textContent.trim()==='Included in Your Stay');
-  if(included){
-   let section=included.nextElementSibling;
-   while(section&&section.tagName!=='H2'){
-    section.querySelectorAll('li').forEach(li=>add(li.textContent));
-    section=section.nextElementSibling;
-   }
-  }
- }
- const confirmed={
-  '116-tyrolean':['Hot tub / swim spa','Sauna','Pool table','Foosball','Air hockey','130-inch projector'],
-  '105-pilsen':['Extra-large hot tub','Detached sauna','Pool table','Foosball','Air hockey','Arcade','110-inch projector'],
-  '109-plater':['Hot tub / swim spa','Pool table','Foosball','Air hockey','Arcade','130-inch projector'],
-  '147-campbell':['Hot tub','Sauna'],
-  '940-seven-oaks':['Waterfront','Hot tub','Canoe','Kayak','Firepit'],
-  '149-tyrolean':['Hot tub','Sauna','Projector'],
-  '100-pilsen':['Hot tub'],
-  '102-patricia':['Hot tub','Foosball','Board games','Two Smart TVs','BBQ','Electric fireplace','Laundry'],
-  '503-466-e-liberty':['Keurig coffee machine','Rooftop patio','BBQ','Laundry','One parking space'],
-  '117-125-fairway':['Seasonal community outdoor pool','Year-round community outdoor hot tub'],
-  '9-elite-caledon':['Private hot tub','Fireplace','BBQ','Deck'],
-  '873235-5th-line-ehs':['Seasonal outdoor pool','Year-round hot tub','Pool table','Ping pong']
- };
- (confirmed[id]||[]).forEach(add);
- if(!items.length)add('Additional amenity information available upon request');
- const button=document.createElement('button');
- button.type='button';button.className='zy-amenities-toggle';
- button.textContent='Amenities  +';button.setAttribute('aria-expanded','false');
- button.setAttribute('aria-controls','zy-amenities-panel');
- const panel=document.createElement('section');
- panel.id='zy-amenities-panel';panel.className='zy-amenities-panel';panel.hidden=true;
- const heading=document.createElement('h2');heading.textContent='Property Amenities';
- const list=document.createElement('ul');
- items.forEach(item=>{const li=document.createElement('li');li.textContent=item;list.appendChild(li)});
- panel.append(heading,list);
- button.addEventListener('click',()=>{
-  panel.hidden=!panel.hidden;
-  button.setAttribute('aria-expanded',String(!panel.hidden));
-  button.textContent=panel.hidden?'Amenities  +':'Amenities  −';
- });
- gallery.before(button,panel);
+ const link=document.createElement('a');
+ link.className='zy-amenities-toggle';
+ link.href='amenities.html?id='+encodeURIComponent(id);
+ link.textContent='Amenities  →';
+ gallery.before(link);
 })();
 </script><script src="zyen-116-calendar-pilot.js?v=20261030-guest-limits" defer></script><script src="zyen-connected-calendar.js?v=20261030-guest-limits" defer></script></body></html>
