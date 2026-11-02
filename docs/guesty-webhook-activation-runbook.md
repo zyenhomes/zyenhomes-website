@@ -229,3 +229,10 @@ Before requesting approval to create the first subscription, the operator and en
 - Explicit acknowledgement that complete event recovery cannot currently be guaranteed.
 
 **Stop conditions:** unexpected subscription count, unknown secret schema, inability to verify signature, unexpected Worker binding changes, or no monitoring/rollback operator. Never automatically retry an ambiguous subscription-creation POST. No live action is authorized by this checklist.
+
+
+## Fresh Guesty subscription preflight — 2026-11-01
+
+Operator shared successful `Verify Guesty Open API Webhook Access (Read Only)` run #6: OAuth token request successful, GET `/v1/webhooks` HTTP 200, **subscription count 0**, and no subscriptions created. This is a point-in-time verification only. Recheck subscription state immediately before any future approved creation; never retry an ambiguous creation POST blindly.
+
+The subscription-creation workflow is still blocked pending a coordinated signing-secret handoff, separate production version rollout authorization, receiver signature verification, and monitoring/recovery readiness.
