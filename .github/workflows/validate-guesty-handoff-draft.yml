@@ -1,0 +1,20 @@
+name: Validate Guesty Secret Handoff Draft (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/install-guesty-signing-secret.mjs'
+      - 'scripts/validate-guesty-handoff-draft.mjs'
+      - '.github/workflows/install-guesty-signing-secret.yml'
+      - '.github/workflows/validate-guesty-handoff-draft.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/install-guesty-signing-secret.mjs
+      - run: node scripts/validate-guesty-handoff-draft.mjs

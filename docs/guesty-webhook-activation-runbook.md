@@ -1,0 +1,290 @@
+# Guesty messaging webhook — controlled activation and rollback
+
+Status: **DRAFT / NOT AUTHORIZED TO RUN**. This runbook does not grant permission to deploy, merge, create subscriptions, install secrets, or enable webhook processing.
+
+## Preconditions (all required)
+
+1. Confirm the exact webhook destination and verify that the deployed Worker route exists and fails closed. Preserve existing booking routes and database bindings.
+2. Confirm the `guesty-webhook-activation` GitHub environment, reviewer policy, credentials, and current Cloudflare account. No new paid products or upgrades.
+3. Validate Guesty's GET /v1/webhooks response schema and the POST subscription payload/status expectations. Verify supported event names and URL uniqueness.
+4. Independently verify the Svix signature algorithm, expected headers, timestamp tolerance, and real signing-secret format. The `whsec_` prefix and top-level `secret` JSON field are **unverified**.
+5. Test the signing-secret handoff against an isolated disposable Worker to ensure it does not alter existing bindings or flags. Do not use the booking Worker for experimentation.
+6. Verify privacy/retention, D1 schema and idempotency, monitoring, and synthetic signed event handling. Ensure no Gmail sends or Guesty message writes are enabled.
+7. Obtain explicit operator approval for the coordinated activation window and confirm a rollback owner.
+
+## Coordinated activation (only after approval)
+
+1. Record a redacted baseline of production Worker binding names, disabled flags, and current subscription count. Never print secret values, guest data, tokens, or raw responses.
+2. Recheck for existing subscriptions. Create **one** subscription only if the verified API response confirms none exists. A timeout or non-201 response is ambiguous; list subscriptions again before any retry.
+3. Retrieve the signing secret for the **exact subscribed endpoint URL**. If the response schema is unknown, use only the redacted classifier, stop, and update/test the parser separately. Never print the raw secret.
+4. Install the verified endpoint-specific secret using a separately validated method that preserves existing Worker bindings. Confirm binding names and disabled flags after installation.
+5. Test a valid signed event and invalid/tampered/replayed events in an isolated environment. Confirm duplicate suppression and D1 behavior.
+6. Only after review, enable the receiver in a separate explicitly approved change. Keep Gmail delivery and booking mutations disabled until independently authorized.
+7. Observe HTTP acknowledgements, retries, storage errors, and event counts. Do not treat a disabled receiver's 503 as a successful delivery.
+
+## Stop and rollback
+
+- If the subscription POST result is uncertain, **do not repeat POST**. Inspect the subscription list first.
+- If the signing secret cannot be retrieved or verified, keep processing disabled. Review Guesty retry behavior and disable/delete the subscription using a separately verified, approved API operation if necessary.
+- If bindings change unexpectedly, halt activation; restore known-good Worker configuration using the existing deployment/rollback process, not speculative writes.
+- If signature verification or storage fails, keep the receiver disabled, preserve logs without secrets, and investigate before any retry.
+- If an endpoint is recreated, assume its signing key may change; reverify the secret and never reuse an old key without confirmation.
+
+## Current blockers
+
+- Guesty has confirmed no existing subscription and no retrievable signing secret yet.
+- Secret retrieval response schema and `whsec_` prefix are unverified.
+- Production binding preservation during secret installation is unverified.
+- End-to-end signed delivery and retry/rollback operations are not yet verified.
+
+No live action is authorized by this document.
+
+
+## Existing booking Worker risk — configuration review
+
+The target Worker is `zyenhomes-booking-api`, not a disposable test Worker. Its `cloudflare/wrangler.toml` declares `BOOKING_DB` (booking-request D1), `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, and disabled `BOOKING_REQUESTS_ENABLED` / `GUESTY_WEBHOOKS_ENABLED` flags. `keep_vars = true` appears in repository configuration but does **not** by itself prove live secret-put preserves all existing bindings.
+
+**Do not run `wrangler secret put` against `zyenhomes-booking-api` as an experiment.** First validate installation and binding preservation on an isolated, already-approved disposable Worker, or obtain independently verified Cloudflare guidance. Compare before/after binding names and disabled flags without printing values. Do not create a paid Cloudflare resource merely to satisfy this test.
+
+The current handoff script requires `ISOLATED_WORKER_SECRET_PUT_VERIFIED=true` but that variable is only an operator assertion, not independent proof. Do not set it until actual evidence has been reviewed.
+
+
+## Read-only Cloudflare inspection option
+
+An existing workflow, `.github/workflows/inspect-guesty-worker-settings.yml`, can request current binding names and confirm the webhook flag is disabled without modifying the Worker. It is a manually dispatched workflow in the protected `guesty-webhook-activation` environment; **it has not been run as part of this review**. Its output is not proof of `wrangler secret put` binding preservation, and it cannot identify whether an isolated disposable Worker exists.
+
+Do not dispatch the workflow or change environment approval settings without explicit operator authorization. Any future read-only run should confirm the Cloudflare token is active and narrowly scoped, then report only binding presence and disabled state.
+
+
+## Production read-only inspection evidence — 2026-10-31
+
+The operator ran `Inspect Guesty Worker Production Bindings (Read Only)` workflow #3. The shared GitHub Actions log reports HTTP 200 from the Cloudflare settings endpoint, and confirms these binding names: `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, `GUESTY_CLIENT_ID`, `GUESTY_CLIENT_SECRET`, `GUESTY_WEBHOOKS_ENABLED`. The inspection script verified `GUESTY_WEBHOOKS_ENABLED` equals `false`, then reported `PASS: Production bindings present and webhook receiver disabled.`
+
+This was read-only and does **not** prove that `wrangler secret put` preserves live bindings, nor that a Guesty subscription exists. Do not mark the installation compatibility gate as verified on this basis.
+
+
+## Cloudflare official command semantics — 2026-10-31
+
+Cloudflare's official Workers documentation confirms that `wrangler secret put` **creates and immediately deploys a new Worker version**. In contrast, `wrangler versions secret put` creates a new version **without deploying it**. See https://developers.cloudflare.com/workers/configuration/secrets/ and https://developers.cloudflare.com/workers/wrangler/commands/workers/.
+
+**Do not execute the current PR #74 handoff script:** it still invokes `wrangler secret put` against the production booking Worker, and thus can cause an immediate deployment. A future reviewed change should prefer the version-only command, explicitly verify version behavior and binding preservation, and keep actual deployment as a separate approval-gated action. No command has been run against Cloudflare during this documentation update.
+
+
+## Wrangler version-only CLI check — 2026-10-31
+
+GitHub Actions `Validate Wrangler Version-Only Secret Command (Offline)` completed successfully on PR #74 commit `d9bb191`. The workflow installed Wrangler 4 locally, verified the executable existed, and successfully invoked `wrangler versions secret put --help` without Cloudflare authentication. This confirms command recognition only.
+
+It does **not** establish behavior against a real Worker, binding preservation, secret response compatibility, or permission to create/deploy a version. Keep the isolated-Worker verification gate closed.
+
+
+## Offline review checkpoint — 2026-10-31
+
+PR #74 commit `625f576` passed all seven GitHub Actions checks. These checks establish only repository-level safeguards and Wrangler CLI command recognition. They do not establish production readiness.
+
+**Next evidence needed (not more static checks):**
+1. Verified read-only Guesty subscription listing with its response structure; do not create a subscription as part of this check.
+2. Verified isolated Worker behavior for `wrangler versions secret put`, including whether existing bindings are preserved; do not test on the booking Worker.
+3. After separately approved creation of the first subscription, classify the signing-secret response without logging values; only then update the strict parser and test a signed delivery.
+
+Until these are resolved, keep the installation workflow blocked and PR #74 in Draft.
+
+
+## Guesty Open API read-only verification — 2026-10-31
+
+The operator ran `Verify Guesty Open API Webhook Access (Read Only)` workflow #5. The shared successful GitHub Actions log reports:
+- Open API token request: successful
+- GET `/v1/webhooks` HTTP status: 200
+- Subscription count: **0**
+- No subscriptions created
+
+This verifies authentication and the top-level array response for the current subscription-list request. It is a point-in-time observation, **not** authorization to create a subscription. Recheck immediately before any future approved creation, and never blindly retry an ambiguous POST.
+
+
+## Isolated Worker baseline inspection — 2026-10-31
+
+Operator shared successful GitHub Actions run #1 of `Inspect Isolated Guesty Test Worker (Read Only)`. Log reports `Isolated Worker settings HTTP status: 200` and `PASS: isolated Worker exists with expected baseline binding names.` The script checks for `TEST_PRESERVE_VARIABLE` and `TEST_DUMMY_SECRET` in `zyenhomes-webhook-test` using GET only.
+
+This confirms the isolated Worker baseline exists. It does **not** prove that `wrangler versions secret put` preserves bindings or creates a safely undeployed version. No secret installation was attempted.
+
+
+## Isolated Worker version history inspection — 2026-10-31
+
+Operator shared successful run #1 of `Inspect Isolated Worker Version History (Read Only)`. The logs report HTTP 200 for both versions and deployments, **6 version entries** and **4 deployment entries**. This was GET-only and did not create versions, install secrets, or deploy anything. Counts alone cannot establish which version is deployed, whether version-only secret installation preserves bindings, or when the two fictional test secrets appeared. Next diagnostic should compare deployed-version identity and relevant version metadata without exposing secrets or modifying Cloudflare.
+
+
+## Isolated deployment reference inspection — 2026-10-31
+
+The operator shared successful run #1 of `Inspect Isolated Worker Deployment References (Read Only)`: HTTP 200 for versions and deployments, 6 version entries, 4 deployment entries, 4 deployment-version references, and **0 references absent from the returned version listing**. This confirms that the four returned deployment references match entries in the returned version page. It does not establish active traffic allocations, explain existing fictional test-secret bindings, or verify preservation of bindings in a new undeployed version. The workflow made no changes.
+
+
+## Correction to isolated version-test interpretation — 2026-10-31
+
+Review of the pre-PR #88 test code found that `baseline(after)` repeated the **same secret-absence assertion** used by `baseline(before)`. Thus the error `Selected test secret already exists in Worker settings; stop` could occur **after** a successful `wrangler versions secret put` invocation. Earlier conclusions that this error necessarily occurred before Wrangler ran were not supported by the error message alone.
+
+PR #88 separated the preflight collision check from post-test baseline validation. Until the failed run's step logs and isolated Worker version/deployment metadata are correlated, do **not** claim no version was created or that the command preserved bindings. Do not rerun the write test merely to resolve this ambiguity. No production booking Worker write is authorized.
+
+
+## Verified GitHub Actions run #41247324968 — execution order
+
+The original workflow run was checked directly using its GitHub Actions job logs and the script at the run's exact head SHA `7c4a8491361992ac688fae7079451cd069a586f7`.
+
+- The first `baseline(before)` call (line 27) returned successfully.
+- The `wrangler versions secret put` subprocess ran (lines 33–39) and exited with status zero; otherwise the script would have thrown on line 39.
+- The script then successfully fetched the Worker settings again (line 41).
+- The second `baseline(after)` call (line 42) threw because the fictional secret was now present. That assertion was inappropriate after secret creation and has since been corrected in PR #88.
+
+**Supported conclusion:** the isolated Wrangler version-only command completed successfully and the secret binding appeared in the subsequent settings response. **Not yet supported:** that a version was definitely undeployed, that every binding was preserved, or that the live production booking Worker would behave identically. No further write test is required to establish command execution. Compare timestamped version and deployment metadata, preferably from an existing audit trail, before any activation decision.
+
+Evidence: https://github.com/zyenhomes/zyenhomes-website/actions/runs/41247324968
+
+
+## Cloudflare dashboard version history evidence — 2026-11-01
+
+Operator shared Cloudflare dashboard screenshot of isolated `zyenhomes-webhook-test` version/deployment history. Three Wrangler-origin entries show `Updated secret` and status `Ready`, with abbreviated version identifiers `8482caf6` (~15h prior), `d5c1f361` (~14h prior), and `42b76d47` (~13h prior). Earlier entries include a manually deployed version, `TEST_DUMMY_SECRET` creation, and `TEST_PRESERVE_VARIABLE` creation.
+
+This is strong evidence that the three isolated Wrangler test attempts created Worker versions despite their GitHub Actions failures. **Ready does not establish active traffic allocation**; the dashboard section label and relative timestamps alone do not prove that these versions were deployed to traffic. Do not repeat secret writes solely to prove version creation. Before concluding no deployment occurred, inspect the active deployment/traffic allocation separately. This screenshot does not establish undeployed-version binding preservation or production Worker safety.
+
+
+## Isolated Worker active deployment dashboard — 2026-11-01
+
+The operator supplied a Cloudflare `zyenhomes-webhook-test` Deployments screenshot showing **Active deployment version `0514e419`** (deployed about one day prior), with the three newer Wrangler-created secret-update versions `8482caf6`, `d5c1f361`, and `42b76d47` listed separately as `Ready`. This is strong direct evidence that the version-only secret operations did **not** replace the active deployment. The dashboard also displays **0% traffic** for `0514e419`; do not infer a 100% traffic allocation or identify other traffic-serving versions from this screenshot alone.
+
+The evidence validates isolated version creation without changing the displayed active deployment, **not** full preservation of bindings in the newly created versions or behavior against the production booking Worker. Keep production secret installation gated.
+
+
+## Isolated version binding preservation verified — 2026-11-01
+
+Operator provided the successful GitHub Actions `Inspect Isolated Worker Version Bindings (Read Only)` output:
+- Latest listed version differs from the latest deployment's single referenced version.
+- Deployed version: 3 bindings; latest version: 6 bindings.
+- Missing or type-changed deployed binding names/types: **0**.
+- Additional bindings: **3**.
+- Script reported `PASS: latest version preserves deployed binding names and types.`
+
+This is evidence of binding name/type preservation in the **isolated test Worker** across the version-only secret updates. The earlier Cloudflare dashboard also showed the original active deployment remained selected. It does **not** prove preservation of production D1/KV/rate-limit bindings, unchanged secret values, or compatibility with Guesty's unverified signing-secret response schema. Keep the production installation workflow gated and PR #74 in Draft.
+
+
+## Subscription-before-secret delivery hazard — 2026-11-01
+
+Current `main` code confirms `cloudflare/worker.js` routes `/api/webhooks/guesty/messages` to `receiveGuestyMessageWebhook`. That receiver returns HTTP **503** whenever `GUESTY_WEBHOOKS_ENABLED` is not `"true"`; it also returns 503 if the signing secret or D1 binding is unavailable. The existing manual subscription workflow targets this endpoint and immediately creates a subscription after a zero-count check, without a separate receiver-readiness check.
+
+**Do not run the subscription-creation workflow yet.** A new subscription could receive Guesty deliveries while the receiver returns 503, triggering retries. Before creation, define a short coordinated activation window with a confirmed signing-secret retrieval/installation method, verified receiver compatibility, operational monitoring, and an approved rollback for the subscription. This is a workflow sequencing blocker, not an invitation to bypass signature verification or enable unverified processing.
+
+
+## Critical two-stage activation requirement — 2026-11-01
+
+The current signing-secret handoff script uses `wrangler versions secret put`, which creates an **undeployed** version. Successful completion does not make `GUESTY_WEBHOOK_SECRET` available to the **currently active** booking Worker. The receiver must not be enabled on the assumption that the secret is active merely because the version-only command succeeded.
+
+A separate, explicitly authorized deployment/rollout of the reviewed version is required. Before any such rollout, independently verify the new version preserves production `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, existing secrets and flags, and that `GUESTY_WEBHOOKS_ENABLED` remains disabled. After rollout, re-inspect production bindings read-only. Enabling the webhook receiver is a **different** later change, requiring a real signed-event validation plan and monitoring.
+
+**Current unresolved coordination issue:** Guesty requires a subscription before its signing secret can be retrieved, but creating that subscription may cause deliveries while the receiver still returns 503. Do not attempt a blind subscription-then-install sequence without an explicitly approved short activation window, known retry behavior, and a verified rollback/cancellation procedure. No subscription, secret installation, or deployment is authorized by this runbook.
+
+
+## Guesty support follow-up — 2026-11-01
+
+Guesty support reports that:
+- A paused/inactive subscription creation mode is **not documented or confirmed**.
+- The webhook dashboard is read-only for monitoring, but clicking a subscribed endpoint URL may display its signing secret. This offers a potential manual alternative to the undocumented GET secret JSON schema. Never paste or log the signing secret into chat or GitHub.
+- Non-2xx responses, including 503, are failures. The receiver should return 2xx promptly (about 15 seconds). Retry guarantees remain unclear, and prolonged failures may lead to endpoint disablement after approximately five days.
+- The dashboard may permit replay of individual deliveries; do not assume this guarantees full recovery or ordering.
+- Duplicate and out-of-order events must be handled safely using Svix identifiers and Guesty event metadata, and source data should be re-fetched before reconciling state.
+
+**Security decision:** Do not change the receiver to acknowledge unauthenticated webhook payloads with 2xx merely to avoid retries. Continue fail-closed signature verification; consider only a separately reviewed secure buffering mechanism with strict bounds and no processing of unverified content.
+
+**Activation gate remains closed:** No first subscription until a coordinated plan addresses secret retrieval, version rollout, potential failed deliveries, rollback, and explicit operator approval. The dashboard's ability to display a secret does not make it safe to transmit that secret through chat or logs.
+
+
+## Guesty API support escalation — 2026-11-01
+
+Guesty support confirmed the questions about paused/inactive subscriptions and the exact HTTP 503 retry/replay guarantees have been forwarded to the **human API support team**. No definitive answers have been supplied yet.
+
+Confirmed documentation guidance: subscriptions are managed through Open API; the dashboard provides read-only status/delivery logs and may expose the endpoint-specific signing secret; non-2xx responses (including 503 and redirects) are failed deliveries; individual events may be replayed from the dashboard. Guesty recommends prompt 2xx acknowledgements, deduplication using `svix-id` / `meta.eventId`, and handling out-of-order updates.
+
+Do not equate replay capability with guaranteed retention or delivery. Do not accept unauthenticated webhook payloads into trusted processing simply to return 2xx. **Activation remains blocked pending human support clarification and a reviewed receiver/secret rollout plan.**
+
+
+## Human Guesty API support confirmation — 2026-11-01
+
+Guesty API support confirmed:
+1. Webhook subscriptions **cannot** be created inactive/paused and **cannot** be reactivated after being disabled.
+2. Disabled subscriptions must be **deleted and recreated** through the Open API. Recreating the same endpoint **may generate a new signing secret**, so reverify and reinstall the endpoint-specific secret before enabling receiver processing.
+3. Failed webhook deliveries can be **manually replayed** from the Guesty Webhooks Dashboard.
+
+**Unresolved:** Support did not give an exact HTTP 503 retry schedule, replay retention window, or guarantee of complete event recovery. Do not treat manual replay as guaranteed delivery.
+
+**Activation consequence:** Creating the first subscription may immediately start delivery attempts. Preserve the current fail-closed signature verification; do not acknowledge unverified payloads as successful. Before any live POST, require an explicitly approved coordinated activation window, tested secret-retrieval/installation and rollout process, monitoring of failed deliveries, and a reviewed deletion/recreation recovery plan. If the subscription must be recreated, assume secret rotation and revalidate signatures. Do not create or delete a subscription based solely on this documentation update.
+
+
+## Controlled first-subscription decision checklist — 2026-11-01
+
+The first Guesty subscription **cannot be paused** and may immediately deliver events. Manual dashboard replay is possible, but retry timing and replay retention remain unguaranteed.
+
+Before requesting approval to create the first subscription, the operator and engineer must confirm:
+- Exact endpoint URL and event allowlist, with a fresh read-only zero-subscription check immediately before creation.
+- A ready, reviewed method to retrieve the new endpoint-specific signing secret through Guesty dashboard or GET endpoint without disclosing it in chat or logs.
+- A verified Cloudflare **version-only** installation workflow, inspection of the new version's production bindings, and a separate explicit approval for deploying that version. Secret installation alone does not activate it.
+- Receiver remains fail-closed until a signed-delivery validation plan and monitoring are ready; do not return 2xx for unauthenticated events.
+- A short supervised activation window with a responsible operator watching Guesty dashboard delivery logs and Cloudflare errors, plus a documented decision to stop if repeated 503s appear.
+- A recovery path using individual dashboard replays where available; if an endpoint must be deleted/recreated, re-check subscription state and treat the signing secret as rotated.
+- Explicit acknowledgement that complete event recovery cannot currently be guaranteed.
+
+**Stop conditions:** unexpected subscription count, unknown secret schema, inability to verify signature, unexpected Worker binding changes, or no monitoring/rollback operator. Never automatically retry an ambiguous subscription-creation POST. No live action is authorized by this checklist.
+
+
+## Fresh Guesty subscription preflight — 2026-11-01
+
+Operator shared successful `Verify Guesty Open API Webhook Access (Read Only)` run #6: OAuth token request successful, GET `/v1/webhooks` HTTP 200, **subscription count 0**, and no subscriptions created. This is a point-in-time verification only. Recheck subscription state immediately before any future approved creation; never retry an ambiguous creation POST blindly.
+
+The subscription-creation workflow is still blocked pending a coordinated signing-secret handoff, separate production version rollout authorization, receiver signature verification, and monitoring/recovery readiness.
+
+
+## Live activation go/no-go sequence — 2026-11-01
+
+**Current status: NO-GO for live subscription creation.** A 0-subscription read-only check passed, but the production receiver still returns 503 while disabled. The exact Guesty signing-secret response and `whsec_` format are unverified. Manual replay is available but not guaranteed to cover every missed event.
+
+### Required pre-creation preparation (no Guesty/Cloudflare writes)
+1. Confirm the exact target URL and messaging event names; inspect production Worker settings read-only, including `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, and the disabled webhook flag. Do not print secrets.
+2. Confirm the receiver's signature verification and D1 insert path work with synthetic signed events in an isolated test. Ensure only authenticated events can be acknowledged as successfully processed.
+3. Agree on a supervised activation window and a responsible operator to inspect Guesty delivery failures. Define a stop decision if failed deliveries accumulate, and acknowledge that replay is not guaranteed.
+4. Prepare an approved secure mechanism to classify and transfer the **actual** Guesty signing secret without placing it in chat, GitHub code, or logs. The current parser's single top-level `secret` and `whsec_` assumptions are not yet verified.
+5. Prepare a separate reviewed Cloudflare rollout workflow with version-specific production binding checks, no implicit production deployment, and explicit authorization for both secret-version deployment and later webhook enablement.
+
+### Coordinated live window (each write separately authorized)
+1. Recheck Guesty subscription count immediately before creation. If nonzero or ambiguous, stop. Do not blindly retry POST.
+2. Create **one** subscription only after explicit authorization, understanding it becomes active immediately and may deliver to a 503 receiver.
+3. Immediately inspect its identity and secret response shape **without exposing secret values**. If unknown or incompatible, stop further production writes and handle possible failed deliveries.
+4. Install the verified secret into a **new undeployed** production Worker version only after separate authorization; inspect all expected bindings and disabled flags.
+5. Deploy the reviewed version only after separate authorization. Verify the deployed version and bindings read-only. Secret installation alone does not enable the receiver.
+6. Enable the receiver only after signature-verified handling is ready, with a separately authorized change; monitor Guesty dashboard and Cloudflare logs. Replay individual failed events where available, with deduplication and source re-fetching.
+
+### Stop / recovery
+- Stop on unknown secret schema, missing or altered production binding, signature mismatch, unverified rollout, or unexpected subscription state.
+- Do **not** return 2xx to unauthenticated payloads or assume 503 retries guarantee recovery.
+- If the subscription becomes disabled, Guesty requires delete/recreate and may rotate the secret. Do not automatically delete/recreate; require separate approval and repeat the verification and rollout steps.
+- A successful offline CI result is not permission to execute production writes.
+
+
+## D1 message archive readiness gate — 2026-11-01
+
+The webhook receiver performs `INSERT OR IGNORE INTO guesty_message_events` using the production `BOOKING_DB` binding. The repository defines this table and its unique-event index in `cloudflare/migrations/0002_guesty_message_events.sql`, but repository presence and synthetic tests **do not** prove the migration has been applied to the live D1 database.
+
+Before enabling webhook processing, verify the production D1 schema **read-only** using the existing authorized Cloudflare environment. Check `sqlite_master` for the table and expected indexes, and `PRAGMA table_info(guesty_message_events)` for the columns `svix_id`, `guesty_event_id`, `event_type`, `reservation_id`, `conversation_id`, `occurred_at`, and `payload_json`. Return only boolean presence or column names, never stored guest records or payloads. Confirm the correct `BOOKING_DB` binding and database ID without printing secrets.
+
+**No automatic migration:** If the schema is missing or differs, stop activation. Applying a migration is a separate production database write requiring explicit approval and backup/rollback review. A passing synthetic D1 adapter test is not sufficient evidence of live schema readiness.
+
+
+## Production D1 table/column visual verification — 2026-11-01
+
+Operator supplied Cloudflare D1 Studio screenshots for `zyenhomes-booking-requests`. The sidebar shows `guesty_message_events` exists. The table header shows all nine expected columns: `svix_id`, `guesty_event_id`, `event_type`, `reservation_id`, `conversation_id`, `occurred_at`, `received_at`, `payload_json`, and `archive_status`. The visible grid contains no rows, but that is not a guarantee of database-wide row count.
+
+**Remaining D1 schema evidence:** Indexes `idx_guesty_message_event_id` and `idx_guesty_message_reservation` have not been independently checked. No data was changed during this visual inspection.
+
+
+## Production D1 index verification — 2026-11-02
+
+Operator ran `PRAGMA index_list('guesty_message_events');` in the Cloudflare D1 Studio for `zyenhomes-booking-requests` and supplied the resulting screenshot. It returned three indexes:
+- `idx_guesty_message_reservation`: present, non-unique.
+- `idx_guesty_message_event_id`: present, unique and partial.
+- `sqlite_autoindex_guesty_message_events_1`: present, primary-key autoindex.
+
+Earlier D1 Studio screenshots confirmed the `guesty_message_events` table and all nine expected columns. Together, these satisfy the production D1 **schema presence** gate for the current webhook receiver. This was a read-only inspection; no migrations or guest records were changed. It does not establish end-to-end live webhook delivery, runtime database access, or signing-secret compatibility.
