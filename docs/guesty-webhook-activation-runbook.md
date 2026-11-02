@@ -236,3 +236,29 @@ Before requesting approval to create the first subscription, the operator and en
 Operator shared successful `Verify Guesty Open API Webhook Access (Read Only)` run #6: OAuth token request successful, GET `/v1/webhooks` HTTP 200, **subscription count 0**, and no subscriptions created. This is a point-in-time verification only. Recheck subscription state immediately before any future approved creation; never retry an ambiguous creation POST blindly.
 
 The subscription-creation workflow is still blocked pending a coordinated signing-secret handoff, separate production version rollout authorization, receiver signature verification, and monitoring/recovery readiness.
+
+
+## Live activation go/no-go sequence — 2026-11-01
+
+**Current status: NO-GO for live subscription creation.** A 0-subscription read-only check passed, but the production receiver still returns 503 while disabled. The exact Guesty signing-secret response and `whsec_` format are unverified. Manual replay is available but not guaranteed to cover every missed event.
+
+### Required pre-creation preparation (no Guesty/Cloudflare writes)
+1. Confirm the exact target URL and messaging event names; inspect production Worker settings read-only, including `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, and the disabled webhook flag. Do not print secrets.
+2. Confirm the receiver's signature verification and D1 insert path work with synthetic signed events in an isolated test. Ensure only authenticated events can be acknowledged as successfully processed.
+3. Agree on a supervised activation window and a responsible operator to inspect Guesty delivery failures. Define a stop decision if failed deliveries accumulate, and acknowledge that replay is not guaranteed.
+4. Prepare an approved secure mechanism to classify and transfer the **actual** Guesty signing secret without placing it in chat, GitHub code, or logs. The current parser's single top-level `secret` and `whsec_` assumptions are not yet verified.
+5. Prepare a separate reviewed Cloudflare rollout workflow with version-specific production binding checks, no implicit production deployment, and explicit authorization for both secret-version deployment and later webhook enablement.
+
+### Coordinated live window (each write separately authorized)
+1. Recheck Guesty subscription count immediately before creation. If nonzero or ambiguous, stop. Do not blindly retry POST.
+2. Create **one** subscription only after explicit authorization, understanding it becomes active immediately and may deliver to a 503 receiver.
+3. Immediately inspect its identity and secret response shape **without exposing secret values**. If unknown or incompatible, stop further production writes and handle possible failed deliveries.
+4. Install the verified secret into a **new undeployed** production Worker version only after separate authorization; inspect all expected bindings and disabled flags.
+5. Deploy the reviewed version only after separate authorization. Verify the deployed version and bindings read-only. Secret installation alone does not enable the receiver.
+6. Enable the receiver only after signature-verified handling is ready, with a separately authorized change; monitor Guesty dashboard and Cloudflare logs. Replay individual failed events where available, with deduplication and source re-fetching.
+
+### Stop / recovery
+- Stop on unknown secret schema, missing or altered production binding, signature mismatch, unverified rollout, or unexpected subscription state.
+- Do **not** return 2xx to unauthenticated payloads or assume 503 retries guarantee recovery.
+- If the subscription becomes disabled, Guesty requires delete/recreate and may rotate the secret. Do not automatically delete/recreate; require separate approval and repeat the verification and rollout steps.
+- A successful offline CI result is not permission to execute production writes.
