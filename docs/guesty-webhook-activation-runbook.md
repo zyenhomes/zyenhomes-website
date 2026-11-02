@@ -201,3 +201,15 @@ Guesty support confirmed the questions about paused/inactive subscriptions and t
 Confirmed documentation guidance: subscriptions are managed through Open API; the dashboard provides read-only status/delivery logs and may expose the endpoint-specific signing secret; non-2xx responses (including 503 and redirects) are failed deliveries; individual events may be replayed from the dashboard. Guesty recommends prompt 2xx acknowledgements, deduplication using `svix-id` / `meta.eventId`, and handling out-of-order updates.
 
 Do not equate replay capability with guaranteed retention or delivery. Do not accept unauthenticated webhook payloads into trusted processing simply to return 2xx. **Activation remains blocked pending human support clarification and a reviewed receiver/secret rollout plan.**
+
+
+## Human Guesty API support confirmation — 2026-11-01
+
+Guesty API support confirmed:
+1. Webhook subscriptions **cannot** be created inactive/paused and **cannot** be reactivated after being disabled.
+2. Disabled subscriptions must be **deleted and recreated** through the Open API. Recreating the same endpoint **may generate a new signing secret**, so reverify and reinstall the endpoint-specific secret before enabling receiver processing.
+3. Failed webhook deliveries can be **manually replayed** from the Guesty Webhooks Dashboard.
+
+**Unresolved:** Support did not give an exact HTTP 503 retry schedule, replay retention window, or guarantee of complete event recovery. Do not treat manual replay as guaranteed delivery.
+
+**Activation consequence:** Creating the first subscription may immediately start delivery attempts. Preserve the current fail-closed signature verification; do not acknowledge unverified payloads as successful. Before any live POST, require an explicitly approved coordinated activation window, tested secret-retrieval/installation and rollout process, monitoring of failed deliveries, and a reviewed deletion/recreation recovery plan. If the subscription must be recreated, assume secret rotation and revalidate signatures. Do not create or delete a subscription based solely on this documentation update.
