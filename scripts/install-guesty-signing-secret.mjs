@@ -18,6 +18,13 @@ const auth=await fetch("https://open-api.guesty.com/oauth2/token",{method:"POST"
 if(!auth.ok)throw Error("Guesty authentication failed: HTTP "+auth.status);
 const access=(await auth.json()).access_token;
 if(typeof access!=="string"||!access)throw Error("Guesty token missing");
+// Independently verify the exact subscribed endpoint before requesting its secret.
+const subscriptionsResponse=await fetch("https://open-api.guesty.com/v1/webhooks",{headers:{Authorization:"Bearer "+access,Accept:"application/json"},signal:AbortSignal.timeout(20000)});
+if(!subscriptionsResponse.ok)throw Error("Subscription verification unavailable: HTTP "+subscriptionsResponse.status);
+const subscriptions=await subscriptionsResponse.json();
+if(!Array.isArray(subscriptions))throw Error("Unexpected subscription listing shape; stop");
+const matching=subscriptions.filter(item=>item&&typeof item==="object"&&item.url===endpoint);
+if(matching.length!==1)throw Error("Expected exactly one subscription for the approved endpoint; stop");
 const url=new URL("https://open-api.guesty.com/v1/webhooks-v2/secret");
 url.searchParams.set("url",endpoint);
 const response=await fetch(url,{headers:{Authorization:"Bearer "+access,Accept:"application/json"},signal:AbortSignal.timeout(20000)});
