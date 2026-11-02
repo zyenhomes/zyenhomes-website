@@ -54,3 +54,17 @@ Confirmed:
 - Recreating a subscription can change the signing secret.
 
 Still unverified: GET `/v1/webhooks` response shape, exact POST success status, secret retrieval JSON field name and prefix, real production bindings, and signed delivery compatibility. Never infer these from synthetic tests. No live API writes are authorized.
+
+
+## Updated engineering checkpoint — 2026-11-01
+
+Earlier notes above describe historical states, not current commands:
+
+- The draft handoff now uses `wrangler versions secret put`, not immediate-deployment `wrangler secret put`.
+- Isolated tests demonstrated successful version creation without replacing the displayed active deployment. The latest isolated version preserved all three deployed binding names/types and had three additional bindings. Production D1/KV/rate-limiter preservation remains unproven.
+- PR #77's read-only signing-secret response shape diagnostic is merged into `main`, but the actual Guesty secret schema and `whsec_` prefix remain unverified until a subscription exists.
+- PR #90's subscription workflow requires separate receiver-readiness approval.
+- Human Guesty support confirmed subscriptions cannot start paused and disabled subscriptions must be deleted/recreated, potentially rotating the signing secret. Manual replay is possible, but complete recovery is not guaranteed.
+- Version-only secret installation does not activate the version. Production binding review, separate rollout approval, and signed-event verification remain necessary.
+
+**Current go/no-go:** NO-GO for first subscription creation until a coordinated live handoff and recovery procedure is approved. No write operation is authorized by this note.
