@@ -262,3 +262,12 @@ The subscription-creation workflow is still blocked pending a coordinated signin
 - Do **not** return 2xx to unauthenticated payloads or assume 503 retries guarantee recovery.
 - If the subscription becomes disabled, Guesty requires delete/recreate and may rotate the secret. Do not automatically delete/recreate; require separate approval and repeat the verification and rollout steps.
 - A successful offline CI result is not permission to execute production writes.
+
+
+## D1 message archive readiness gate — 2026-11-01
+
+The webhook receiver performs `INSERT OR IGNORE INTO guesty_message_events` using the production `BOOKING_DB` binding. The repository defines this table and its unique-event index in `cloudflare/migrations/0002_guesty_message_events.sql`, but repository presence and synthetic tests **do not** prove the migration has been applied to the live D1 database.
+
+Before enabling webhook processing, verify the production D1 schema **read-only** using the existing authorized Cloudflare environment. Check `sqlite_master` for the table and expected indexes, and `PRAGMA table_info(guesty_message_events)` for the columns `svix_id`, `guesty_event_id`, `event_type`, `reservation_id`, `conversation_id`, `occurred_at`, and `payload_json`. Return only boolean presence or column names, never stored guest records or payloads. Confirm the correct `BOOKING_DB` binding and database ID without printing secrets.
+
+**No automatic migration:** If the schema is missing or differs, stop activation. Applying a migration is a separate production database write requiring explicit approval and backup/rollback review. A passing synthetic D1 adapter test is not sufficient evidence of live schema readiness.
