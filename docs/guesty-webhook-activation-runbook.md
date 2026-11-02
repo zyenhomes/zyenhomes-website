@@ -271,3 +271,10 @@ The webhook receiver performs `INSERT OR IGNORE INTO guesty_message_events` usin
 Before enabling webhook processing, verify the production D1 schema **read-only** using the existing authorized Cloudflare environment. Check `sqlite_master` for the table and expected indexes, and `PRAGMA table_info(guesty_message_events)` for the columns `svix_id`, `guesty_event_id`, `event_type`, `reservation_id`, `conversation_id`, `occurred_at`, and `payload_json`. Return only boolean presence or column names, never stored guest records or payloads. Confirm the correct `BOOKING_DB` binding and database ID without printing secrets.
 
 **No automatic migration:** If the schema is missing or differs, stop activation. Applying a migration is a separate production database write requiring explicit approval and backup/rollback review. A passing synthetic D1 adapter test is not sufficient evidence of live schema readiness.
+
+
+## Production D1 table/column visual verification — 2026-11-01
+
+Operator supplied Cloudflare D1 Studio screenshots for `zyenhomes-booking-requests`. The sidebar shows `guesty_message_events` exists. The table header shows all nine expected columns: `svix_id`, `guesty_event_id`, `event_type`, `reservation_id`, `conversation_id`, `occurred_at`, `received_at`, `payload_json`, and `archive_status`. The visible grid contains no rows, but that is not a guarantee of database-wide row count.
+
+**Remaining D1 schema evidence:** Indexes `idx_guesty_message_event_id` and `idx_guesty_message_reservation` have not been independently checked. No data was changed during this visual inspection.
