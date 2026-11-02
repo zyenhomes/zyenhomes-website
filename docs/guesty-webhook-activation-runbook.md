@@ -213,3 +213,19 @@ Guesty API support confirmed:
 **Unresolved:** Support did not give an exact HTTP 503 retry schedule, replay retention window, or guarantee of complete event recovery. Do not treat manual replay as guaranteed delivery.
 
 **Activation consequence:** Creating the first subscription may immediately start delivery attempts. Preserve the current fail-closed signature verification; do not acknowledge unverified payloads as successful. Before any live POST, require an explicitly approved coordinated activation window, tested secret-retrieval/installation and rollout process, monitoring of failed deliveries, and a reviewed deletion/recreation recovery plan. If the subscription must be recreated, assume secret rotation and revalidate signatures. Do not create or delete a subscription based solely on this documentation update.
+
+
+## Controlled first-subscription decision checklist — 2026-11-01
+
+The first Guesty subscription **cannot be paused** and may immediately deliver events. Manual dashboard replay is possible, but retry timing and replay retention remain unguaranteed.
+
+Before requesting approval to create the first subscription, the operator and engineer must confirm:
+- Exact endpoint URL and event allowlist, with a fresh read-only zero-subscription check immediately before creation.
+- A ready, reviewed method to retrieve the new endpoint-specific signing secret through Guesty dashboard or GET endpoint without disclosing it in chat or logs.
+- A verified Cloudflare **version-only** installation workflow, inspection of the new version's production bindings, and a separate explicit approval for deploying that version. Secret installation alone does not activate it.
+- Receiver remains fail-closed until a signed-delivery validation plan and monitoring are ready; do not return 2xx for unauthenticated events.
+- A short supervised activation window with a responsible operator watching Guesty dashboard delivery logs and Cloudflare errors, plus a documented decision to stop if repeated 503s appear.
+- A recovery path using individual dashboard replays where available; if an endpoint must be deleted/recreated, re-check subscription state and treat the signing secret as rotated.
+- Explicit acknowledgement that complete event recovery cannot currently be guaranteed.
+
+**Stop conditions:** unexpected subscription count, unknown secret schema, inability to verify signature, unexpected Worker binding changes, or no monitoring/rollback operator. Never automatically retry an ambiguous subscription-creation POST. No live action is authorized by this checklist.
