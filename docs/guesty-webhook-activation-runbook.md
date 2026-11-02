@@ -278,3 +278,13 @@ Before enabling webhook processing, verify the production D1 schema **read-only*
 Operator supplied Cloudflare D1 Studio screenshots for `zyenhomes-booking-requests`. The sidebar shows `guesty_message_events` exists. The table header shows all nine expected columns: `svix_id`, `guesty_event_id`, `event_type`, `reservation_id`, `conversation_id`, `occurred_at`, `received_at`, `payload_json`, and `archive_status`. The visible grid contains no rows, but that is not a guarantee of database-wide row count.
 
 **Remaining D1 schema evidence:** Indexes `idx_guesty_message_event_id` and `idx_guesty_message_reservation` have not been independently checked. No data was changed during this visual inspection.
+
+
+## Production D1 index verification — 2026-11-02
+
+Operator ran `PRAGMA index_list('guesty_message_events');` in the Cloudflare D1 Studio for `zyenhomes-booking-requests` and supplied the resulting screenshot. It returned three indexes:
+- `idx_guesty_message_reservation`: present, non-unique.
+- `idx_guesty_message_event_id`: present, unique and partial.
+- `sqlite_autoindex_guesty_message_events_1`: present, primary-key autoindex.
+
+Earlier D1 Studio screenshots confirmed the `guesty_message_events` table and all nine expected columns. Together, these satisfy the production D1 **schema presence** gate for the current webhook receiver. This was a read-only inspection; no migrations or guest records were changed. It does not establish end-to-end live webhook delivery, runtime database access, or signing-secret compatibility.
