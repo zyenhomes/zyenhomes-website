@@ -1,0 +1,23 @@
+name: Validate Guesty Secret Handoff Preparation (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/install-guesty-signing-secret.mjs'
+      - 'scripts/test-guesty-secret-handoff-failclosed.mjs'
+      - 'scripts/test-guesty-subscription-identity-offline.mjs'
+      - '.github/workflows/install-guesty-signing-secret.yml'
+      - '.github/workflows/validate-guesty-handoff-preparation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/install-guesty-signing-secret.mjs
+      - run: node scripts/test-guesty-secret-handoff-failclosed.mjs
+      - run: node scripts/test-guesty-subscription-identity-offline.mjs
