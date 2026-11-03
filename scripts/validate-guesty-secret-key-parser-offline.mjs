@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const script=readFileSync("scripts/install-guesty-signing-secret.mjs","utf8");
+assert.match(script,/Object\.keys\(payload\)\.length!==1/);
+assert.match(script,/typeof payload\.key!=="string"/);
+assert.match(script,/\^whsec_/);
+assert.match(script,/input:payload\.key\+"\\n"/);
+assert.doesNotMatch(script,/payload\.secret/);
+assert.match(script,/GUESTY_SECRET_SCHEMA_VERIFIED/);
+assert.match(script,/matching\.length!==1/);
+console.log("PASS: verified single-field Guesty key parser and approval gates.");
