@@ -330,3 +330,8 @@ This is a **point-in-time production binding-presence and disabled-state check**
 ## Live disabled receiver verification — 2026-11-02
 
 Operator shared successful GitHub Actions run #2 of `Verify Live Guesty Webhook Disabled (Read Only)`. The synthetic POST to the production webhook endpoint returned HTTP **503** and response message `Webhook receiver disabled`. The workflow passed its expected disabled-state check. This establishes the receiver rejected the synthetic request while disabled; it does not independently verify D1 row counts or prove that all future deliveries will be recoverable. No subscription, signing-secret installation, or production deployment was performed.
+
+
+## Repository activation readiness verification — 2026-11-02
+
+Operator supplied successful GitHub Actions run #3 of `Guesty Messaging Activation Readiness (No Writes)`. Repository checks passed for disabled receiver and booking submissions, presence of signature verification and signing-secret requirement, support for message-received and message-sent event types, D1 archive insertion, and documented secret handoff. The workflow explicitly states it does **not** verify live Cloudflare settings or create subscriptions. Separate prior read-only inspections verified production binding presence, D1 schema, and disabled receiver response. No live activation was performed.
