@@ -43,6 +43,11 @@ if(keys.length===1&&unknownKeys.length===1){
    ? (/^whsec_[A-Za-z0-9+/=]{20,}$/.test(value)?"Svix-format string":"other string")
    : Array.isArray(value)?"array":value===null?"null":typeof value;
  console.log("Single unrecognized field type:",kind);
- console.log("Field name suppressed; exact schema remains unverified.");
+ // Compare only against a fixed set of plausible documented-style keys.
+ // The output is a boolean match and never prints the unknown key itself.
+ const candidateNames=["signing_secret","signing_key","signingKey","webhook_secret","webhookSigningSecret","webhook_signing_secret","svixSecret","svix_secret","key","value"];
+ const matched=candidateNames.filter(name=>Object.hasOwn(payload,name));
+ console.log("Fixed candidate field-name match:",matched.length===1?matched[0]:"none");
+ console.log("Field name suppressed unless it matches the reviewed fixed candidate list; exact schema requires independent validation.");
 }
 console.log("No secret values or unknown field names printed. No subscriptions or Worker changes made.");
