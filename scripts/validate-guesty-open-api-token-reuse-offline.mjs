@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {spawnSync} from "node:child_process";
+const script=readFileSync("scripts/install-guesty-signing-secret.mjs","utf8");
+const workflow=readFileSync(".github/workflows/install-guesty-signing-secret.yml","utf8");
+assert.match(script,/GUESTY_OPEN_API_ACCESS_TOKEN/);
+assert.match(script,/GUESTY_OPEN_API_TOKEN_EXPIRES_AT/);
+assert.match(script,/remaining<300000/);
+assert.match(script,/const auth=await authenticate\(\)/);
+assert.ok(script.indexOf("if(supplied||expiry)")<script.indexOf("const auth=await authenticate()"));
+assert.match(workflow,/secrets\.GUESTY_OPEN_API_ACCESS_TOKEN/);
+assert.match(workflow,/vars\.GUESTY_OPEN_API_TOKEN_EXPIRES_AT/);
+const result=spawnSync(process.execPath,["scripts/install-guesty-signing-secret.mjs"],{encoding:"utf8",env:{PATH:process.env.PATH},timeout:5000});
+assert.equal(result.status,1);
+assert.match(result.stderr,/Explicit handoff confirmation required/);
+console.log("PASS: optional cached token path is gated; no live API calls.");
