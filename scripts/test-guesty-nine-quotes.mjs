@@ -34,7 +34,7 @@ for (const id of ids) {
       detail = "Worker rate limiter active; run again later";
     } else {
       status = "REVIEW";
-      detail = `HTTP ${response.status}: ${String(result.message ?? "No message").slice(0,120)}`;
+      detail = `HTTP ${response.status} | Guesty status: ${Number.isInteger(result.guestyStatus) ? result.guestyStatus : "not provided"} | Error: ${typeof result.errorCode === "string" ? result.errorCode.slice(0,50) : "not provided"} | ${String(result.message ?? "No message").slice(0,80)}`;
     }
   } catch (error) {
     detail = String(error.message || error).slice(0,120);
