@@ -33,4 +33,16 @@ for(const key of ["secret","signingSecret","webhookSecret","data"]){
  const kind=typeof value==="string"?( /^whsec_[A-Za-z0-9+/=]{20,}$/.test(value)?"Svix-format string":"other string" ):Array.isArray(value)?"array":value===null?"null":typeof value;
  console.log("Recognized field:",key,"type:",kind);
 }
+// Classify the sole unrecognized field without printing its key or value.
+// Do not treat this diagnostic as authorization to install a secret.
+const recognized=new Set(["secret","signingSecret","webhookSecret","data"]);
+const unknownKeys=keys.filter(key=>!recognized.has(key));
+if(keys.length===1&&unknownKeys.length===1){
+ const value=payload[unknownKeys[0]];
+ const kind=typeof value==="string"
+   ? (/^whsec_[A-Za-z0-9+/=]{20,}$/.test(value)?"Svix-format string":"other string")
+   : Array.isArray(value)?"array":value===null?"null":typeof value;
+ console.log("Single unrecognized field type:",kind);
+ console.log("Field name suppressed; exact schema remains unverified.");
+}
 console.log("No secret values or unknown field names printed. No subscriptions or Worker changes made.");
