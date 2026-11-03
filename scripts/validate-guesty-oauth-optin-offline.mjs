@@ -1,0 +1,10 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/install-guesty-signing-secret.mjs","utf8");
+const w=readFileSync(".github/workflows/install-guesty-signing-secret.yml","utf8");
+assert.match(s,/ALLOW_NEW_GUESTY_OAUTH_TOKEN!=="true"/);
+assert.ok(s.indexOf("ALLOW_NEW_GUESTY_OAUTH_TOKEN")<s.indexOf("const auth=await authenticate()"));
+assert.match(w,/allow_new_oauth_token:/);
+assert.match(w,/default: false/);
+assert.match(w,/ALLOW_NEW_GUESTY_OAUTH_TOKEN: \$\{\{ inputs\.allow_new_oauth_token \}\}/);
+console.log("PASS: fresh Guesty OAuth request requires separate explicit opt-in.");
