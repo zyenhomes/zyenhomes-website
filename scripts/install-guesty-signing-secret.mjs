@@ -50,7 +50,7 @@ async function getAccessToken(){
  const supplied=process.env.GUESTY_OPEN_API_ACCESS_TOKEN;
  const expiry=process.env.GUESTY_OPEN_API_TOKEN_EXPIRES_AT;
  if(supplied||expiry){
-   if(typeof supplied!=="string"||supplied.length<20||!/^\\d{13}$/.test(expiry||""))throw Error("Invalid cached Open API token metadata; stop");
+   if(typeof supplied!=="string"||supplied.length<20||!/^[0-9]{13}$/.test(expiry||""))throw Error("Invalid cached Open API token metadata; stop");
    const remaining=Number(expiry)-Date.now();
    if(!Number.isSafeInteger(Number(expiry))||remaining<300000||remaining>86400000)throw Error("Cached Open API token expired or expiry invalid; stop");
    console.log("Using securely supplied unexpired Open API token; no OAuth request.");
