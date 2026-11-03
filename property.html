@@ -521,6 +521,11 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
  head.append(closeButton,title);
  const body=document.createElement('div');body.className='zy-about-modal-content';
  nodes.forEach(node=>body.append(node.cloneNode(true)));
+ if(new URLSearchParams(location.search).get('property')==='the-cozy-ski-chalet'||new URLSearchParams(location.search).get('id')==='102-patricia'){
+   // Preserve the concise on-page preview; expand only the Show more dialog.
+   body.replaceChildren();
+   ["Welcome to The Cozy Ski Chalet, your perfect Blue Mountains getaway! This beautiful and inviting 6-bedroom, 2-bathroom chalet accommodates up to 14 guests, making it an ideal retreat for families, friends and group vacations.","Walk to the ski slopes and Blue Mountain Village! Enjoy convenient access to skiing, snowboarding, restaurants, shopping, entertainment and year-round mountain activities without needing to drive.","After a day of adventure, return to your cozy chalet and relax in the year-round outdoor hot tub on the backyard deck. Enjoy a BBQ, unwind in the outdoor seating area, or gather indoors around the electric fireplace.","The main floor features a fully stocked kitchen, dining area, comfortable living room and entertainment space with a foosball table. With two Smart TVs and board games, there are plenty of ways for everyone to relax and spend quality time together.","Spread across two floors, the chalet offers six bedrooms and two full bathrooms, providing comfortable accommodations for groups of up to 14 guests.","Whether you're planning a winter ski vacation, a summer mountain escape or a relaxing weekend with loved ones, The Cozy Ski Chalet offers a welcoming combination of comfort, convenience and memorable Blue Mountains experiences."].forEach(text=>{const p=document.createElement('p');p.textContent=text;body.append(p)});
+ }
  overlay.append(head,body);document.body.append(overlay);
  const close=()=>{
   overlay.hidden=true;button.setAttribute('aria-expanded','false');document.body.classList.remove('zy-about-locked');button.focus();
