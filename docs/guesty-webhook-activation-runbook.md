@@ -325,3 +325,8 @@ A future separately approved version rollout must identify the exact immutable v
 Operator supplied successful GitHub Actions run #4 of `Inspect Guesty Worker Production Bindings (Read Only)`. Cloudflare settings GET returned HTTP 200. The output confirmed presence of `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, `GUESTY_CLIENT_ID`, `GUESTY_CLIENT_SECRET`, and `GUESTY_WEBHOOKS_ENABLED`; it reported `PASS: Production bindings present and webhook receiver disabled.`
 
 This is a **point-in-time production binding-presence and disabled-state check**, not proof of preserved binding targets/values in a future version, active signing-secret availability, or successful live signed delivery. No Worker modifications were made.
+
+
+## Live disabled receiver verification — 2026-11-02
+
+Operator shared successful GitHub Actions run #2 of `Verify Live Guesty Webhook Disabled (Read Only)`. The synthetic POST to the production webhook endpoint returned HTTP **503** and response message `Webhook receiver disabled`. The workflow passed its expected disabled-state check. This establishes the receiver rejected the synthetic request while disabled; it does not independently verify D1 row counts or prove that all future deliveries will be recoverable. No subscription, signing-secret installation, or production deployment was performed.
