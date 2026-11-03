@@ -1,0 +1,24 @@
+name: Validate Wrangler Version-Only Secret Command (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/install-guesty-signing-secret.mjs'
+      - '.github/workflows/validate-guesty-wrangler-version-command.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Wrangler locally (no Cloudflare authentication)
+        run: npm install --no-save wrangler@4
+      - name: Verify version-only command exists without invoking it
+        run: |
+          test -x node_modules/.bin/wrangler
+          node_modules/.bin/wrangler versions secret put --help > /dev/null
+          node scripts/test-guesty-secret-put-command-offline.mjs

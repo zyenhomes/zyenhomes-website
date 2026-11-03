@@ -1,0 +1,20 @@
+name: Validate Guesty Subscription Activation Preflight (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/test-guesty-subscription-activation-preflight.mjs'
+      - '.github/workflows/validate-guesty-activation-preflight.yml'
+      - 'scripts/create-guesty-message-subscription.mjs'
+      - 'scripts/install-guesty-signing-secret.mjs'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/test-guesty-subscription-activation-preflight.mjs
