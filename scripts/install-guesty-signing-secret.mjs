@@ -30,11 +30,11 @@ url.searchParams.set("url",endpoint);
 const response=await fetch(url,{headers:{Authorization:"Bearer "+access,Accept:"application/json"},signal:AbortSignal.timeout(20000)});
 if(!response.ok)throw Error("Guesty signing-secret request failed: HTTP "+response.status);
 const payload=await response.json();
-// Guesty public docs show {} rather than a concrete response schema.
-// Only accept a single explicit top-level 'secret' key until verified.
-if(!payload||typeof payload!=="object"||Array.isArray(payload)||Object.keys(payload).length!==1||typeof payload.secret!=="string"||!/^whsec_[A-Za-z0-9+/=]{20,}$/.test(payload.secret))throw Error("Unrecognized Guesty signing-secret response; no Cloudflare changes made");
+// Read-only Guesty inspection #4 verified one top-level 'key' field with a Svix-format string.
+// Reject all other shapes and never log the value.
+if(!payload||typeof payload!=="object"||Array.isArray(payload)||Object.keys(payload).length!==1||typeof payload.key!=="string"||!/^whsec_[A-Za-z0-9+/=]{20,}$/.test(payload.key))throw Error("Unrecognized Guesty signing-secret response; no Cloudflare changes made");
 const child=spawnSync("../node_modules/.bin/wrangler",["versions","secret","put","GUESTY_WEBHOOK_SECRET","--name","zyenhomes-booking-api","--config","wrangler.toml"],{
-  cwd:"cloudflare",input:payload.secret+"\n",encoding:"utf8",
+  cwd:"cloudflare",input:payload.key+"\n",encoding:"utf8",
   env:{...process.env,CLOUDFLARE_API_TOKEN:cloudflare,CLOUDFLARE_ACCOUNT_ID:account},
   timeout:30000,maxBuffer:100000
 });
