@@ -1,0 +1,26 @@
+name: Preflight Exact Guesty Worker Version (Read Only)
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_version_id:
+        description: "Exact 36-character candidate Worker version UUID (no deployment)"
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: guesty-webhook-activation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect exact candidate version without writes
+        env:
+          CANDIDATE_VERSION_ID: ${{ inputs.candidate_version_id }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/preflight-guesty-production-version-readonly.mjs
