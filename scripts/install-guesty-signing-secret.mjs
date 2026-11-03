@@ -20,7 +20,7 @@ function retryDelayMs(value){
  if(!value)return null;
  const trimmed=value.trim();
  let ms;
- if(/^\\d+$/.test(trimmed))ms=Number(trimmed)*1000;
+ if(/^[0-9]+$/.test(trimmed))ms=Number(trimmed)*1000;
  else {
    const parsed=Date.parse(trimmed);
    if(!Number.isFinite(parsed))return null;
