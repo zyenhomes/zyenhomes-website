@@ -44,9 +44,24 @@ async function authenticate(){
  }
  throw Error("Guesty OAuth unavailable");
 }
-const auth=await authenticate();
-const access=(await auth.json()).access_token;
-if(typeof access!=="string"||!access)throw Error("Guesty token missing");
+// A securely injected, unexpired Open API token can be reused without tokenization.
+// Never use a Booking Engine token here. Do not log the token or its expiry.
+async function getAccessToken(){
+ const supplied=process.env.GUESTY_OPEN_API_ACCESS_TOKEN;
+ const expiry=process.env.GUESTY_OPEN_API_TOKEN_EXPIRES_AT;
+ if(supplied||expiry){
+   if(typeof supplied!=="string"||supplied.length<20||!/^\\d{13}$/.test(expiry||""))throw Error("Invalid cached Open API token metadata; stop");
+   const remaining=Number(expiry)-Date.now();
+   if(!Number.isSafeInteger(Number(expiry))||remaining<300000||remaining>86400000)throw Error("Cached Open API token expired or expiry invalid; stop");
+   console.log("Using securely supplied unexpired Open API token; no OAuth request.");
+   return supplied;
+ }
+ const auth=await authenticate();
+ const access=(await auth.json()).access_token;
+ if(typeof access!=="string"||!access)throw Error("Guesty token missing");
+ return access;
+}
+const access=await getAccessToken();
 // Independently verify the exact subscribed endpoint before requesting its secret.
 const subscriptionsResponse=await fetch("https://open-api.guesty.com/v1/webhooks",{headers:{Authorization:"Bearer "+access,Accept:"application/json"},signal:AbortSignal.timeout(20000)});
 if(!subscriptionsResponse.ok)throw Error("Subscription verification unavailable: HTTP "+subscriptionsResponse.status);
