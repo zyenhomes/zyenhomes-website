@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {spawnSync} from "node:child_process";
+const script=readFileSync("scripts/install-guesty-signing-secret.mjs","utf8");
+assert.match(script,/attempt<2/);
+assert.match(script,/response\.status!==429/);
+assert.match(script,/response\.headers\.get\("Retry-After"\)/);
+assert.match(script,/ms<=60000/);
+assert.match(script,/if\(attempt===1\|\|wait===null\)throw/);
+assert.match(script,/if\(!response\.ok\)/);
+assert.doesNotMatch(script,/console\.log\([^\n]*(?:access_token|response\.json\(|payload\.key)/);
+const run=spawnSync(process.execPath,["scripts/install-guesty-signing-secret.mjs"],{env:{PATH:process.env.PATH},encoding:"utf8",timeout:5000});
+assert.equal(run.status,1);
+assert.match(run.stderr,/Explicit handoff confirmation required/);
+console.log("PASS: bounded OAuth 429 handling and fail-closed preflight.");
