@@ -56,6 +56,7 @@ async function getAccessToken(){
    console.log("Using securely supplied unexpired Open API token; no OAuth request.");
    return supplied;
  }
+ if(process.env.ALLOW_NEW_GUESTY_OAUTH_TOKEN!=="true")throw Error("No valid cached Open API token; fresh OAuth request not separately authorized");
  const auth=await authenticate();
  const access=(await auth.json()).access_token;
  if(typeof access!=="string"||!access)throw Error("Guesty token missing");
