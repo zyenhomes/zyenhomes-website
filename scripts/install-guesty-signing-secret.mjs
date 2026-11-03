@@ -14,35 +14,17 @@ if(process.env.ISOLATED_WORKER_SECRET_PUT_VERIFIED!=="true")throw Error("Isolate
 if(process.env.GUESTY_SUBSCRIPTION_VERIFIED!=="true")throw Error("Guesty subscription identity has not been verified; stop");
 if(process.env.GUESTY_SECRET_SCHEMA_VERIFIED!=="true")throw Error("Guesty signing-secret schema has not been verified; stop");
 if(!id||!secret||!cloudflare||!/^[a-fA-F0-9]{32}$/.test(account||""))throw Error("Missing required credentials/configuration");
-// Retry at most once, and only when Guesty supplies a bounded Retry-After.
-// Never log the OAuth response body, token, or Retry-After raw value.
-function retryDelayMs(value){
- if(!value)return null;
- const trimmed=value.trim();
- let ms;
- if(/^[0-9]+$/.test(trimmed))ms=Number(trimmed)*1000;
- else {
-   const parsed=Date.parse(trimmed);
-   if(!Number.isFinite(parsed))return null;
-   ms=Math.max(0,parsed-Date.now());
- }
- return Number.isFinite(ms)&&ms>=1000&&ms<=60000?ms:null;
-}
+// Guesty permits only five tokenization requests per client per 24 hours.
+// Make at most one attempt per separately approved execution; never retry 429.
 async function authenticate(){
- for(let attempt=0;attempt<2;attempt++){
-   const response=await fetch("https://open-api.guesty.com/oauth2/token",{
-     method:"POST",headers:{Accept:"application/json","Content-Type":"application/x-www-form-urlencoded"},
-     body:new URLSearchParams({grant_type:"client_credentials",scope:"open-api",client_id:id,client_secret:secret}),
-     signal:AbortSignal.timeout(20000)
-   });
-   if(response.ok)return response;
-   if(response.status!==429)throw Error("Guesty authentication failed: HTTP "+response.status);
-   const wait=retryDelayMs(response.headers.get("Retry-After"));
-   if(attempt===1||wait===null)throw Error("Guesty OAuth rate limited (HTTP 429); no further attempts made");
-   console.log("Guesty OAuth rate limited; respecting bounded Retry-After before one retry.");
-   await new Promise(resolve=>setTimeout(resolve,wait));
- }
- throw Error("Guesty OAuth unavailable");
+ const response=await fetch("https://open-api.guesty.com/oauth2/token",{
+   method:"POST",headers:{Accept:"application/json","Content-Type":"application/x-www-form-urlencoded"},
+   body:new URLSearchParams({grant_type:"client_credentials",scope:"open-api",client_id:id,client_secret:secret}),
+   signal:AbortSignal.timeout(20000)
+ });
+ if(response.status===429)throw Error("Guesty OAuth quota exhausted (HTTP 429); stop without retry");
+ if(!response.ok)throw Error("Guesty authentication failed: HTTP "+response.status);
+ return response;
 }
 // A securely injected, unexpired Open API token can be reused without tokenization.
 // Never use a Booking Engine token here. Do not log the token or its expiry.
