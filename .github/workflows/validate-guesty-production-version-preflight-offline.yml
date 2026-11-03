@@ -1,0 +1,21 @@
+name: Validate Exact Guesty Version Preflight (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/preflight-guesty-production-version-readonly.mjs'
+      - 'scripts/validate-guesty-production-version-preflight-offline.mjs'
+      - '.github/workflows/preflight-guesty-production-version-readonly.yml'
+      - '.github/workflows/validate-guesty-production-version-preflight-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/preflight-guesty-production-version-readonly.mjs
+      - run: node scripts/validate-guesty-production-version-preflight-offline.mjs
