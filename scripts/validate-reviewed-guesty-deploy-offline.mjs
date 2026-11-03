@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {spawnSync} from "node:child_process";
+const script=readFileSync("scripts/deploy-reviewed-guesty-version.mjs","utf8");
+const workflow=readFileSync(".github/workflows/deploy-reviewed-guesty-version.yml","utf8");
+assert.match(script,/versions","deploy",candidate\+"@100%"/);
+assert.match(script,/allocations\.length!==1/);
+assert.match(script,/VERSION_PREFLIGHT_APPROVED/);
+assert.doesNotMatch(script,/\["deploy"/);
+assert.match(workflow,/environment: cloudflare-production/);
+assert.match(workflow,/group: zyenhomes-booking-api-production/);
+assert.match(workflow,/default: false/);
+const result=spawnSync(process.execPath,["scripts/deploy-reviewed-guesty-version.mjs"],{encoding:"utf8",env:{PATH:process.env.PATH},timeout:5000});
+assert.equal(result.status,1);
+assert.match(result.stderr,/Explicit production deployment confirmation required/);
+console.log("PASS: exact-version promotion remains gated and fails closed offline.");
