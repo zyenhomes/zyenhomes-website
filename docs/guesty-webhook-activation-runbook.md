@@ -318,3 +318,10 @@ Repository `main` already contains `.github/workflows/deploy-booking-api.yml` (`
 **Do not use this existing deploy workflow to activate Guesty signing secrets.** It performs an immediate production deployment of repository code/config, not an explicitly selected and verified version-only secret rollout. It is not a substitute for `wrangler versions deploy` of an exact reviewed version. Post-deployment health checks cannot prevent a bad deployment.
 
 A future separately approved version rollout must identify the exact immutable version, verify its production D1/KV/rate-limiter bindings and disabled flags, record the previous active version, and provide an operator-reviewed rollback plan. Avoid invoking `deploy-booking-api.yml` during this process. This is a documentation-only finding; no production workflow was run.
+
+
+## Fresh production binding inspection — 2026-11-02
+
+Operator supplied successful GitHub Actions run #4 of `Inspect Guesty Worker Production Bindings (Read Only)`. Cloudflare settings GET returned HTTP 200. The output confirmed presence of `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, `GUESTY_CLIENT_ID`, `GUESTY_CLIENT_SECRET`, and `GUESTY_WEBHOOKS_ENABLED`; it reported `PASS: Production bindings present and webhook receiver disabled.`
+
+This is a **point-in-time production binding-presence and disabled-state check**, not proof of preserved binding targets/values in a future version, active signing-secret availability, or successful live signed delivery. No Worker modifications were made.
