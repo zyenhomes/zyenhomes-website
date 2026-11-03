@@ -309,3 +309,12 @@ The signing-secret handoff on `main` uses `wrangler versions secret put`, which 
 **After separately approved deployment:** Read back the active deployment/version and production bindings. Keep webhook processing disabled until separately approved authenticated delivery testing and enablement. If any binding, flag, or route differs unexpectedly, stop and investigate; do not perform an automatic rollback or another deployment without approval.
 
 **Open blocker:** No reviewed production version-deployment workflow has yet been established in this checkpoint. The exact command, token permissions, and non-disruptive rollout behavior must be reviewed before it is created or run.
+
+
+## Existing production deploy workflow hazard — 2026-11-02
+
+Repository `main` already contains `.github/workflows/deploy-booking-api.yml` (`Deploy Zyen Homes Booking API`). This manual workflow executes `cloudflare/wrangler-action@v3` with `command: deploy --config wrangler.toml` against `zyenhomes-booking-api`, then performs health, CORS, and live quote checks.
+
+**Do not use this existing deploy workflow to activate Guesty signing secrets.** It performs an immediate production deployment of repository code/config, not an explicitly selected and verified version-only secret rollout. It is not a substitute for `wrangler versions deploy` of an exact reviewed version. Post-deployment health checks cannot prevent a bad deployment.
+
+A future separately approved version rollout must identify the exact immutable version, verify its production D1/KV/rate-limiter bindings and disabled flags, record the previous active version, and provide an operator-reviewed rollback plan. Avoid invoking `deploy-booking-api.yml` during this process. This is a documentation-only finding; no production workflow was run.
