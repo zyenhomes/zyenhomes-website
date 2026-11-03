@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const script=readFileSync("scripts/preflight-guesty-production-version-readonly.mjs","utf8");
+const workflow=readFileSync(".github/workflows/preflight-guesty-production-version-readonly.yml","utf8");
+assert.match(script,/workers\/scripts\/zyenhomes-booking-api/);
+assert.match(script,/method:"GET"/);
+assert.match(script,/CANDIDATE_VERSION_ID/);
+assert.match(script,/GUESTY_WEBHOOK_SECRET/);
+assert.match(script,/GUESTY_WEBHOOKS_ENABLED/);
+assert.match(script,/BOOKING_REQUESTS_ENABLED/);
+assert.doesNotMatch(script,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/i);
+assert.doesNotMatch(script,/spawnSync|execSync|wrangler/);
+assert.match(workflow,/workflow_dispatch:/);
+assert.match(workflow,/environment: guesty-webhook-activation/);
+console.log("PASS: exact-version preflight contains only Cloudflare GET operations.");
