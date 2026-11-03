@@ -288,3 +288,24 @@ Operator ran `PRAGMA index_list('guesty_message_events');` in the Cloudflare D1 
 - `sqlite_autoindex_guesty_message_events_1`: present, primary-key autoindex.
 
 Earlier D1 Studio screenshots confirmed the `guesty_message_events` table and all nine expected columns. Together, these satisfy the production D1 **schema presence** gate for the current webhook receiver. This was a read-only inspection; no migrations or guest records were changed. It does not establish end-to-end live webhook delivery, runtime database access, or signing-secret compatibility.
+
+
+## Production rollout approval gate — 2026-11-02
+
+**This section is a plan only; no deployment command is authorized.**
+
+The signing-secret handoff on `main` uses `wrangler versions secret put`, which creates a version without deploying it. A future production rollout must be a separate, manually approved operation targeting only `zyenhomes-booking-api`.
+
+**Before any deployment:**
+1. Verify the exact Guesty endpoint subscription and its actual signing-secret schema. Do not log or paste secret values.
+2. Record the current production deployment/version identifier and traffic allocation using read-only Cloudflare inspection.
+3. Identify the specific new version containing `GUESTY_WEBHOOK_SECRET`. Do not select `latest` blindly or infer identity from creation time.
+4. Read that version's binding names/types and confirm `BOOKING_DB`, `GUESTY_TOKEN_KV`, `BOOKING_RATE_LIMITER`, existing required secrets, and `BOOKING_REQUESTS_ENABLED=false` and `GUESTY_WEBHOOKS_ENABLED=false`. Confirm relevant binding targets and values through safe private verification; names/types alone are not sufficient.
+5. Confirm the receiver code and signing format are compatible with Guesty's real delivery headers. Review whether the current version includes the intended handler and unchanged booking routes.
+6. Confirm an operator can monitor Cloudflare errors and Guesty delivery logs, with a recovery procedure that does not assume guaranteed replay.
+
+**Deployment approval:** Present the exact Worker name, version ID, expected binding changes, unchanged booking functionality, and rollback target. Obtain explicit authorization for this version only. Do not deploy from this documentation step.
+
+**After separately approved deployment:** Read back the active deployment/version and production bindings. Keep webhook processing disabled until separately approved authenticated delivery testing and enablement. If any binding, flag, or route differs unexpectedly, stop and investigate; do not perform an automatic rollback or another deployment without approval.
+
+**Open blocker:** No reviewed production version-deployment workflow has yet been established in this checkpoint. The exact command, token permissions, and non-disruptive rollout behavior must be reviewed before it is created or run.
