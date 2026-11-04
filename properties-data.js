@@ -13,7 +13,7 @@ window.ZYEN_PROPERTIES=[
 {id:"39-snowbridge",name:"The Snowbridge Retreat",location:"Blue Mountains",beds:3,baths:3.5,guests:8,feature:"Seasonal Heated Outdoor Pool · Private Sauna · Pool Table · Foosball",image:"property-photos/39-171-snowbridge/39-171-snowbridge-60.webp"},
 {id:"102-patricia",name:"The Cozy Ski Chalet",location:"Blue Mountains",beds:6,baths:2,guests:14,feature:"Cozy Ski Chalet · Hot Tub · Walk to Ski Slopes & Village",image:"property-photos/102-Patricia/102patricia_3.webp"},
 {id:"503-466-e-liberty",name:"The Liberty Village Suite",location:"Liberty Village, Toronto",beds:2,baths:1.5,guests:6,feature:"2-Bedroom Condo · Liberty Village · Walk to CNE, BMO Field & CN Tower · 1 Parking Spot",image:"property-photos/46-Liberty/46-Liberty-41.webp"},
-{id:"117-125-fairway",name:"The Fairway Village Retreat",location:"Blue Mountains",beds:2,baths:2,guests:6,feature:"5-Minute Walk to Village & Skiing · Seasonal Community Pool · Year-Round Community Hot Tub · Walk to Golf",image:""},
+{id:"117-125-fairway",name:"The Fairway Village Retreat",location:"Blue Mountains",beds:2,baths:2,guests:6,feature:"5-Minute Walk to Village & Skiing · Seasonal Community Pool · Year-Round Community Hot Tub · Walk to Golf",image:"property-photos/117-125-Fairway/125-fairway-43.webp"},
 {id:"9-elite-caledon",name:"The Caledon Golf Retreat",location:"Caledon, Ontario",beds:6,baths:3.5,guests:12,feature:"Hot Tub · Near TPC Toronto at Osprey Valley Golf Course · Approx. 14-Minute Drive",image:""},
 ];
 // Public-facing property URLs use the branded name, not the internal address-based ID.
