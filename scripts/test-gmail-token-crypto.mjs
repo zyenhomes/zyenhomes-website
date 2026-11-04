@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import {importEncryptionKey,sealToken,openToken} from "../gmail-archive-oauth/token-crypto.js";
+const key=await importEncryptionKey(crypto.getRandomValues(new Uint8Array(32)));
+const other=await importEncryptionKey(crypto.getRandomValues(new Uint8Array(32)));
+const envelope=await sealToken(key,"fictional-refresh-token");
+assert.equal(await openToken(key,envelope),"fictional-refresh-token");
+await assert.rejects(()=>openToken(other,envelope));
+const tampered={...envelope,ciphertext:[...envelope.ciphertext]};
+tampered.ciphertext[0]^=1;
+await assert.rejects(()=>openToken(key,tampered));
+await assert.rejects(()=>importEncryptionKey(new Uint8Array(16)));
+console.log("PASS: synthetic token encryption, decryption, tampering and wrong-key rejection.");
+console.log("No OAuth credentials, Gmail API calls, or production token storage.");

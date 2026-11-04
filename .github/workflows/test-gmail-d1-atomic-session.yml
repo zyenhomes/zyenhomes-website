@@ -1,0 +1,15 @@
+name: Validate Gmail D1 Atomic OAuth Sessions (Offline)
+on:
+  pull_request:
+    paths:
+      - 'gmail-archive-oauth/d1-oauth-sessions.js'
+      - 'scripts/test-gmail-d1-atomic-session.py'
+      - '.github/workflows/test-gmail-d1-atomic-session.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/test-gmail-d1-atomic-session.py
