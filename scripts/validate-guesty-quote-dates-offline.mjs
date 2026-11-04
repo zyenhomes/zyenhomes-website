@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {spawnSync} from "node:child_process";
+const s=readFileSync("scripts/test-guesty-nine-quotes.mjs","utf8");
+const w=readFileSync(".github/workflows/test-guesty-property-quotes.yml","utf8");
+assert.match(s,/QUOTE_CHECK_IN/);
+assert.match(s,/QUOTE_CHECK_OUT/);
+assert.match(s,/QUOTE_PROPERTY_ID/);
+assert.match(s,/parseDate\(checkIn\)/);
+assert.doesNotMatch(s,/date\(21\)|date\(23\)/);
+assert.match(w,/inputs\.check_in/);
+assert.match(w,/inputs\.check_out/);
+const run=spawnSync(process.execPath,["scripts/test-guesty-nine-quotes.mjs"],{encoding:"utf8",env:{PATH:process.env.PATH},timeout:5000});
+assert.equal(run.status,1);
+assert.match(run.stderr,/Check-in and check-out must be YYYY-MM-DD/);
+console.log("PASS: explicit quote date inputs and fail-closed validation.");
