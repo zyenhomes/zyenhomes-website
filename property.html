@@ -122,6 +122,11 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
   if(x.id==='117-125-fairway'){
     Object.keys(categories).forEach(key=>delete categories[key]);
     for(const category of ['Featured Photos','Community Pool & Hot Tub','Living, Kitchen & Dining','Bedrooms & Bathrooms','Outdoor & Exterior','View All Photos'])categories[category]=[];
+    categories["Featured Photos"]=["125-fairway-43.webp","125-fairway-3.webp","125-fairway-7.webp","125-fairway-19.webp","125-fairway-2.webp","125-fairway-21.webp","125-fairway-22.webp","125-fairway-39.webp","125-fairway-34.webp","125-fairway-20.webp","125-fairway-8.webp","125-fairway-10.webp","125-fairway-17.webp"];
+    categories["Community Pool & Hot Tub"]=["125-fairway-19.webp","125-fairway-27.webp","125-fairway-29.webp","125-fairway-32.webp","125-fairway-3.webp","125-fairway-5.webp","125-fairway-6.webp","125-fairway-28.webp","125-fairway-2.webp","125-fairway-4.webp","125-fairway-7.webp","125-fairway-21.webp","125-fairway-26.webp"];
+    categories["Bedrooms & Bathrooms"]=["125-fairway-20.webp","125-fairway-42.webp","125-fairway-12.webp","125-fairway-36.webp","125-fairway-16.webp","125-fairway-18.webp","125-fairway-17.webp","125-fairway-30.webp","125-fairway-10.webp","125-fairway-1.webp","125-fairway-31.webp"];
+    categories["Living, Kitchen & Dining"]=["125-fairway-8.webp","125-fairway-15.webp","125-fairway-9.webp","125-fairway-39.webp","125-fairway-40.webp","125-fairway-14.webp","125-fairway-34.webp","125-fairway-37.webp","125-fairway-23.webp","125-fairway-38.webp"];
+    categories['View All Photos']=[...new Set([...categories['Featured Photos'],...categories['Community Pool & Hot Tub'],...categories['Living, Kitchen & Dining'],...categories['Bedrooms & Bathrooms']])];
   }
   if(x.id==='503-466-e-liberty'){
     Object.keys(categories).forEach(key=>delete categories[key]);
