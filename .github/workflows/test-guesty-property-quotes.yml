@@ -1,22 +1,43 @@
 name: Test Guesty Property Quotes
-
 on:
   workflow_dispatch:
-
+    inputs:
+      check_in:
+        description: Confirmed available check-in YYYY-MM-DD
+        required: true
+        type: string
+      check_out:
+        description: Confirmed available check-out YYYY-MM-DD
+        required: true
+        type: string
+      guests:
+        description: Guest count
+        required: true
+        default: '2'
+        type: string
+      property_id:
+        description: Property slug or all
+        required: true
+        default: all
+        type: string
 permissions:
   contents: read
-
 jobs:
   quote-tests:
-    name: Check nine live Guesty quotes (read-only)
+    name: Check selected live Guesty quotes (read-only)
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: '22'
       - name: Validate quote test syntax
         run: node --check scripts/test-guesty-nine-quotes.mjs
-      - name: Test all connected listings without creating reservations
+      - name: Test selected listings without creating reservations
+        env:
+          QUOTE_CHECK_IN: ${{ inputs.check_in }}
+          QUOTE_CHECK_OUT: ${{ inputs.check_out }}
+          QUOTE_GUESTS: ${{ inputs.guests }}
+          QUOTE_PROPERTY_ID: ${{ inputs.property_id }}
         run: node scripts/test-guesty-nine-quotes.mjs
