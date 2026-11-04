@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/compare-guesty-worker-versions-readonly.mjs","utf8");
+const w=readFileSync(".github/workflows/compare-guesty-worker-versions-readonly.yml","utf8");
+assert.match(s,/method:"GET"/);
+assert.match(s,/ACTIVE_VERSION_ID/);
+assert.match(s,/CANDIDATE_VERSION_ID/);
+assert.match(s,/GUESTY_WEBHOOK_SECRET/);
+assert.match(s,/GUESTY_WEBHOOKS_ENABLED/);
+assert.match(s,/BOOKING_REQUESTS_ENABLED/);
+assert.doesNotMatch(s,/method:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
+assert.match(w,/workflow_dispatch:/);
+assert.match(w,/environment: guesty-webhook-activation/);
+console.log("PASS: version comparison uses Cloudflare GET only and explicit version IDs.");

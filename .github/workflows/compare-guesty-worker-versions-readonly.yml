@@ -1,0 +1,31 @@
+name: Compare Guesty Worker Version Bindings (Read Only)
+on:
+  workflow_dispatch:
+    inputs:
+      active_version_id:
+        description: "Full currently active version UUID"
+        required: true
+        type: string
+      candidate_version_id:
+        description: "Full undeployed signing-secret version UUID"
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: guesty-webhook-activation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compare exact version metadata without writes
+        env:
+          ACTIVE_VERSION_ID: ${{ inputs.active_version_id }}
+          CANDIDATE_VERSION_ID: ${{ inputs.candidate_version_id }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/compare-guesty-worker-versions-readonly.mjs
