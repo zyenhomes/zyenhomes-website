@@ -1,0 +1,23 @@
+name: Validate Guesty Version Comparison (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/compare-guesty-worker-versions-readonly.mjs'
+      - 'scripts/validate-guesty-version-compare-offline.mjs'
+      - '.github/workflows/compare-guesty-worker-versions-readonly.yml'
+      - '.github/workflows/validate-guesty-version-compare-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/compare-guesty-worker-versions-readonly.mjs
+      - run: node scripts/validate-guesty-version-compare-offline.mjs
