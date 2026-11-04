@@ -142,8 +142,15 @@ const more=document.getElementById('zy-more-filters');
 const toggle=document.getElementById('zy-more-toggle');
 toggle.addEventListener('click',()=>{more.hidden=!more.hidden;toggle.setAttribute('aria-expanded',String(!more.hidden));});
 document.getElementById('zy-clear-filters').addEventListener('click',()=>{
- ['bedrooms','beds'].forEach(k=>f.elements[k].value='');
+ ['checkin','checkout','guests','bedrooms','beds'].forEach(k=>{
+  const input=f.elements[k];
+  if(input._flatpickr)input._flatpickr.clear();
+  else input.value='';
+ });
  ['hotTub','sauna','waterfront','pool','washerDryer','airConditioning','workspace','evCharger','kingBed','crib','petsAllowed'].forEach(k=>f.elements[k].checked=false);
+ const query=new URLSearchParams(location.search);
+ ['checkin','checkout','guests','bedrooms','beds','hotTub','sauna','waterfront','pool','washerDryer','airConditioning','workspace','evCharger','kingBed','crib','petsAllowed'].forEach(k=>query.delete(k));
+ history.replaceState(null,'',location.pathname+(query.size?'?'+query:'')+location.hash);
  render();
 });
 if(['bedrooms','beds','hotTub','sauna','waterfront','pool'].some(k=>params.has(k)&&params.get(k))) {more.hidden=false;toggle.setAttribute('aria-expanded','true');}
