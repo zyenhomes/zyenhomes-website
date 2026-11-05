@@ -1,0 +1,10 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/inspect-isolated-flag-baseline-readonly.mjs","utf8");
+assert.match(s,/zyenhomes-webhook-test/);
+assert.match(s,/TEST_WEBHOOKS_ENABLED/);
+assert.match(s,/flag\.text!=="true"/);
+assert.match(s,/TEST_VERSION_ONLY_SECRET_2026_B/);
+assert.doesNotMatch(s,/method:"(?:POST|PUT|PATCH|DELETE)"/);
+assert.doesNotMatch(s,/console\.log\([^\n]*(?:token|account|\.text)/);
+console.log("PASS: read-only isolated flag inspection does not disclose values.");
