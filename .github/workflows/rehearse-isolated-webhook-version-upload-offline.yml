@@ -1,0 +1,22 @@
+name: Rehearse Isolated Webhook Version Upload (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/rehearse-isolated-webhook-version-upload-offline.mjs'
+      - '.github/workflows/rehearse-isolated-webhook-version-upload-offline.yml'
+permissions:
+  contents: read
+jobs:
+  rehearse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save wrangler@4
+      - run: node --check scripts/rehearse-isolated-webhook-version-upload-offline.mjs
+      - run: node scripts/rehearse-isolated-webhook-version-upload-offline.mjs
