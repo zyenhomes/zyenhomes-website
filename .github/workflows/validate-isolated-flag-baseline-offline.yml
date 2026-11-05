@@ -1,0 +1,23 @@
+name: Validate Isolated Flag Baseline Inspection (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/inspect-isolated-flag-baseline-readonly.mjs'
+      - '.github/workflows/inspect-isolated-flag-baseline-readonly.yml'
+      - 'scripts/validate-isolated-flag-baseline-offline.mjs'
+      - '.github/workflows/validate-isolated-flag-baseline-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/inspect-isolated-flag-baseline-readonly.mjs
+      - run: node scripts/validate-isolated-flag-baseline-offline.mjs
