@@ -1,0 +1,22 @@
+name: Validate Guesty Script Hash Reporting (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/compare-guesty-worker-script-etags-readonly.mjs'
+      - 'scripts/validate-guesty-script-hash-report-offline.mjs'
+      - '.github/workflows/validate-guesty-script-hash-report-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/compare-guesty-worker-script-etags-readonly.mjs
+      - run: node scripts/validate-guesty-script-hash-report-offline.mjs
