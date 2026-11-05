@@ -1,0 +1,23 @@
+name: Validate Isolated Flag Version Upload (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/create-isolated-flag-version.mjs'
+      - '.github/workflows/create-isolated-flag-version.yml'
+      - 'scripts/validate-isolated-flag-version-upload-offline.mjs'
+      - '.github/workflows/validate-isolated-flag-version-upload-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/create-isolated-flag-version.mjs
+      - run: node scripts/validate-isolated-flag-version-upload-offline.mjs
