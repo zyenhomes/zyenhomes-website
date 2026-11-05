@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/preflight-guesty-activation-baseline-readonly.mjs","utf8");
+const w=readFileSync(".github/workflows/preflight-guesty-activation-baseline-readonly.yml","utf8");
+assert.match(s,/zyenhomes-booking-api/);
+assert.match(s,/EXPECTED_ACTIVE_VERSION_ID/);
+assert.match(s,/GUESTY_WEBHOOK_SECRET/);
+assert.match(s,/BOOKING_REQUESTS_ENABLED/);
+assert.match(s,/GUESTY_WEBHOOKS_ENABLED/);
+assert.match(s,/percentage\)!==100/);
+assert.doesNotMatch(s,/method:"(?:POST|PUT|PATCH|DELETE)"/);
+assert.match(w,/environment: cloudflare-production/);
+console.log("PASS: read-only production baseline inspection checks exact active version and disabled flags.");
