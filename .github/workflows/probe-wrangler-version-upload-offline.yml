@@ -1,0 +1,21 @@
+name: Probe Wrangler Version Upload Capability (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/probe-wrangler-version-upload-offline.mjs'
+      - '.github/workflows/probe-wrangler-version-upload-offline.yml'
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save wrangler@4
+      - run: node scripts/probe-wrangler-version-upload-offline.mjs
