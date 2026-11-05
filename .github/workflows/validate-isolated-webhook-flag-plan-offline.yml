@@ -1,0 +1,21 @@
+name: Validate Isolated Webhook Flag Plan (Offline)
+on:
+  pull_request:
+    paths:
+      - 'docs/isolated-guesty-webhook-flag-version-test.md'
+      - 'scripts/validate-isolated-webhook-flag-plan-offline.mjs'
+      - '.github/workflows/validate-isolated-webhook-flag-plan-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/validate-isolated-webhook-flag-plan-offline.mjs
