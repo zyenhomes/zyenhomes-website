@@ -1,0 +1,23 @@
+name: Validate Guesty Quote Dates (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/test-guesty-nine-quotes.mjs'
+      - '.github/workflows/test-guesty-property-quotes.yml'
+      - 'scripts/validate-guesty-quote-dates-offline.mjs'
+      - '.github/workflows/validate-guesty-quote-dates-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/test-guesty-nine-quotes.mjs
+      - run: node scripts/validate-guesty-quote-dates-offline.mjs
