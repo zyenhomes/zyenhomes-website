@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/inspect-guesty-version-code-metadata-readonly.mjs","utf8");
+const w=readFileSync(".github/workflows/inspect-guesty-version-code-metadata-readonly.yml","utf8");
+assert.match(s,/INCONCLUSIVE: Cloudflare version metadata/);
+assert.match(s,/version_id!==active/);
+assert.match(s,/headers:\{Authorization:/);
+assert.doesNotMatch(s,/method:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
+assert.match(w,/workflow_dispatch:/);
+assert.match(w,/environment: guesty-webhook-activation/);
+console.log("PASS: metadata-only comparison explicitly does not claim code parity.");
