@@ -1,0 +1,10 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/compare-guesty-worker-script-etags-readonly.mjs","utf8");
+assert.match(s,/if\(ah!==bh\)throw Error/);
+assert.match(s,/PASS: Cloudflare script etags match/);
+assert.match(s,/INCONCLUSIVE: runtime compatibility flags unavailable/);
+assert.match(s,/MISMATCH: runtime compatibility flags differ/);
+assert.match(s,/INCONCLUSIVE: version script etag missing/);
+assert.doesNotMatch(s,/console\.log\([^\n]*(?:ah|bh|token)/);
+console.log("PASS: code hash mismatch remains fatal; missing runtime flags separately reported.");

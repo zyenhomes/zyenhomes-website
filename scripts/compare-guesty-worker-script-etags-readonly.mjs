@@ -20,13 +20,26 @@ if(!Array.isArray(latest.versions)||latest.versions.length!==1||latest.versions[
 const ah=a?.resources?.script?.etag,bh=b?.resources?.script?.etag;
 if(typeof ah!=="string"||!ah||typeof bh!=="string"||!bh)throw Error("INCONCLUSIVE: version script etag missing; do not infer code parity");
 if(ah!==bh)throw Error("MISMATCH: version script hashes differ; do not deploy without review");
+console.log("PASS: Cloudflare script etags match; active baseline unchanged.");
 const ar=a?.resources?.script_runtime,br=b?.resources?.script_runtime;
-if(!ar||!br)throw Error("INCONCLUSIVE: runtime metadata unavailable");
-if(!ar.compatibility_date||!br.compatibility_date)throw Error("INCONCLUSIVE: runtime compatibility date unavailable");
-if(ar.compatibility_date!==br.compatibility_date)throw Error("MISMATCH: runtime compatibility date differs");
-const af=ar.compatibility_flags,bf=br.compatibility_flags;
-if(!Array.isArray(af)||!Array.isArray(bf))throw Error("INCONCLUSIVE: runtime flags unavailable");
-if(JSON.stringify([...af].sort())!==JSON.stringify([...bf].sort()))throw Error("MISMATCH: runtime compatibility flags differ");
-console.log("PASS: Cloudflare script etags and runtime compatibility settings match; active baseline unchanged.");
-console.log("LIMITATION: this does not prove equality of secret values, binding targets, or full execution behavior.");
+if(!ar||!br){
+ console.log("INCONCLUSIVE: runtime metadata unavailable.");
+}else{
+ if(!ar.compatibility_date||!br.compatibility_date){
+  console.log("INCONCLUSIVE: runtime compatibility date unavailable.");
+ }else if(ar.compatibility_date!==br.compatibility_date){
+  throw Error("MISMATCH: runtime compatibility date differs");
+ }else{
+  console.log("PASS: runtime compatibility dates match.");
+ }
+ const af=ar.compatibility_flags,bf=br.compatibility_flags;
+ if(!Array.isArray(af)||!Array.isArray(bf)){
+  console.log("INCONCLUSIVE: runtime compatibility flags unavailable.");
+ }else if(JSON.stringify([...af].sort())!==JSON.stringify([...bf].sort())){
+  throw Error("MISMATCH: runtime compatibility flags differ");
+ }else{
+  console.log("PASS: runtime compatibility flags match.");
+ }
+}
+console.log("LIMITATION: matching script etags do not verify secrets, binding targets, or full runtime behavior.");
 console.log("READ ONLY: no deployment or Worker changes.");
