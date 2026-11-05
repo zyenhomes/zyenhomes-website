@@ -1,0 +1,23 @@
+name: Validate Guesty Activation Baseline (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/preflight-guesty-activation-baseline-readonly.mjs'
+      - '.github/workflows/preflight-guesty-activation-baseline-readonly.yml'
+      - 'scripts/validate-guesty-activation-baseline-offline.mjs'
+      - '.github/workflows/validate-guesty-activation-baseline-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/preflight-guesty-activation-baseline-readonly.mjs
+      - run: node scripts/validate-guesty-activation-baseline-offline.mjs
