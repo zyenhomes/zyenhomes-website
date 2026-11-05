@@ -1,0 +1,23 @@
+name: Validate Guesty Webhook Idempotency (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/test-guesty-signed-receiver-offline.mjs'
+      - 'scripts/test-guesty-message-idempotency-sqlite.py'
+      - 'cloudflare/migrations/0002_guesty_message_events.sql'
+      - '.github/workflows/validate-guesty-webhook-idempotency-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/test-guesty-signed-receiver-offline.mjs
+      - run: python3 scripts/test-guesty-message-idempotency-sqlite.py
