@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {spawnSync} from "node:child_process";
+const s=readFileSync("scripts/create-isolated-flag-version.mjs","utf8");
+const w=readFileSync(".github/workflows/create-isolated-flag-version.yml","utf8");
+assert.match(s,/worker="zyenhomes-webhook-test"/);
+assert.doesNotMatch(s,/zyenhomes-booking-api/);
+assert.match(s,/TEST_CONFIRMATION!=="CREATE_ONE_ISOLATED_FLAG_VERSION"/);
+assert.match(s,/versions","upload"/);
+assert.doesNotMatch(s,/versions","deploy"|\bwrangler deploy\b/);
+assert.match(s,/TEST_DUMMY_SECRET/);
+assert.match(s,/TEST_WEBHOOKS_ENABLED/);
+assert.match(s,/isolated deployment history changed/);
+assert.match(w,/environment: guesty-webhook-activation/);
+const run=spawnSync(process.execPath,["scripts/create-isolated-flag-version.mjs"],{encoding:"utf8",env:{PATH:process.env.PATH},timeout:5000});
+assert.equal(run.status,1);
+assert.match(run.stderr,/Explicit isolated version creation confirmation required/);
+console.log("PASS: isolated upload requires approval and has no production target.");
