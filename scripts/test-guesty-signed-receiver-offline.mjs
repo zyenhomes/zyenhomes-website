@@ -18,12 +18,30 @@ assert.equal(await verifyGuestySvix(headers,raw+" ",secret,now),null);
 assert.equal(await verifyGuestySvix(headers,raw,secret,now+360000),null);
 assert.equal(await verifyGuestySvix(new Headers({...Object.fromEntries(headers),"svix-signature":"v1,invalid"}),raw,secret,now),null);
 let writes=0;
-const db={prepare(sql){assert.match(sql,/INSERT OR IGNORE/);return {bind(...values){assert.equal(values[0],id);return {async run(){writes++;return {success:true}}}}}}};
+const seenSvixIds=new Set();
+const seenEventIds=new Set();
+const db={prepare(sql){
+ assert.match(sql,/INSERT OR IGNORE/);
+ return {bind(...values){
+  const [svixId,eventId]=values;
+  assert.equal(typeof svixId,"string");
+  return {async run(){
+   if(seenSvixIds.has(svixId)||(eventId!==null&&seenEventIds.has(eventId)))return {success:true,meta:{changes:0}};
+   seenSvixIds.add(svixId);
+   if(eventId!==null)seenEventIds.add(eventId);
+   writes++;
+   return {success:true,meta:{changes:1}};
+  }};
+ }};
+}};
 const request=()=>new Request("https://example.invalid/api/webhooks/guesty/messages",{method:"POST",headers,body:raw});
 const disabled=await receiveGuestyMessageWebhook(request(),{GUESTY_WEBHOOKS_ENABLED:"false",GUESTY_WEBHOOK_SECRET:secret,BOOKING_DB:db});
 assert.equal(disabled.status,503);assert.equal(writes,0);
 const accepted=await receiveGuestyMessageWebhook(request(),{GUESTY_WEBHOOKS_ENABLED:"true",GUESTY_WEBHOOK_SECRET:secret,BOOKING_DB:db});
 assert.equal(accepted.status,200);assert.equal(writes,1);
+const duplicate=await receiveGuestyMessageWebhook(request(),{GUESTY_WEBHOOKS_ENABLED:"true",GUESTY_WEBHOOK_SECRET:secret,BOOKING_DB:db});
+assert.equal(duplicate.status,200);
+assert.equal(writes,1,"Duplicate delivery must not create a second archived row");
 const bad=await receiveGuestyMessageWebhook(new Request("https://example.invalid",{method:"POST",headers,body:raw+" "}),{GUESTY_WEBHOOKS_ENABLED:"true",GUESTY_WEBHOOK_SECRET:secret,BOOKING_DB:db});
 assert.equal(bad.status,401);assert.equal(writes,1);
-console.log("PASS: synthetic signature, tampering, expiry, disabled receiver, and authenticated persistence checks.");
+console.log("PASS: synthetic signature, tampering, expiry, disabled receiver, and authenticated persistence, and duplicate delivery checks (simulated unique constraints).");
