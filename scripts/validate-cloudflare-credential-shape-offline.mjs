@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {spawnSync} from "node:child_process";
+const s=readFileSync("scripts/check-cloudflare-production-credential-shape.mjs","utf8");
+const w=readFileSync(".github/workflows/check-cloudflare-production-credential-shape.yml","utf8");
+assert.match(s,/accountFormat/);
+assert.doesNotMatch(s,/fetch\(|console\.log\([^\n]*\btoken\s*\)|console\.log\([^\n]*\baccount\s*\)/);
+assert.match(w,/environment: cloudflare-production/);
+const run=spawnSync(process.execPath,["scripts/check-cloudflare-production-credential-shape.mjs"],{encoding:"utf8",env:{PATH:process.env.PATH},timeout:5000});
+assert.equal(run.status,1);
+assert.match(run.stdout,/API token present: NO/);
+assert.match(run.stdout,/account ID format.*INVALID/);
+console.log("PASS: credential check is non-disclosing and fails closed.");
