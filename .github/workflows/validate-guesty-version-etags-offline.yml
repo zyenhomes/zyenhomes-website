@@ -1,0 +1,23 @@
+name: Validate Guesty Worker Script Hash Comparison (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/compare-guesty-worker-script-etags-readonly.mjs'
+      - '.github/workflows/compare-guesty-worker-script-etags-readonly.yml'
+      - 'scripts/validate-guesty-version-etags-offline.mjs'
+      - '.github/workflows/validate-guesty-version-etags-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/compare-guesty-worker-script-etags-readonly.mjs
+      - run: node scripts/validate-guesty-version-etags-offline.mjs

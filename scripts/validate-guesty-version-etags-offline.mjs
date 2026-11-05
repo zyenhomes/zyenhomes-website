@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/compare-guesty-worker-script-etags-readonly.mjs","utf8");
+assert.match(s,/resources\?\.script\?\.etag/);
+assert.match(s,/if\(ah!==bh\)/);
+assert.match(s,/compatibility_date/);
+assert.match(s,/compatibility_flags/);
+assert.match(s,/INCONCLUSIVE/);
+assert.match(s,/active\)throw Error/);
+assert.doesNotMatch(s,/method:"(?:POST|PUT|PATCH|DELETE)"/);
+assert.doesNotMatch(s,/console\.log\([^\n]*(?:ah|bh|token)/);
+console.log("PASS: version etag check fails closed and does not print hashes.");
