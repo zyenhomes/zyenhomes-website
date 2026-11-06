@@ -17,19 +17,14 @@ const versions=Array.isArray(listing)?listing:listing.items;
 if(!Array.isArray(rows)||rows.length===0||!Array.isArray(versions)||versions.length===0)throw Error("Missing deployment/version history");
 const deployed=[...rows].sort((a,b)=>Date.parse(b.created_on||0)-Date.parse(a.created_on||0))[0];
 if(deployed?.versions?.length!==1||deployed.versions[0].version_id!==expected||Number(deployed.versions[0].percentage)!==100)throw Error("Active version differs from expected 100% baseline");
-// Cloudflare may omit created_on from list entries; read per-version metadata when necessary.
-// Fail closed if any version cannot be dated, or if the list may be paginated.
-if(listing?.result_info?.total_pages>1||listing?.result_info?.has_more===true)throw Error("Version list pagination unresolved; cannot identify latest");
+// Cloudflare documents the first list entry as the latest uploaded version.
+// GET /versions?page=1; do not sort by missing top-level timestamps.
+// Source: https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/versions/methods/list/
+if(listed.result_info?.page!=null&&Number(listed.result_info.page)!==1)throw Error("Unexpected version list page");
 if(versions.some(v=>!uuid.test(v.id||"")))throw Error("Version listing contains invalid ID");
-const detailed=await Promise.all(versions.map(async v=>{
- if(Number.isFinite(Date.parse(v.created_on||v.created_at||"")))return {id:v.id,at:Date.parse(v.created_on||v.created_at)};
- const detail=await get("/versions/"+encodeURIComponent(v.id));
- return {id:v.id,at:Date.parse(detail.created_on||detail.created_at||"")};
-}));
-if(detailed.some(v=>!Number.isFinite(v.at)))throw Error("Cannot reliably order uploaded versions: timestamps unavailable");
-const ordered=[...detailed].sort((a,b)=>b.at-a.at);
-if(ordered.length>1&&ordered[0].at===ordered[1].at)throw Error("Latest uploaded version ambiguous due to equal timestamps");
-const latest=ordered[0];
+const latest=versions[0];
+if(!latest||!uuid.test(latest.id||""))throw Error("Latest version entry missing");
+console.log("Latest version metadata timestamp available:",Number.isFinite(Date.parse(latest.metadata?.created_on||"")));
 const [activeVersion,latestVersion]=await Promise.all([get("/versions/"+encodeURIComponent(expected)),get("/versions/"+encodeURIComponent(latest.id))]);
 const a=activeVersion?.resources?.bindings,b=latestVersion?.resources?.bindings;
 if(!Array.isArray(a)||!Array.isArray(b))throw Error("Binding metadata unavailable");
