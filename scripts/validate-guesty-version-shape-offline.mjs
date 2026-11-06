@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/diagnose-guesty-version-shape-readonly.mjs","utf8");
+const w=readFileSync(".github/workflows/diagnose-guesty-version-shape-readonly.yml","utf8");
+assert.match(s,/expected active version remains at 100% traffic/);
+assert.match(s,/response ordering is not assumed/);
+assert.doesNotMatch(s,/console\.log\([^\n]*(?:JSON\.stringify|\.result\)|\.bindings|\.etag)/);
+assert.doesNotMatch(s,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
+assert.doesNotMatch(s,/spawnSync\(|versions upload|versions deploy/);
+assert.match(w,/workflow_dispatch:/);
+assert.match(w,/environment: cloudflare-production/);
+console.log("PASS: diagnostic reports only allowlisted metadata structure and makes no writes.");
