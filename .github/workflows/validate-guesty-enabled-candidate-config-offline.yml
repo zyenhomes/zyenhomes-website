@@ -1,0 +1,21 @@
+name: Validate Guesty Enabled Candidate Configuration (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/validate-guesty-enabled-candidate-config-offline.mjs'
+      - '.github/workflows/validate-guesty-enabled-candidate-config-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/validate-guesty-enabled-candidate-config-offline.mjs
+      - run: node scripts/validate-guesty-enabled-candidate-config-offline.mjs
