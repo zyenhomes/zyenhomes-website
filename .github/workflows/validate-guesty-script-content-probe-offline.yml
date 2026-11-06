@@ -1,0 +1,23 @@
+name: Validate Guesty Script Content Probe (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/probe-guesty-script-content-readonly.mjs'
+      - '.github/workflows/probe-guesty-script-content-readonly.yml'
+      - 'scripts/validate-guesty-script-content-probe-offline.mjs'
+      - '.github/workflows/validate-guesty-script-content-probe-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/probe-guesty-script-content-readonly.mjs
+      - run: node scripts/validate-guesty-script-content-probe-offline.mjs
