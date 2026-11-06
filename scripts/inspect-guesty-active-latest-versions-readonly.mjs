@@ -20,7 +20,7 @@ if(deployed?.versions?.length!==1||deployed.versions[0].version_id!==expected||N
 // Cloudflare documents the first list entry as the latest uploaded version.
 // GET /versions?page=1; do not sort by missing top-level timestamps.
 // Source: https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/versions/methods/list/
-if(listed.result_info?.page!=null&&Number(listed.result_info.page)!==1)throw Error("Unexpected version list page");
+// The GET helper returns only result, not result_info; do not access an undeclared response object.
 if(versions.some(v=>!uuid.test(v.id||"")))throw Error("Version listing contains invalid ID");
 const latest=versions[0];
 if(!latest||!uuid.test(latest.id||""))throw Error("Latest version entry missing");
