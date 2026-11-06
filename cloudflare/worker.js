@@ -987,10 +987,20 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
         if(!Number.isFinite(money?.hostPayout)||money.hostPayout<=0||money.currency&&money.currency!=="CAD")
           return reply({success:false,message:"Unable to verify the current quote"},502);
         const totalCents=Math.round(money.hostPayout*100);
-        const requestId=crypto.randomUUID();
+        // Deterministic idempotency key: repeat submissions of the same inquiry
+        // cannot create duplicate operational or marketing records.
+        const encoder=new TextEncoder();
+        const signature=[propertyId,email,phone,checkIn,checkOut,guests,message].join("|");
+        const digest=await crypto.subtle.digest("SHA-256",encoder.encode(signature));
+        const requestId="inq-"+Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,"0")).join("");
+        const existing=await env.BOOKING_DB.prepare(
+          "SELECT request_id FROM booking_requests WHERE request_id=?"
+        ).bind(requestId).first();
+        if(existing) return reply({success:true,requestId,status:"received",guestySyncStatus:"pending",
+          message:"Your request was already received. No new reservation was created."},200);
         const consent=b.marketingConsent===true;
         await env.BOOKING_DB.prepare(
-          "INSERT INTO booking_requests (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,message,quote_total_cents,quote_currency,marketing_consent,marketing_consent_at,consent_text_version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+          "INSERT OR IGNORE INTO booking_requests (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,message,quote_total_cents,quote_currency,marketing_consent,marketing_consent_at,consent_text_version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         ).bind(requestId,propertyId,name,email,phone,checkIn,checkOut,guests,message,totalCents,"CAD",
           consent?1:0,consent?new Date().toISOString():null,consent?"v1":null).run();
         return reply({success:true,requestId,status:"received",guestySyncStatus:"pending",
