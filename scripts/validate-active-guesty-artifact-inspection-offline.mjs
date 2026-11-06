@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const script=readFileSync("scripts/inspect-active-guesty-artifact-metadata-readonly.mjs","utf8");
+const workflow=readFileSync(".github/workflows/inspect-active-guesty-artifact-metadata-readonly.yml","utf8");
+assert.match(script,/resources\?\.script\?\.etag/);
+assert.match(script,/EXPECTED_ACTIVE_VERSION_ID/);
+assert.match(script,/BOOKING_REQUESTS_ENABLED/);
+assert.match(script,/GUESTY_WEBHOOKS_ENABLED/);
+assert.match(script,/READ ONLY/);
+assert.doesNotMatch(script,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
+assert.doesNotMatch(script,/versions upload|versions deploy|spawnSync/);
+assert.match(workflow,/workflow_dispatch:/);
+assert.match(workflow,/environment: cloudflare-production/);
+console.log("PASS: metadata workflow has no Cloudflare mutation operations.");

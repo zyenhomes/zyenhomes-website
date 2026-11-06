@@ -1,0 +1,26 @@
+name: Inspect Active Guesty Artifact Metadata (Read Only)
+on:
+  workflow_dispatch:
+    inputs:
+      expected_active_version_id:
+        description: Full active Worker version UUID
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: cloudflare-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect Cloudflare version metadata without modifying it
+        env:
+          EXPECTED_ACTIVE_VERSION_ID: ${{ inputs.expected_active_version_id }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/inspect-active-guesty-artifact-metadata-readonly.mjs
