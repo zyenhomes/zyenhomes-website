@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/inspect-guesty-script-artifact-fields-readonly.mjs","utf8");
+const w=readFileSync(".github/workflows/inspect-guesty-script-artifact-fields-readonly.yml","utf8");
+assert.match(s,/EXPECTED_ACTIVE_VERSION_ID/);
+assert.match(s,/Script metadata field presence/);
+assert.match(s,/Secret binding present/);
+assert.match(s,/READ ONLY/);
+assert.doesNotMatch(s,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
+assert.doesNotMatch(s,/spawnSync\(|versions upload|versions deploy/);
+assert.match(w,/environment: cloudflare-production/);
+console.log("PASS: artifact field inspection is metadata-only and non-mutating.");
