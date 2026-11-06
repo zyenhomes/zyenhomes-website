@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/probe-guesty-script-content-readonly.mjs","utf8");
+const w=readFileSync(".github/workflows/probe-guesty-script-content-readonly.yml","utf8");
+assert.match(s,/\/content\/v2/);
+assert.match(s,/arrayBuffer\(\)/);
+assert.match(s,/createHash\("sha256"\)/);
+assert.match(s,/GUESTY_WEBHOOK_SECRET/);
+assert.match(s,/BOOKING_REQUESTS_ENABLED/);
+assert.match(s,/GUESTY_WEBHOOKS_ENABLED/);
+assert.doesNotMatch(s,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
+assert.doesNotMatch(s,/writeFile|console\.log\([^\n]*(?:bytes|digest|etag)\s*[,)]/);
+assert.match(w,/environment: cloudflare-production/);
+console.log("PASS: script content probe uses GET only and does not persist or log bytes.");
