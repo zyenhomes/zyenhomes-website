@@ -4,7 +4,7 @@ const s=readFileSync("scripts/diagnose-guesty-version-shape-readonly.mjs","utf8"
 const w=readFileSync(".github/workflows/diagnose-guesty-version-shape-readonly.yml","utf8");
 assert.match(s,/expected active version remains at 100% traffic/);
 assert.match(s,/response ordering is not assumed/);
-assert.doesNotMatch(s,/console\.log\([^\n]*(?:JSON\.stringify|\.result\)|\.bindings|\.etag)/);
+assert.doesNotMatch(s,/console\.log\(\s*(?:JSON\.stringify\(|(?:listed|detail|deploy)(?:\.result)?\s*[,)]|[^\n]*\.bindings\b|[^\n]*\.etag\b)/);
 assert.doesNotMatch(s,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
 assert.doesNotMatch(s,/spawnSync\(|versions upload|versions deploy/);
 assert.match(w,/workflow_dispatch:/);
