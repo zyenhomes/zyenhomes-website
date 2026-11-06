@@ -1,0 +1,23 @@
+name: Validate Active Guesty Artifact Inspection (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/inspect-active-guesty-artifact-metadata-readonly.mjs'
+      - '.github/workflows/inspect-active-guesty-artifact-metadata-readonly.yml'
+      - 'scripts/validate-active-guesty-artifact-inspection-offline.mjs'
+      - '.github/workflows/validate-active-guesty-artifact-inspection-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/inspect-active-guesty-artifact-metadata-readonly.mjs
+      - run: node scripts/validate-active-guesty-artifact-inspection-offline.mjs
