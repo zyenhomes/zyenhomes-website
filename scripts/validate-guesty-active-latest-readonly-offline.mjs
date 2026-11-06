@@ -5,6 +5,8 @@ const w=readFileSync(".github/workflows/inspect-guesty-active-latest-versions-re
 assert.match(s,/Latest uploaded version equals active version/);
 assert.match(s,/BLOCKED: latest uploaded differs/);
 assert.match(s,/const latest=versions\[0\]/);
+assert.doesNotMatch(s,/\blisted\./);
+assert.match(s,/const \[deployments,listing\]/);
 assert.match(s,/latest\.metadata\?\.created_on/);
 assert.doesNotMatch(s,/Cannot reliably order uploaded versions/);
 assert.match(s,/EXPECTED_ACTIVE_VERSION_ID/);
