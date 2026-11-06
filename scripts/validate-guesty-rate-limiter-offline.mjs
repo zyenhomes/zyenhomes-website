@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/inspect-guesty-rate-limiter-readonly.mjs","utf8");
+const w=readFileSync(".github/workflows/inspect-guesty-rate-limiter-readonly.yml","utf8");
+assert.match(s,/BOOKING_RATE_LIMITER/);
+assert.match(s,/Rate limiter namespace verification/);
+assert.match(s,/READ ONLY/);
+assert.doesNotMatch(s,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
+assert.doesNotMatch(s,/spawnSync\(|versions upload|versions deploy/);
+assert.match(w,/environment: cloudflare-production/);
+console.log("PASS: rate limiter diagnostic uses GET requests only.");
