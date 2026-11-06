@@ -4,7 +4,7 @@ const s=readFileSync("scripts/inspect-guesty-active-latest-versions-readonly.mjs
 const w=readFileSync(".github/workflows/inspect-guesty-active-latest-versions-readonly.yml","utf8");
 assert.match(s,/Latest uploaded version equals active version/);
 assert.match(s,/BLOCKED: latest uploaded differs/);
-assert.match(s,/EX PECTED_ACTIVE_VERSION_ID/.replace(" ",""));
+assert.match(s,/EXPECTED_ACTIVE_VERSION_ID/);
 assert.doesNotMatch(s,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
 assert.doesNotMatch(s,/spawnSync\(|versions upload|versions deploy/);
 assert.match(w,/workflow_dispatch:/);
