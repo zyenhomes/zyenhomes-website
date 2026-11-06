@@ -1,0 +1,23 @@
+name: Validate Guesty Production Upload Preparation (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/preflight-guesty-production-upload-offline.mjs'
+      - '.github/workflows/preflight-guesty-production-upload-offline.yml'
+      - 'scripts/validate-guesty-production-upload-prep-offline.mjs'
+      - '.github/workflows/validate-guesty-production-upload-prep-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/preflight-guesty-production-upload-offline.mjs
+      - run: node scripts/validate-guesty-production-upload-prep-offline.mjs

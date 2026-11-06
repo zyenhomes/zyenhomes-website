@@ -1,0 +1,10 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/preflight-guesty-production-upload-offline.mjs","utf8");
+const w=readFileSync(".github/workflows/preflight-guesty-production-upload-offline.yml","utf8");
+assert.match(s,/BLOCKED: deployed Worker script byte identity/);
+assert.match(s,/BOOKING_REQUESTS_ENABLED/);
+assert.match(s,/GUESTY_WEBHOOKS_ENABLED/);
+assert.doesNotMatch(s,/fetch\(|spawnSync\(|versions upload|versions deploy/);
+assert.doesNotMatch(w,/CLOUDFLARE_API_TOKEN|environment: cloudflare-production/);
+console.log("PASS: preparation has no Cloudflare access or write path.");
