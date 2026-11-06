@@ -17,10 +17,18 @@ const versions=Array.isArray(listing)?listing:listing.items;
 if(!Array.isArray(rows)||rows.length===0||!Array.isArray(versions)||versions.length===0)throw Error("Missing deployment/version history");
 const deployed=[...rows].sort((a,b)=>Date.parse(b.created_on||0)-Date.parse(a.created_on||0))[0];
 if(deployed?.versions?.length!==1||deployed.versions[0].version_id!==expected||Number(deployed.versions[0].percentage)!==100)throw Error("Active version differs from expected 100% baseline");
-const valid=versions.filter(v=>uuid.test(v.id||"")&&Number.isFinite(Date.parse(v.created_on||"")));
-if(valid.length!==versions.length)throw Error("Cannot reliably order uploaded versions");
-const ordered=[...valid].sort((a,b)=>Date.parse(b.created_on)-Date.parse(a.created_on));
-if(ordered.length>1&&Date.parse(ordered[0].created_on)===Date.parse(ordered[1].created_on))throw Error("Latest uploaded version ambiguous due to equal timestamps");
+// Cloudflare may omit created_on from list entries; read per-version metadata when necessary.
+// Fail closed if any version cannot be dated, or if the list may be paginated.
+if(listing?.result_info?.total_pages>1||listing?.result_info?.has_more===true)throw Error("Version list pagination unresolved; cannot identify latest");
+if(versions.some(v=>!uuid.test(v.id||"")))throw Error("Version listing contains invalid ID");
+const detailed=await Promise.all(versions.map(async v=>{
+ if(Number.isFinite(Date.parse(v.created_on||v.created_at||"")))return {id:v.id,at:Date.parse(v.created_on||v.created_at)};
+ const detail=await get("/versions/"+encodeURIComponent(v.id));
+ return {id:v.id,at:Date.parse(detail.created_on||detail.created_at||"")};
+}));
+if(detailed.some(v=>!Number.isFinite(v.at)))throw Error("Cannot reliably order uploaded versions: timestamps unavailable");
+const ordered=[...detailed].sort((a,b)=>b.at-a.at);
+if(ordered.length>1&&ordered[0].at===ordered[1].at)throw Error("Latest uploaded version ambiguous due to equal timestamps");
 const latest=ordered[0];
 const [activeVersion,latestVersion]=await Promise.all([get("/versions/"+encodeURIComponent(expected)),get("/versions/"+encodeURIComponent(latest.id))]);
 const a=activeVersion?.resources?.bindings,b=latestVersion?.resources?.bindings;
