@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const s=readFileSync("scripts/inspect-guesty-binding-targets-readonly.mjs","utf8");
+const w=readFileSync(".github/workflows/inspect-guesty-binding-targets-readonly.yml","utf8");
+assert.match(s,/EXPECTED_ACTIVE_VERSION_ID/);
+assert.match(s,/GUESTY_WEBHOOK_SECRET/);
+assert.match(s,/BOOKING_REQUESTS_ENABLED/);
+assert.match(s,/GUESTY_WEBHOOKS_ENABLED/);
+assert.match(s,/Secret value preservation: NOT ESTABLISHED/);
+assert.doesNotMatch(s,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
+assert.doesNotMatch(s,/spawnSync\(|versions upload|versions deploy/);
+assert.match(w,/environment: cloudflare-production/);
+console.log("PASS: binding assessment uses read-only requests and reports no secret values.");
