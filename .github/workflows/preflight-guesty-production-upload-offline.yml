@@ -1,0 +1,23 @@
+name: Preflight Guesty Production Upload Preparation (Offline)
+on:
+  workflow_dispatch:
+    inputs:
+      expected_active_version_id:
+        description: Exact active production Worker UUID
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect repository safety requirements
+        env:
+          EXPECTED_ACTIVE_VERSION_ID: ${{ inputs.expected_active_version_id }}
+        run: node scripts/preflight-guesty-production-upload-offline.mjs
