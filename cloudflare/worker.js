@@ -983,6 +983,10 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
         const payload=await quoteRes.json(),q=payload.results??payload;
         const quote=Array.isArray(q)?q[0]:q;
         const plan=quote?.rates?.ratePlans?.[0];
+        // Preserve the server-created quote ID; never trust a browser-supplied quote ID.
+        const guestyQuoteId=quote?._id;
+        if(typeof guestyQuoteId!=="string"||!/^[a-f0-9]{24}$/i.test(guestyQuoteId))
+          return reply({success:false,message:"Unable to verify Guesty quote reference"},502);
         const money=plan?.ratePlan?.money??plan?.money?.money;
         if(!Number.isFinite(money?.hostPayout)||money.hostPayout<=0||money.currency&&money.currency!=="CAD")
           return reply({success:false,message:"Unable to verify the current quote"},502);
@@ -990,9 +994,9 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
         const requestId=crypto.randomUUID();
         const consent=b.marketingConsent===true;
         await env.BOOKING_DB.prepare(
-          "INSERT INTO booking_requests (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,message,quote_total_cents,quote_currency,marketing_consent,marketing_consent_at,consent_text_version) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+          "INSERT INTO booking_requests (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,message,quote_total_cents,quote_currency,marketing_consent,marketing_consent_at,consent_text_version,guesty_quote_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         ).bind(requestId,propertyId,name,email,phone,checkIn,checkOut,guests,message,totalCents,"CAD",
-          consent?1:0,consent?new Date().toISOString():null,consent?"v1":null).run();
+          consent?1:0,consent?new Date().toISOString():null,consent?"v1":null,guestyQuoteId).run();
         return reply({success:true,requestId,status:"received",guestySyncStatus:"pending",
           message:"Request received by Zyen Homes. This is not a confirmed reservation."},201);
       } catch {

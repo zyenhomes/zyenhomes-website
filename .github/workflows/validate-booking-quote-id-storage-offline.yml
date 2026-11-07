@@ -1,0 +1,24 @@
+name: Validate Booking Quote ID Storage (Offline)
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/worker.js'
+      - 'cloudflare/migrations/0003_booking_request_guesty_quote_id.sql'
+      - 'scripts/validate-booking-quote-id-storage-offline.mjs'
+      - '.github/workflows/validate-booking-quote-id-storage-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check syntax and quote storage safeguards
+        run: |
+          node --check cloudflare/worker.js
+          node --check scripts/validate-booking-quote-id-storage-offline.mjs
+          node scripts/validate-booking-quote-id-storage-offline.mjs
