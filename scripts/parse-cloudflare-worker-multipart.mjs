@@ -35,6 +35,9 @@ export function inspectWorkerMultipart(bytes, contentType) {
   let position = 0;
   let count = 0;
   const parts = [];
+  
+const seenNames = new Set();
+
 
   if (!raw.subarray(0, delimiter.length).equals(delimiter)) {
     throw new Error("Missing opening boundary");
@@ -78,6 +81,12 @@ export function inspectWorkerMultipart(bytes, contentType) {
     if (!nameMatch) {
       throw new Error("Missing part name");
     }
+    
+if (seenNames.has(nameMatch[1])) {
+  throw new Error("Duplicate multipart part name");
+}
+seenNames.add(nameMatch[1]);
+
 
     const bodyStart = headerEnd + separator.length;
     const bodyEnd = raw.indexOf(marker, bodyStart);
