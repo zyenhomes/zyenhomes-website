@@ -1,0 +1,25 @@
+name: Validate Guesty Inquiry HTTP Adapter (Offline)
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/guesty-inquiry-submit.js'
+      - 'scripts/validate-guesty-inquiry-http-adapter-offline.mjs'
+      - 'scripts/build-guesty-inquiry-request-offline.mjs'
+      - 'scripts/guesty-inquiry-submission-adapter-offline.mjs'
+      - '.github/workflows/validate-guesty-inquiry-http-adapter-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test unwired HTTP adapter using mocked responses
+        run: |
+          node --check cloudflare/guesty-inquiry-submit.js
+          node --check scripts/validate-guesty-inquiry-http-adapter-offline.mjs
+          node scripts/validate-guesty-inquiry-http-adapter-offline.mjs
