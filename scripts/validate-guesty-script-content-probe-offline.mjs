@@ -5,10 +5,12 @@ const w=readFileSync(".github/workflows/probe-guesty-script-content-readonly.yml
 assert.match(s,/\/content\/v2/);
 assert.match(s,/arrayBuffer\(\)/);
 assert.match(s,/createHash\("sha256"\)/);
+assert.match(s,/inspectWorkerMultipart\(bytes,mediaType\)/);
+assert.match(s,/\.\/parse-cloudflare-worker-multipart\.mjs/);
 assert.match(s,/GUESTY_WEBHOOK_SECRET/);
 assert.match(s,/BOOKING_REQUESTS_ENABLED/);
 assert.match(s,/GUESTY_WEBHOOKS_ENABLED/);
 assert.doesNotMatch(s,/method\s*:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
 assert.doesNotMatch(s,/writeFile|console\.log\([^\n]*(?:bytes|digest|etag)\s*[,)]/);
 assert.match(w,/environment: cloudflare-production/);
-console.log("PASS: script content probe uses GET only and does not persist or log bytes.");
+console.log("PASS: script content probe uses GET only, parses multipart in memory and does not persist or log bytes.");
