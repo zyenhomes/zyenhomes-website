@@ -1,0 +1,25 @@
+name: Validate Guesty Atomic Claims (Local SQLite)
+on:
+  pull_request:
+    paths:
+      - 'scripts/validate-guesty-atomic-claims-sqlite-offline.mjs'
+      - 'scripts/guesty-sync-claim-sql-offline.mjs'
+      - 'cloudflare/migrations/0001_booking_requests.sql'
+      - 'cloudflare/migrations/0003_booking_request_guesty_quote_id.sql'
+      - 'cloudflare/migrations/0004_guesty_inquiry_sync_claims.sql'
+      - '.github/workflows/validate-guesty-atomic-claims-sqlite-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate SQL against temporary in-memory SQLite
+        run: |
+          node --check scripts/validate-guesty-atomic-claims-sqlite-offline.mjs
+          node scripts/validate-guesty-atomic-claims-sqlite-offline.mjs
