@@ -12,9 +12,9 @@ export function buildGuestyInquiryRequest(input) {
     }
   }
   if (typeof email !== "string" || email.length > 254 ||
-      !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) throw Error("Invalid email");
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw Error("Invalid email");
   if (!Array.isArray(phones) || phones.length < 1 || phones.length > 3 ||
-      !phones.every(phone => typeof phone === "string" && /^\\+[1-9]\\d{7,14}$/.test(phone))) {
+      !phones.every(phone => typeof phone === "string" && /^\+[1-9]\d{7,14}$/.test(phone))) {
     throw Error("Phone numbers must be in E.164 format");
   }
   // Only allow the documented safe subset, regardless of extra input properties.
