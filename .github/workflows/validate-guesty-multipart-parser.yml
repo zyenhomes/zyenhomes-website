@@ -1,0 +1,35 @@
+
+name: Validate Guesty Multipart Parser (Offline)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/parse-cloudflare-worker-multipart.mjs'
+      - 'scripts/validate-guesty-multipart-parser-offline.mjs'
+      - '.github/workflows/validate-guesty-multipart-parser.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate multipart parser offline
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check scripts/parse-cloudflare-worker-multipart.mjs
+          node --check scripts/validate-guesty-multipart-parser-offline.mjs
+
+      - name: Run offline multipart parser tests
+        run: node scripts/validate-guesty-multipart-parser-offline.mjs
