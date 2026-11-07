@@ -1,0 +1,23 @@
+name: Validate Guesty Inquiry Auth Preflight (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/guesty-inquiry-auth-preflight-offline.mjs'
+      - 'scripts/validate-guesty-inquiry-auth-preflight-offline.mjs'
+      - '.github/workflows/validate-guesty-inquiry-auth-preflight-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check Open API auth preflight
+        run: |
+          node --check scripts/guesty-inquiry-auth-preflight-offline.mjs
+          node --check scripts/validate-guesty-inquiry-auth-preflight-offline.mjs
+          node scripts/validate-guesty-inquiry-auth-preflight-offline.mjs
