@@ -1,0 +1,23 @@
+name: Validate Guesty Open API Auth (Offline)
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/guesty-open-api-auth.js'
+      - 'scripts/validate-guesty-open-api-auth-offline.mjs'
+      - '.github/workflows/validate-guesty-open-api-auth-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate separate Open API auth using mocked responses
+        run: |
+          node --check cloudflare/guesty-open-api-auth.js
+          node --check scripts/validate-guesty-open-api-auth-offline.mjs
+          node scripts/validate-guesty-open-api-auth-offline.mjs
