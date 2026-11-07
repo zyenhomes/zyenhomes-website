@@ -127,4 +127,27 @@ function inspect(parts) {
   console.log("PASS: duplicate part names rejected");
 }
 
+ // Test 8: Boundary-like bytes inside binary content
+{
+  const binary = Buffer.from(
+    "Start of binary data\r\n" +
+    `--${boundary}NOT_A_REAL_BOUNDARY\r\n` +
+    "End of binary data"
+  );
+
+  const expected = createHash("sha256")
+    .update(binary)
+    .digest("hex");
+
+  const result = inspect([
+    { name: "worker.js", data: binary }
+  ]);
+
+  assert.equal(result.partCount, 1);
+  assert.equal(result.parts[0].size, binary.length);
+  assert.equal(result.parts[0].sha256, expected);
+
+  console.log("PASS: boundary-like binary content preserved");
+}
+
 console.log("Offline multipart parser tests completed.");
