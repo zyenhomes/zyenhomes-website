@@ -1,0 +1,24 @@
+name: Validate Guesty D1 Claim Adapter (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/guesty-d1-claim-adapter-offline.mjs'
+      - 'scripts/validate-guesty-d1-claim-adapter-offline.mjs'
+      - 'scripts/guesty-d1-atomic-claim-batch-offline.mjs'
+      - '.github/workflows/validate-guesty-d1-claim-adapter-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run standalone D1 adapter tests
+        run: |
+          node --check scripts/guesty-d1-claim-adapter-offline.mjs
+          node --check scripts/validate-guesty-d1-claim-adapter-offline.mjs
+          node scripts/validate-guesty-d1-claim-adapter-offline.mjs
