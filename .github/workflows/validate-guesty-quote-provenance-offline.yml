@@ -1,0 +1,23 @@
+name: Validate Guesty Quote Provenance (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/guesty-quote-provenance-offline.mjs'
+      - 'scripts/validate-guesty-quote-provenance-offline.mjs'
+      - '.github/workflows/validate-guesty-quote-provenance-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run offline checks
+        run: |
+          node --check scripts/guesty-quote-provenance-offline.mjs
+          node --check scripts/validate-guesty-quote-provenance-offline.mjs
+          node scripts/validate-guesty-quote-provenance-offline.mjs
