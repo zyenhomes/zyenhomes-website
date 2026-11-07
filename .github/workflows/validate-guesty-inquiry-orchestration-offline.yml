@@ -1,0 +1,25 @@
+name: Validate Guesty Inquiry Orchestration (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/guesty-inquiry-orchestration-offline.mjs'
+      - 'scripts/validate-guesty-inquiry-orchestration-offline.mjs'
+      - 'scripts/guesty-quote-provenance-offline.mjs'
+      - 'scripts/guesty-inquiry-submission-adapter-offline.mjs'
+      - '.github/workflows/validate-guesty-inquiry-orchestration-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify fail-closed integrated inquiry workflow
+        run: |
+          node --check scripts/guesty-inquiry-orchestration-offline.mjs
+          node --check scripts/validate-guesty-inquiry-orchestration-offline.mjs
+          node scripts/validate-guesty-inquiry-orchestration-offline.mjs
