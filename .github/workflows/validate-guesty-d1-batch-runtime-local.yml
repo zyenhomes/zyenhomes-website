@@ -1,0 +1,43 @@
+name: Validate Guesty D1 Batch Runtime (Local Only)
+on:
+  pull_request:
+    paths:
+      - 'tests/d1-batch/**'
+      - 'scripts/guesty-d1-atomic-claim-batch-offline.mjs'
+      - 'scripts/guesty-sync-claim-sql-offline.mjs'
+      - '.github/workflows/validate-guesty-d1-batch-runtime-local.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Wrangler for local emulator only
+        run: npm install --no-save --no-package-lock wrangler@4
+      - name: Prepare isolated local D1 database
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/zyenhomes-d1-batch-runtime
+          for file in cloudflare/migrations/0001_booking_requests.sql cloudflare/migrations/0003_booking_request_guesty_quote_id.sql cloudflare/migrations/0004_guesty_inquiry_sync_claims.sql tests/d1-batch/seed.sql; do
+            npx wrangler d1 execute zyenhomes-d1-batch-local-test --local --config tests/d1-batch/wrangler.toml --persist-to /tmp/zyenhomes-d1-batch-runtime --file "$file"
+          done
+      - name: Run isolated Worker and assert D1 batch results
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx wrangler dev --local --config tests/d1-batch/wrangler.toml --persist-to /tmp/zyenhomes-d1-batch-runtime --ip 127.0.0.1 --port 8796 > /tmp/zyenhomes-d1-batch-worker.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 40); do
+            if curl -s -o /dev/null http://127.0.0.1:8796/; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/zyenhomes-d1-batch-worker.log; exit 1; fi
+          node tests/d1-batch/validate-local-d1-batch.mjs
