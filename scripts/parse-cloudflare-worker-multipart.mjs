@@ -35,9 +35,7 @@ export function inspectWorkerMultipart(bytes, contentType) {
   let position = 0;
   let count = 0;
   const parts = [];
-  
-const seenNames = new Set();
-
+  const seenNames = new Set();
 
   if (!raw.subarray(0, delimiter.length).equals(delimiter)) {
     throw new Error("Missing opening boundary");
@@ -81,15 +79,28 @@ const seenNames = new Set();
     if (!nameMatch) {
       throw new Error("Missing part name");
     }
-    
-if (seenNames.has(nameMatch[1])) {
-  throw new Error("Duplicate multipart part name");
-}
-seenNames.add(nameMatch[1]);
-
+    if (seenNames.has(nameMatch[1])) {
+      throw new Error("Duplicate multipart part name");
+    }
+    seenNames.add(nameMatch[1]);
 
     const bodyStart = headerEnd + separator.length;
-    const bodyEnd = raw.indexOf(marker, bodyStart);
+    // Ignore boundary-like bytes unless followed by a valid delimiter suffix.
+    let bodyEnd = -1;
+    let searchFrom = bodyStart;
+    while (searchFrom < raw.length) {
+      const candidate = raw.indexOf(marker, searchFrom);
+      if (candidate < 0) break;
+      const suffix = candidate + marker.length;
+      const suffixBytes = raw.subarray(suffix, suffix + 2);
+      if (suffixBytes.length === 2 &&
+          (suffixBytes.equals(Buffer.from([13, 10])) ||
+           suffixBytes.equals(Buffer.from([45, 45])))) {
+        bodyEnd = candidate;
+        break;
+      }
+      searchFrom = candidate + 1;
+    }
 
     if (bodyEnd < 0) {
       throw new Error("Missing closing boundary");
