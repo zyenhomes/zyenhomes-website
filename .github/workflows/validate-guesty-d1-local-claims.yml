@@ -1,0 +1,35 @@
+name: Validate Guesty Claims in Local Cloudflare D1
+on:
+  pull_request:
+    paths:
+      - 'scripts/generate-guesty-d1-local-claim-fixture.mjs'
+      - 'scripts/guesty-sync-claim-sql-offline.mjs'
+      - 'cloudflare/migrations/0001_booking_requests.sql'
+      - 'cloudflare/migrations/0003_booking_request_guesty_quote_id.sql'
+      - 'cloudflare/migrations/0004_guesty_inquiry_sync_claims.sql'
+      - '.github/workflows/validate-guesty-d1-local-claims.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install local Wrangler CLI
+        run: npm install --no-save --no-package-lock wrangler@4
+      - name: Run D1 emulator against isolated local state
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/zyenhomes-d1-claim-test
+          for file in cloudflare/migrations/0001_booking_requests.sql cloudflare/migrations/0003_booking_request_guesty_quote_id.sql cloudflare/migrations/0004_guesty_inquiry_sync_claims.sql; do
+            npx wrangler d1 execute zyenhomes-booking-requests --local --config cloudflare/wrangler.toml --persist-to /tmp/zyenhomes-d1-claim-test --file "$file"
+          done
+          node scripts/generate-guesty-d1-local-claim-fixture.mjs
+          npx wrangler d1 execute zyenhomes-booking-requests --local --config cloudflare/wrangler.toml --persist-to /tmp/zyenhomes-d1-claim-test --file /tmp/zyenhomes-local-d1-claim-fixture.sql > /tmp/zyenhomes-local-d1-result.txt
+          grep -F 'ASSERT|uncertain|1|1|claim-d' /tmp/zyenhomes-local-d1-result.txt
+          echo "PASS: local D1 guards prevent duplicate and uncertain claims."
