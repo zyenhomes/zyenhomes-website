@@ -20,7 +20,7 @@ export function assessInquirySync(input) {
   if (typeof listingId !== "string" || !/^[0-9a-f]{24}$/i.test(listingId)) {
     return { status: SYNC_STATES.BLOCKED, reason: "unverified_listing_mapping" };
   }
-  const date = v => typeof v === "string" && /^\\d{4}-\\d{2}-\\d{2}$/.test(v) &&
+  const date = v => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) &&
     !Number.isNaN(Date.parse(v)) && new Date(v).toISOString().slice(0,10) === v;
   if (!date(checkIn) || !date(checkOut) || checkOut <= checkIn) {
     return { status: SYNC_STATES.BLOCKED, reason: "invalid_stay_dates" };
