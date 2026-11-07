@@ -7,7 +7,6 @@ const q = id => "'" + id + "'";
 const insert = id => `INSERT INTO booking_requests
 (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,quote_total_cents,guesty_quote_id)
 VALUES (${q(id)},'149-tyrolean','Local Test','test@example.invalid','+14165550101','2027-01-14','2027-01-18',6,105300,'6adb5d7320cb330ec34a3507');`;
-const claim = (token,id) => CLAIM_SQL.replaceAll("?",()=>{throw Error("bind markers must be replaced explicitly")});
 // Convert only the known templates, without accepting user input.
 const claimSql = (token,id) => CLAIM_SQL.replace("guesty_sync_claim_token = ?",`guesty_sync_claim_token = ${q(token)}`)
   .replace("WHERE request_id = ?",`WHERE request_id = ${q(id)}`);
@@ -17,10 +16,8 @@ const uncertainSql = (id,token) => MARK_UNCERTAIN_SQL.replace("WHERE request_id 
   .replace("guesty_sync_claim_token = ?",`guesty_sync_claim_token = ${q(token)}`);
 const sql = [
   insert("local-a"), insert("local-b"),
-  "BEGIN TRANSACTION;",
   claimSql("claim-a","local-a") + ";",
   auditSql("attempt-a","local-a") + ";",
-  "COMMIT;",
   claimSql("claim-b","local-a") + ";",
   uncertainSql("local-a","claim-a") + ";",
   claimSql("claim-c","local-a") + ";",
