@@ -1,0 +1,27 @@
+name: Validate Guesty Multipart Probe (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/probe-guesty-script-content-readonly.mjs'
+      - 'scripts/validate-guesty-script-content-probe-offline.mjs'
+      - 'scripts/parse-cloudflare-worker-multipart.mjs'
+      - '.github/workflows/validate-guesty-multipart-probe.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check syntax
+        run: |
+          node --check scripts/probe-guesty-script-content-readonly.mjs
+          node --check scripts/validate-guesty-script-content-probe-offline.mjs
+      - name: Run offline validation
+        run: |
+          node scripts/validate-guesty-script-content-probe-offline.mjs
+          node scripts/validate-guesty-multipart-parser-offline.mjs

@@ -1,6 +1,7 @@
 // Read-only script download capability probe. Never logs or persists script bytes.
 // Cloudflare script content endpoint is script-scoped, not version-scoped.
 import {createHash} from "node:crypto";
+import {inspectWorkerMultipart} from "./parse-cloudflare-worker-multipart.mjs";
 const account=process.env.CLOUDFLARE_ACCOUNT_ID?.trim(),token=process.env.CLOUDFLARE_API_TOKEN,expected=process.env.EXPECTED_ACTIVE_VERSION_ID;
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 if(!/^[0-9a-f]{32}$/i.test(account||"")||!token||!uuid.test(expected||""))throw Error("Invalid inputs");
@@ -20,10 +21,14 @@ if(!r.ok)throw Error("Script content GET unavailable HTTP "+r.status);
 const bytes=new Uint8Array(await r.arrayBuffer());
 if(bytes.length===0||bytes.length>10_000_000)throw Error("Unexpected script content size");
 const digest=createHash("sha256").update(bytes).digest("hex");
+const mediaType=r.headers.get("content-type")||"";
+const multipart=inspectWorkerMultipart(bytes,mediaType);
 const etag=active?.resources?.script?.etag;
 console.log("PASS: exact active/latest production version at 100%, safety gates disabled, signing-secret binding present.");
 console.log("PASS: script content endpoint returned nonempty bytes; bytes were hashed only in memory.");
-console.log("Content media type:",(r.headers.get("content-type")||"unavailable").split(";")[0]);
-console.log("Downloaded SHA-256 matches Cloudflare version script etag:",typeof etag==="string"&&etag.length>0?digest===etag:"INCONCLUSIVE");
+console.log("Content media type:",mediaType.split(";")[0]);
+console.log("PASS: multipart component parsing succeeded; component count:",multipart.partCount);
+console.log("PASS: component byte lengths and SHA-256 calculated in memory; names, hashes and contents withheld.");
+console.log("Whole multipart SHA-256 matches Cloudflare version script etag:",typeof etag==="string"&&etag.length>0?digest===etag:"INCONCLUSIVE (not a code parity assertion)");
 console.log("LIMITATION: script-scoped content endpoint is not an immutable version-specific download; byte hash may differ from Cloudflare etag semantics.");
 console.log("READ ONLY: script bytes and hashes not logged or saved; no upload, deployment, or replay.");
