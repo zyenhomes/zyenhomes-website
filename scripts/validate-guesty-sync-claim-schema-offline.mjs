@@ -1,0 +1,20 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { CLAIM_SQL, RECORD_ATTEMPT_SQL, MARK_UNCERTAIN_SQL, MARK_SUCCESS_SQL, explainClaimSafety } from "./guesty-sync-claim-sql-offline.mjs";
+
+const migration = readFileSync("cloudflare/migrations/0004_guesty_inquiry_sync_claims.sql","utf8");
+assert.match(migration,/ADD COLUMN guesty_sync_claim_token TEXT/);
+assert.match(migration,/ADD COLUMN guesty_sync_attempt_count INTEGER NOT NULL DEFAULT 0/);
+assert.match(migration,/CREATE TABLE IF NOT EXISTS guesty_inquiry_sync_attempts/);
+assert.match(migration,/claim_token TEXT NOT NULL UNIQUE/);
+assert.match(CLAIM_SQL,/guesty_sync_status = 'pending'/);
+assert.match(CLAIM_SQL,/guesty_sync_claim_token IS NULL/);
+assert.match(CLAIM_SQL,/guesty_quote_id IS NOT NULL/);
+assert.match(CLAIM_SQL,/RETURNING request_id, guesty_sync_claim_token/);
+assert.match(RECORD_ATTEMPT_SQL,/INSERT INTO guesty_inquiry_sync_attempts/);
+assert.match(MARK_UNCERTAIN_SQL,/guesty_sync_status = 'processing'/);
+assert.match(MARK_SUCCESS_SQL,/guesty_reference IS NULL/);
+assert.equal(explainClaimSafety().executable,false);
+assert.equal(explainClaimSafety().automaticRetry,false);
+assert.equal(explainClaimSafety().externalExactlyOnceGuaranteed,false);
+console.log("PASS: claim and attempt schema are guarded and offline-only.");
