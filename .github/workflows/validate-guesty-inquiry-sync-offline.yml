@@ -1,0 +1,23 @@
+name: Validate Guesty Inquiry Sync Planning (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/guesty-inquiry-sync-offline.mjs'
+      - 'scripts/validate-guesty-inquiry-sync-offline.mjs'
+      - '.github/workflows/validate-guesty-inquiry-sync-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check syntax and run offline tests
+        run: |
+          node --check scripts/guesty-inquiry-sync-offline.mjs
+          node --check scripts/validate-guesty-inquiry-sync-offline.mjs
+          node scripts/validate-guesty-inquiry-sync-offline.mjs
