@@ -1,0 +1,23 @@
+name: Validate Guesty Inquiry Request (Offline)
+on:
+  pull_request:
+    paths:
+      - 'scripts/build-guesty-inquiry-request-offline.mjs'
+      - 'scripts/validate-guesty-inquiry-request-offline.mjs'
+      - '.github/workflows/validate-guesty-inquiry-request-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax and offline-only request builder
+        run: |
+          node --check scripts/build-guesty-inquiry-request-offline.mjs
+          node --check scripts/validate-guesty-inquiry-request-offline.mjs
+          node scripts/validate-guesty-inquiry-request-offline.mjs
