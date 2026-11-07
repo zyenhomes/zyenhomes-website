@@ -1,0 +1,9 @@
+name = "zyenhomes-d1-batch-local-test"
+main = "d1-batch-worker.mjs"
+compatibility_date = "2026-10-24"
+workers_dev = false
+
+[[d1_databases]]
+binding = "BOOKING_DB"
+database_name = "zyenhomes-d1-batch-local-test"
+database_id = "00000000-0000-4000-8000-000000000146"
