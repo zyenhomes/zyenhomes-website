@@ -194,6 +194,21 @@
     event.preventDefault();
     if(!quotedTotal || !form.reportValidity())return;
     const data=new FormData(form);
+    // Prepare the API bridge only while explicitly hard-disabled.
+    // It cannot send requests; the established email workflow remains active.
+    const apiDraft={
+      propertyId:"116-tyrolean",
+      name:String(data.get("fullName")||""),
+      email:String(data.get("email")||""),
+      phone:String(data.get("phone")||""),
+      checkIn,checkOut,guests:Number(fields.Guests.value),
+      message:String(data.get("message")||""),marketingConsent:false
+    };
+    // Deliberately no fetch/transport: the bridge's hard-disabled result
+    // is used only as a local integration checkpoint.
+    void import("./booking-form-api-bridge.mjs")
+      .then(({createBookingFormApiBridge})=>createBookingFormApiBridge().submit(apiDraft))
+      .catch(()=>{ /* Email submission is independent of the disabled bridge. */ });
     const id=typeof propertyId==="string"?propertyId:"116-tyrolean";
     const propertyName=window.ZYEN_PROPERTIES?.find(p=>p.id===id)?.name || "Vacation rental";
     const lines=["Hello Zyen Homes,","I would like to request a booking.","",
