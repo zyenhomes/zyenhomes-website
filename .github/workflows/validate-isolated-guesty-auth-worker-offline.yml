@@ -1,0 +1,23 @@
+name: Validate Isolated Guesty Auth Test Worker (Offline)
+on:
+  pull_request:
+    paths:
+      - 'tests/guesty-open-api-auth-worker/**'
+      - 'scripts/validate-isolated-guesty-auth-worker-offline.mjs'
+      - '.github/workflows/validate-isolated-guesty-auth-worker-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test isolated authentication Worker without secrets or network
+        run: |
+          node --check tests/guesty-open-api-auth-worker/worker.mjs
+          node --check scripts/validate-isolated-guesty-auth-worker-offline.mjs
+          node scripts/validate-isolated-guesty-auth-worker-offline.mjs

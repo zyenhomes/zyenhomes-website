@@ -1,0 +1,15 @@
+# Separate test-only Worker. No production Worker name, bindings or secrets.
+name = "zyenhomes-guesty-auth-test-isolated"
+main = "worker.mjs"
+compatibility_date = "2026-10-24"
+workers_dev = false
+
+[vars]
+GUESTY_OPEN_API_AUTH_ENABLED = "false"
+GUESTY_OPEN_API_AUTH_DIAGNOSTIC_ENABLED = "false"
+
+# Required only for a separately approved future test deployment:
+# GUESTY_OPEN_API_CLIENT_ID (secret)
+# GUESTY_OPEN_API_CLIENT_SECRET (secret)
+# GUESTY_AUTH_TEST_ADMIN_TOKEN (secret)
+# Never put secret values in this file or GitHub.
