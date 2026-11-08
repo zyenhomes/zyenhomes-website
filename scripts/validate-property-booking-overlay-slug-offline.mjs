@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+const html=readFileSync("property.html","utf8");
+assert.match(html,/const requestedId=params\.get\('id'\)/);
+assert.match(html,/const requestedSlug=params\.get\('property'\)/);
+assert.match(html,/const id=home\?\.id/);
+assert.match(html,/homes\.find\(p=>requestedSlug/);
+assert.match(html,/if\(!root\|\|!home\)return/);
+assert.match(html,/\.zy-request-book/);
+assert.match(html,/content\.append\(existing\)/);
+assert.match(html,/mailto:info@zyenhomes\.com/);
+assert.doesNotMatch(html,/\/api\/public\/booking-request/);
+console.log("PASS: property-name URLs resolve booking dialog property; no live submission route added.");
