@@ -1,0 +1,18 @@
+name: Validate Disabled Booking Form Wiring
+on:
+  pull_request:
+    paths:
+      - "zyen-116-calendar-pilot.js"
+      - "zyen-connected-calendar.js"
+      - "scripts/validate-disabled-booking-form-wiring-offline.mjs"
+      - ".github/workflows/validate-disabled-booking-form-wiring.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-disabled-booking-form-wiring-offline.mjs
