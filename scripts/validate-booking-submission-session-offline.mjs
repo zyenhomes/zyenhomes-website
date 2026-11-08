@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {createBookingSubmissionKey,createBookingSubmissionSession} from "./booking-submission-session.mjs";
+import {createBookingSubmissionKey,createBookingSubmissionSession} from "../booking-submission-session.mjs";
 let count=0;
 const fake={randomUUID:()=> "aaaaaaaa-bbbb-4ccc-8ddd-"+String(++count).padStart(12,"0")};
 const session=createBookingSubmissionSession(fake);
