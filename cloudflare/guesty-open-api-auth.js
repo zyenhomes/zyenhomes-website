@@ -19,7 +19,7 @@ export async function requestGuestyOpenApiToken({ env, transport, now = Date.now
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
       body: new URLSearchParams({
-        grant_type: "client_credentials", client_id: clientId, client_secret: clientSecret
+        grant_type: "client_credentials", scope: "open-api", client_id: clientId, client_secret: clientSecret
       }).toString()
     });
   } catch {
