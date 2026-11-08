@@ -1,0 +1,17 @@
+name: Validate Booking Request Draft (Offline)
+on:
+  pull_request:
+    paths:
+      - "booking-request-draft.mjs"
+      - "scripts/validate-booking-request-draft-offline.mjs"
+      - ".github/workflows/validate-booking-request-draft-offline.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-booking-request-draft-offline.mjs
