@@ -1,0 +1,17 @@
+name: Validate Disabled Booking Form API Bridge
+on:
+  pull_request:
+    paths:
+      - "booking-form-api-bridge.mjs"
+      - "scripts/validate-disabled-booking-form-api-bridge-offline.mjs"
+      - ".github/workflows/validate-disabled-booking-form-api-bridge.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-disabled-booking-form-api-bridge-offline.mjs
