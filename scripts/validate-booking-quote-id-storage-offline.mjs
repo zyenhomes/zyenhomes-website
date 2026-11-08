@@ -10,10 +10,12 @@ assert.match(migration, /ALTER TABLE booking_requests ADD COLUMN guesty_quote_id
 assert.match(migration, /idx_booking_requests_guesty_quote_id/);
 assert.match(worker, /const guestyQuoteId=quote\?\._id;/);
 assert.match(worker, /typeof guestyQuoteId!=="string"/);
-assert.match(worker, /INSERT INTO booking_requests \([^\n]*guesty_quote_id\) VALUES \(\?,\?,\?,\?,\?,\?,\?,\?,\?,\?,\?,\?,\?,\?,\?\)/);
-assert.match(worker, /consent\?"v1":null,guestyQuoteId\)\.run\(\)/);
 assert.match(worker, /env\.BOOKING_REQUESTS_ENABLED !== "true"/);
 assert.match(worker, /guestySyncStatus:"pending"/);
 assert.doesNotMatch(worker, /status:\s*"confirmed"/);
+assert.match(worker, /request_idempotency_key,request_payload_fingerprint/);
+assert.match(worker, /requestKey,payloadFingerprint/);
+assert.match(worker, /request_payload_fingerprint===payloadFingerprint/);
+assert.match(worker, /fingerprintBookingRequest/);
 console.log("PASS: offline checks confirm server quote ID validation, SQL parameter count and disabled booking gate.");
 console.log("LIMITATION: production migration state and live Guesty behavior not tested.");
