@@ -1,0 +1,22 @@
+name: Validate Standalone Guesty Auth Worker (Offline)
+on:
+  pull_request:
+    paths:
+      - 'tests/guesty-open-api-auth-worker/standalone-dashboard-worker.mjs'
+      - 'scripts/validate-standalone-guesty-auth-worker-offline.mjs'
+      - '.github/workflows/validate-standalone-guesty-auth-worker-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test standalone Worker without external calls
+        run: |
+          node --check tests/guesty-open-api-auth-worker/standalone-dashboard-worker.mjs
+          node scripts/validate-standalone-guesty-auth-worker-offline.mjs
