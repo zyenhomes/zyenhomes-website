@@ -12,7 +12,7 @@ for(const [change,reason] of [
  [{guestsCount:7},"quote_guests_mismatch"],
  [{status:"expired"},"quote_not_valid"],
  [{expiresAt:"2026-11-08T17:00:00Z"},"quote_freshness_unverified"]
-]){const result=await verify({...input,transport:async()=>({ok:true,status:200,json:async()=>({...quote,...change}})});assert.equal(result.reason,reason);}
+]){const result=await verify({...input,transport:async()=>({ok:true,status:200,json:async()=>({...quote,...change})})});assert.equal(result.reason,reason);}
 for(const [status,reason] of [[404,"quote_not_found_in_open_api"],[410,"quote_expired"],[401,"quote_lookup_rejected"]]){
  assert.equal((await verify({...input,transport:async()=>({ok:false,status})})).reason,reason);
 }
