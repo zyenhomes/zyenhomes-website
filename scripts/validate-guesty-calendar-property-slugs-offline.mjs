@@ -8,7 +8,7 @@ for (const file of ["zyen-116-calendar-pilot.js","zyen-connected-calendar.js"]) 
  assert.match(s,/propertyIdFromSlug/);
  assert.match(s,/params\.get\("id"\) \|\| propertyIdFromSlug/);
  assert.match(s,/\.replace\(\/\[\^a-z0-9\]\+\/g,"-"\)/);
- assert.match(s,/\.zy-116-booking/);
+ assert.match(s,/section\.className = "zy-116-booking"/);
 }
 const page=readFileSync("property.html","utf8");
 assert.match(page,/history\.replaceState/);
