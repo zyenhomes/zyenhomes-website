@@ -1,0 +1,17 @@
+name: Validate Guesty Inquiry Readiness Preflight
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-inquiry-readiness.js"
+      - "scripts/validate-guesty-inquiry-readiness-offline.mjs"
+      - ".github/workflows/validate-guesty-inquiry-readiness.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-guesty-inquiry-readiness-offline.mjs
