@@ -1,0 +1,24 @@
+name: Validate Guesty Auth-Only Diagnostic (Offline)
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/guesty-open-api-auth-diagnostic.js'
+      - 'scripts/validate-guesty-auth-only-diagnostic-offline.mjs'
+      - 'cloudflare/guesty-open-api-auth.js'
+      - '.github/workflows/validate-guesty-auth-only-diagnostic-offline.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test auth-only diagnostic without real credentials
+        run: |
+          node --check cloudflare/guesty-open-api-auth-diagnostic.js
+          node --check scripts/validate-guesty-auth-only-diagnostic-offline.mjs
+          node scripts/validate-guesty-auth-only-diagnostic-offline.mjs
