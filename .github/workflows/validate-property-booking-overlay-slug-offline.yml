@@ -1,0 +1,17 @@
+name: Validate Property Booking Overlay Slugs (Offline)
+on:
+  pull_request:
+    paths:
+      - "property.html"
+      - "scripts/validate-property-booking-overlay-slug-offline.mjs"
+      - ".github/workflows/validate-property-booking-overlay-slug-offline.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-property-booking-overlay-slug-offline.mjs
