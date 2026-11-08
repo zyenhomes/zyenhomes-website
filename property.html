@@ -390,8 +390,14 @@ if(x && (x.id==='116-tyrolean'||x.id==='109-plater'||x.id==='105-pilsen'||x.id==
 </script><script>
 (function(){
  const root=document.getElementById('property');
- const id=new URLSearchParams(location.search).get('id');
- const home=(window.ZYEN_PROPERTIES||[]).find(p=>p.id===id);
+ const params=new URLSearchParams(location.search);
+ const requestedId=params.get('id');
+ const requestedSlug=params.get('property');
+ const homes=window.ZYEN_PROPERTIES||[];
+ const home=homes.find(p=>p.id===requestedId)||
+   homes.find(p=>requestedSlug&&String(p.name||'').toLowerCase()
+     .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')===requestedSlug);
+ const id=home?.id;
  if(!root||!home)return;
  const detail=root.querySelector('.zy-detail > div:last-child');
  if(!detail)return;
