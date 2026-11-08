@@ -28,3 +28,37 @@ ON booking_requests(request_idempotency_key)
 WHERE request_idempotency_key IS NOT NULL;
 `.trim();
 // PREPARATION ONLY: do not apply this schema to production without approval.
+
+const FINGERPRINT_FIELDS = Object.freeze([
+  "propertyId", "name", "email", "phone", "checkIn", "checkOut",
+  "guests", "message", "marketingConsent"
+]);
+
+// Canonicalize only server-validated booking fields; ignore browser-provided
+// price, quote ID, sync status, and approval flags.
+export function canonicalBookingRequestFields(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input))
+    throw Error("Invalid booking request");
+  const result = {};
+  for (const field of FINGERPRINT_FIELDS) {
+    const value = input[field];
+    if (field === "guests") {
+      if (!Number.isSafeInteger(value) || value < 1) throw Error("Invalid guests");
+      result[field] = value;
+    } else if (field === "marketingConsent") {
+      if (typeof value !== "boolean") throw Error("Invalid consent");
+      result[field] = value;
+    } else {
+      if (typeof value !== "string") throw Error("Invalid " + field);
+      result[field] = field === "email" ? value.trim().toLowerCase() : value.trim();
+    }
+  }
+  return Object.freeze(result);
+}
+
+export async function fingerprintBookingRequest(input) {
+  const canonical = canonicalBookingRequestFields(input);
+  const bytes = new TextEncoder().encode(JSON.stringify(canonical));
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, "0")).join("");
+}
