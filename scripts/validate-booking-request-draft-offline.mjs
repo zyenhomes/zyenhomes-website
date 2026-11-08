@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import {createBookingRequestDraftSession} from "../booking-request-draft.mjs";
+import {fingerprintBookingRequest} from "./guesty-booking-request-idempotency-offline.mjs";
+let n=0;
+const session=createBookingRequestDraftSession({fingerprint:fingerprintBookingRequest,cryptoApi:{randomUUID:()=> "aaaaaaaa-bbbb-4ccc-8ddd-"+String(++n).padStart(12,"0")}});
+const input={propertyId:"149-tyrolean",name:"Guest Example",email:"GUEST@example.invalid",phone:"+14165550123",checkIn:"2027-01-14",checkOut:"2027-01-18",guests:6,message:"",marketingConsent:false};
+const first=await session.prepare(input);
+assert.equal(first.email,"guest@example.invalid");
+assert.equal(first.requestKey,(await session.prepare({...input,email:"guest@example.invalid"})).requestKey);
+assert.notEqual(first.requestKey,(await session.prepare({...input,guests:7})).requestKey);
+await assert.rejects(session.prepare({...input,marketingConsent:undefined}));
+await assert.rejects(session.prepare({...input,checkOut:"2027-01-13"}));
+assert.equal("quoteId" in first,false);
+assert.equal("total" in first,false);
+assert.equal("status" in first,false);
+console.log("PASS: browser request drafts are canonical, stable on retry, and contain no untrusted quote or approval fields.");
