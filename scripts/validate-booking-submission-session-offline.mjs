@@ -1,0 +1,17 @@
+import assert from "node:assert/strict";
+import {createBookingSubmissionKey,createBookingSubmissionSession} from "./booking-submission-session.mjs";
+let count=0;
+const fake={randomUUID:()=> "aaaaaaaa-bbbb-4ccc-8ddd-"+String(++count).padStart(12,"0")};
+const session=createBookingSubmissionSession(fake);
+const first=session.keyFor("a".repeat(64));
+assert.equal(session.keyFor("A".repeat(64)),first);
+assert.equal(count,1);
+const second=session.keyFor("b".repeat(64));
+assert.notEqual(second,first);
+assert.equal(count,2);
+assert.equal(session.keyFor("b".repeat(64)),second);
+session.reset();
+assert.notEqual(session.keyFor("b".repeat(64)),second);
+assert.throws(()=>session.keyFor("bad"));
+assert.throws(()=>createBookingSubmissionKey({}));
+console.log("PASS: submission keys are stable across retries and rotate when details change.");
