@@ -1,0 +1,17 @@
+name: Validate Booking Bridge Transport Integration (Offline)
+on:
+  pull_request:
+    paths:
+      - "booking-form-api-bridge.mjs"
+      - "scripts/validate-booking-bridge-transport-integration-offline.mjs"
+      - ".github/workflows/validate-booking-bridge-transport-integration-offline.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-booking-bridge-transport-integration-offline.mjs
