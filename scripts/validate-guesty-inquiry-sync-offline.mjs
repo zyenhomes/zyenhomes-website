@@ -26,4 +26,38 @@ assert.equal(planSyncAttempt({
   requestId: valid.requestId, previousStatus: "pending",
   permissionVerified: true, endpointVerified: true, idempotencyVerified: true
 }).reason, "atomic_deduplication_not_implemented");
+
+// Replay protection: a completed, in-progress, uncertain, or manually reviewed
+// request must never be considered eligible for another Guesty submission.
+const verified = {
+  requestId: valid.requestId,
+  permissionVerified: true,
+  endpointVerified: true,
+  idempotencyVerified: true
+};
+for (const previousStatus of [
+  "succeeded", "processing", "uncertain", "manual_review",
+  "ready", "blocked", "unknown", null
+]) {
+  const plan = planSyncAttempt({ ...verified, previousStatus });
+  assert.equal(plan.allowed, false, previousStatus + " must not allow a replay");
+}
+for (const previousStatus of ["pending", "failed"]) {
+  const plan = planSyncAttempt({ ...verified, previousStatus });
+  assert.deepEqual(plan, {
+    allowed: false,
+    reason: "atomic_deduplication_not_implemented"
+  });
+}
+for (const omitted of ["permissionVerified", "endpointVerified", "idempotencyVerified"]) {
+  const gates = { ...verified };
+  delete gates[omitted];
+  const plan = planSyncAttempt({ ...gates, previousStatus: "pending" });
+  assert.deepEqual(plan, {
+    allowed: false,
+    reason: "write_prerequisites_unverified"
+  });
+}
+assert.equal(planSyncAttempt({ ...verified, requestId: "not-a-uuid", previousStatus: "pending" }).allowed, false);
+
 console.log("PASS: inquiry sync remains fail-closed; no network, database or Guesty writes.");
