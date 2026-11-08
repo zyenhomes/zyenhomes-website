@@ -1,0 +1,18 @@
+name: Validate Guesty Calendar Property Slugs (Offline)
+on:
+  pull_request:
+    paths:
+      - "zyen-116-calendar-pilot.js"
+      - "zyen-connected-calendar.js"
+      - "scripts/validate-guesty-calendar-property-slugs-offline.mjs"
+      - ".github/workflows/validate-guesty-calendar-property-slugs-offline.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-guesty-calendar-property-slugs-offline.mjs

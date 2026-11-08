@@ -1,7 +1,10 @@
 (() => {
   "use strict";
   const params = new URLSearchParams(location.search);
-  const propertyId = params.get("id");
+  const slug=params.get("property");
+  const propertyIdFromSlug=(window.ZYEN_PROPERTIES||[]).find(p=>
+    slug && String(p.name||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")===slug)?.id;
+  const propertyId = params.get("id") || propertyIdFromSlug;
   const connected = new Set(["100-pilsen","105-pilsen","106-birch-view","109-plater","147-campbell","149-tyrolean","197-arlberg","37-snowbridge"]);
   if (!connected.has(propertyId)) return;
   const root = document.getElementById("property");

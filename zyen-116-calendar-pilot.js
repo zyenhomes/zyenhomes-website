@@ -1,7 +1,10 @@
 (() => {
   "use strict";
   const params = new URLSearchParams(location.search);
-  if (params.get("id") !== "116-tyrolean") return;
+  const slug=params.get("property");
+  const propertyIdFromSlug=(window.ZYEN_PROPERTIES||[]).find(p=>
+    slug && String(p.name||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")===slug)?.id;
+  if ((params.get("id") || propertyIdFromSlug) !== "116-tyrolean") return;
   const root = document.getElementById("property");
   if (!root) return;
   const section = document.createElement("section");
