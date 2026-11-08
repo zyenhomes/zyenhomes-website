@@ -1,4 +1,5 @@
 import { receiveGuestyMessageWebhook } from "./guesty-webhooks.js";
+import { fingerprintBookingRequest } from "../scripts/guesty-booking-request-idempotency-offline.mjs";
 
 let cachedToken = null;
 let tokenExpiresAt = 0;
@@ -973,6 +974,22 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
           nights<1||nights>30||!Number.isInteger(guests)||guests<1||guests>caps[propertyId]||
           typeof b.marketingConsent!=="boolean")
           return reply({success:false,message:"Please check your booking details"},400);
+        // Require a stable key across browser retries. Database migration 0005
+        // must be applied before enabling BOOKING_REQUESTS_ENABLED.
+        const requestKey = typeof b.requestKey === "string" ? b.requestKey : "";
+        if(!/^[A-Za-z0-9_-]{24,128}$/.test(requestKey))
+          return reply({success:false,message:"Missing or invalid submission key"},400);
+        const payloadFingerprint=await fingerprintBookingRequest({
+          propertyId,name,email,phone,checkIn,checkOut,guests,message,
+          marketingConsent:b.marketingConsent
+        });
+        const prior=await env.BOOKING_DB.prepare(
+          "SELECT request_id,request_payload_fingerprint FROM booking_requests WHERE request_idempotency_key = ?"
+        ).bind(requestKey).first();
+        if(prior) return prior.request_payload_fingerprint===payloadFingerprint
+          ?reply({success:true,requestId:prior.request_id,status:"received",guestySyncStatus:"pending",
+            message:"Request already received. This is not a confirmed reservation."},200)
+          :reply({success:false,message:"Submission key already used for different details"},409);
         // Reprice server-side. Never trust a total supplied by the browser.
         const token=await getGuestyToken(env);
         const quoteRes=await fetch("https://booking.guesty.com/api/reservations/quotes",{
@@ -993,10 +1010,24 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
         const totalCents=Math.round(money.hostPayout*100);
         const requestId=crypto.randomUUID();
         const consent=b.marketingConsent===true;
-        await env.BOOKING_DB.prepare(
-          "INSERT INTO booking_requests (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,message,quote_total_cents,quote_currency,marketing_consent,marketing_consent_at,consent_text_version,guesty_quote_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-        ).bind(requestId,propertyId,name,email,phone,checkIn,checkOut,guests,message,totalCents,"CAD",
-          consent?1:0,consent?new Date().toISOString():null,consent?"v1":null,guestyQuoteId).run();
+        try {
+          await env.BOOKING_DB.prepare(
+            "INSERT INTO booking_requests (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,message,quote_total_cents,quote_currency,marketing_consent,marketing_consent_at,consent_text_version,guesty_quote_id,request_idempotency_key,request_payload_fingerprint) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+          ).bind(requestId,propertyId,name,email,phone,checkIn,checkOut,guests,message,totalCents,"CAD",
+            consent?1:0,consent?new Date().toISOString():null,consent?"v1":null,guestyQuoteId,
+            requestKey,payloadFingerprint).run();
+        } catch {
+          // A simultaneous request may have won the UNIQUE-key race. Read back
+          // only the matching key; never create a second booking or Guesty write.
+          const winner=await env.BOOKING_DB.prepare(
+            "SELECT request_id,request_payload_fingerprint FROM booking_requests WHERE request_idempotency_key = ?"
+          ).bind(requestKey).first();
+          if(winner) return winner.request_payload_fingerprint===payloadFingerprint
+            ?reply({success:true,requestId:winner.request_id,status:"received",guestySyncStatus:"pending",
+              message:"Request already received. This is not a confirmed reservation."},200)
+            :reply({success:false,message:"Submission key already used for different details"},409);
+          throw Error("Booking request storage uncertain");
+        }
         return reply({success:true,requestId,status:"received",guestySyncStatus:"pending",
           message:"Request received by Zyen Homes. This is not a confirmed reservation."},201);
       } catch {
