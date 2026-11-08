@@ -1,0 +1,17 @@
+name: Validate Booking Request Fingerprint (Offline)
+on:
+  pull_request:
+    paths:
+      - "scripts/guesty-booking-request-idempotency-offline.mjs"
+      - "scripts/validate-booking-request-fingerprint-offline.mjs"
+      - ".github/workflows/validate-booking-request-fingerprint-offline.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-booking-request-fingerprint-offline.mjs
