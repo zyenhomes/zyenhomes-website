@@ -1,0 +1,17 @@
+name: Validate Booking Idempotency Migration (Offline)
+on:
+  pull_request:
+    paths:
+      - "cloudflare/migrations/0005_booking_request_idempotency.sql"
+      - "scripts/validate-booking-idempotency-migration-offline.mjs"
+      - ".github/workflows/validate-booking-idempotency-migration-offline.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-booking-idempotency-migration-offline.mjs
