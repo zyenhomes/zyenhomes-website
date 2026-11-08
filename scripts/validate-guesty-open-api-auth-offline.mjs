@@ -19,7 +19,7 @@ const transport=async (url,init)=>{
   assert.equal(params.get("grant_type"),"client_credentials");
   assert.equal(params.get("client_id"),env.GUESTY_OPEN_API_CLIENT_ID);
   assert.equal(params.get("client_secret"),env.GUESTY_OPEN_API_CLIENT_SECRET);
-  assert.equal(params.has("scope"),false);
+  assert.equal(params.get("scope"),"open-api");
   return {ok:true,status:200,json:async()=>({access_token:"test-open-token",expires_in:86400})};
 };
 assert.equal((await requestGuestyOpenApiToken({env:{...env,GUESTY_OPEN_API_AUTH_ENABLED:"false"},transport})).reason,"disabled");
