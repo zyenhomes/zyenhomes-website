@@ -1,0 +1,17 @@
+name: Validate Isolated Guesty Quote Diagnostic
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-quote-diagnostic-isolated.js"
+      - "scripts/validate-isolated-guesty-quote-diagnostic-offline.mjs"
+      - ".github/workflows/validate-isolated-guesty-quote-diagnostic.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-isolated-guesty-quote-diagnostic-offline.mjs
