@@ -1,0 +1,17 @@
+name: Validate Guesty Quote Read-Only Verification
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-quote-readonly.js"
+      - "scripts/validate-guesty-quote-readonly-offline.mjs"
+      - ".github/workflows/validate-guesty-quote-readonly.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-guesty-quote-readonly-offline.mjs
