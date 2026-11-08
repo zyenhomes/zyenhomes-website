@@ -9,6 +9,6 @@ for(const path of ["zyen-connected-calendar.js","zyen-116-calendar-pilot.js"]){
  assert.match(s,/mailto:info@zyenhomes\.com/);
  assert.match(s,/let resolvedQuote=null/);
  assert.match(s,/clearQuote\(\)/);
- assert.match(s,/calendar\.hidden=true/);
+ assert.match(s,/calendar\.hidden=false/);
 }
 console.log("Mobile calendar and quote inquiry syntax checks passed");
