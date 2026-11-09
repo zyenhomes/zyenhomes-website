@@ -29,7 +29,7 @@ export async function verifyGuestyQuoteReadOnly({quoteId,listingId,checkIn,check
   return blocked("quote_dates_mismatch");
  if(quote.guestsCount!==guests)
   return blocked("quote_guests_mismatch");
- if(quote.status!=="valid")
+ if(Object.hasOwn(quote,"status")&&quote.status!=="valid")
   return blocked("quote_not_valid");
  const created=Date.parse(quote.createdAt),expires=Date.parse(quote.expiresAt);
  if(!Number.isFinite(created)||!Number.isFinite(expires)||created>now||expires<=now||expires<=created)

@@ -12,9 +12,9 @@ export function diagnoseQuoteContract(raw, expected, now=Date.now()) {
   checkIn:validObject&&quote.checkInDateLocalized===expected?.checkIn,
   checkOut:validObject&&quote.checkOutDateLocalized===expected?.checkOut,
   guests:validObject&&(quote.guestsCount===expected?.guests||quote.numberOfGuests===expected?.guests),
-  status:validObject&&quote.status==="valid",
-  createdAt:validObject&&Number.isFinite(Date.parse(quote.createdAt)),
-  expiresAt:validObject&&Number.isFinite(Date.parse(quote.expiresAt))&&Date.parse(quote.expiresAt)>now
+  status:validObject&&(!Object.hasOwn(quote,"status")||quote.status==="valid"),
+  createdAt:validObject&&Number.isFinite(Date.parse(quote.createdAt))&&Date.parse(quote.createdAt)<=now,
+  expiresAt:validObject&&Number.isFinite(Date.parse(quote.expiresAt))&&Date.parse(quote.expiresAt)>now&&Date.parse(quote.expiresAt)>Date.parse(quote.createdAt)
  };
  return Object.freeze({contractDiagnostic:true,shape:!validObject?"invalid":Array.isArray(raw?.results)?"array":"object",
   fieldsPresent:present,fieldsMatch:Object.fromEntries(Object.entries(match).map(([k,v])=>[k,v===true])),
