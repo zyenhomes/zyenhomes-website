@@ -11,11 +11,20 @@ export default {
   if(request.method!=="GET") return reply({success:false,reason:"method_not_allowed"},405);
   if(env?.GUESTY_QUOTE_READONLY_DIAGNOSTIC_ENABLED!=="true")
    return reply({success:false,reason:"diagnostic_disabled"},403);
-  // No public unauthenticated diagnostic: require Cloudflare Access JWT to be
-  // validated upstream, AND an explicit local Access-verified gate. A header
-  // alone is never treated as proof of authentication.
-  if(env?.GUESTY_QUOTE_DIAGNOSTIC_ACCESS_VERIFIED!=="true")
-   return reply({success:false,reason:"access_not_verified"},403);
+  // Authenticate with a dedicated random Worker secret, never Guesty credentials.
+  // Compare fixed-length SHA-256 digests to avoid variable-time string comparisons.
+  const secret=env?.GUESTY_QUOTE_DIAGNOSTIC_ACCESS_TOKEN;
+  const auth=request.headers.get("Authorization")||"";
+  const supplied=auth.startsWith("Bearer ")?auth.slice(7):"";
+  if(typeof secret!=="string"||secret.length<48||secret.length>256||
+     !/^[A-Za-z0-9_-]+$/.test(secret)||supplied.length<48||supplied.length>256||
+     !/^[A-Za-z0-9_-]+$/.test(supplied))
+   return reply({success:false,reason:"unauthorized"},401);
+  const digest=async value=>new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(value)));
+  const a=await digest(secret),b=await digest(supplied);
+  let diff=0;
+  for(let i=0;i<a.length;i++) diff|=a[i]^b[i];
+  if(diff!==0) return reply({success:false,reason:"unauthorized"},401);
   // Inputs are provisioned as Worker variables, never accepted from URL/body.
   const quoteId=env?.GUESTY_DIAGNOSTIC_QUOTE_ID;
   const listingId=env?.GUESTY_DIAGNOSTIC_LISTING_ID;
