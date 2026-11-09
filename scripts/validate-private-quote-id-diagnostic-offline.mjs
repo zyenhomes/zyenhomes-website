@@ -1,0 +1,20 @@
+import assert from "node:assert/strict";
+import {handlePrivateQuoteIdDiagnostic as run} from "../cloudflare/private-quote-id-diagnostic.js";
+const secret="s".repeat(48),env={ZYEN_PRIVATE_QUOTE_ID_DIAGNOSTIC_ENABLED:"true",ZYEN_QUOTE_TEST_KEY:secret};
+const payload={checkIn:"2027-01-18",checkOut:"2027-01-20",guests:6};
+const req=(key=secret,body=payload,method="POST")=>new Request("https://example.invalid/api/internal/quote-id-diagnostic",{method,headers:{"X-Zyen-Test-Key":key,"Content-Type":"application/json"},body:JSON.stringify(body)});
+let calls=0;
+const dependencies={tokenProvider:async()=>{calls++;return "mock-token"},transport:async(url,opts)=>{
+ assert.equal(url,"https://booking.guesty.com/api/reservations/quotes");assert.equal(opts.method,"POST");
+ assert.equal(JSON.parse(opts.body).listingId,"6914041adf75040043bc8ed8");
+ return {ok:true,json:async()=>({results:[{_id:"a".repeat(24)}]})};
+}};
+assert.equal((await run(req(),{},dependencies)).status,404);
+assert.equal((await run(req("wrong"),env,dependencies)).status,401);
+assert.equal((await run(req(secret,{...payload,guests:50}),env,dependencies)).status,400);
+assert.equal(calls,0,"disabled, unauthorized, invalid requests must not call Guesty");
+const result=await run(req(),env,dependencies);assert.equal(result.status,200);
+const body=await result.json();assert.equal(body.quoteId,"a".repeat(24));assert.equal(body.success,true);
+assert.equal(calls,1);
+assert.equal((await run(req(),env,{tokenProvider:dependencies.tokenProvider,transport:async()=>({ok:false,status:429})})).status,502);
+console.log("PASS: temporary private quote-ID diagnostic is gated, authenticated, validated, and never writes a reservation.");
