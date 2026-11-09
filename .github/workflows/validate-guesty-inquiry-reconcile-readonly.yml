@@ -1,0 +1,17 @@
+name: Validate Guesty Inquiry Reconciliation Read Only
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-inquiry-reconcile-readonly.js"
+      - "scripts/validate-guesty-inquiry-reconcile-readonly-offline.mjs"
+      - ".github/workflows/validate-guesty-inquiry-reconcile-readonly.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-guesty-inquiry-reconcile-readonly-offline.mjs
