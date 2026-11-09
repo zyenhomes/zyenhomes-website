@@ -1,4 +1,5 @@
 import { receiveGuestyMessageWebhook } from "./guesty-webhooks.js";
+import { handlePrivateQuoteIdDiagnostic } from "./private-quote-id-diagnostic.js";
 import { fingerprintBookingRequest } from "../scripts/guesty-booking-request-idempotency-offline.mjs";
 
 let cachedToken = null;
@@ -10,6 +11,8 @@ let pendingToken = null;
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api/internal/quote-id-diagnostic") return handlePrivateQuoteIdDiagnostic(request,env,{tokenProvider:getGuestyToken});
 
     if (url.pathname === "/api/webhooks/guesty/messages") return receiveGuestyMessageWebhook(request,env);
 
