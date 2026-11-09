@@ -1,7 +1,7 @@
 // ISOLATED TEST WORKER ONLY. Never import from cloudflare/worker.js.
 // Read-only quote check. No inquiry/reservation write endpoints.
 import {requestGuestyOpenApiToken} from "./guesty-open-api-auth.js";
-import {verifyGuestyQuoteReadOnly} from "./guesty-quote-readonly.js";
+import {diagnoseQuoteContract} from "./guesty-quote-contract-diagnostic.js";
 
 export default {
  async fetch(request,env) {
@@ -35,12 +35,23 @@ export default {
    return reply({success:false,reason:"quote_not_configured"},503);
   const token=await requestGuestyOpenApiToken({env,transport:fetch});
   if(!token.ok) return reply({success:false,reason:"authentication_unavailable"},503);
-  const result=await verifyGuestyQuoteReadOnly({
-   quoteId,listingId,checkIn,checkOut,guests,
-   token:token.accessToken,transport:fetch
-  });
-  // Never return quote payload, token, email, names, listing/quote IDs.
-  return reply({success:result.verified===true,
-    reason:result.reason,writeAuthorized:false});
+  // Exactly one read-only quote lookup. Do not expose raw response content.
+  let response;
+  try {
+   response=await fetch("https://open-api.guesty.com/v1/quotes/"+quoteId,{
+    method:"GET",headers:{Authorization:"Bearer "+token.accessToken,Accept:"application/json"}
+   });
+  }catch{return reply({success:false,reason:"quote_lookup_unavailable",writeAuthorized:false},502);}
+  if(!response.ok)return reply({success:false,reason:"quote_lookup_rejected",
+    httpStatus:response.status,writeAuthorized:false},502);
+  let raw;
+  try {raw=await response.json();}catch{
+   return reply({success:false,reason:"invalid_quote_response",writeAuthorized:false},502);
+  }
+  const diagnostic=diagnoseQuoteContract(raw,{quoteId,listingId,checkIn,checkOut,guests});
+  // No raw quote data, IDs, names, emails, or credentials are returned.
+  return reply({success:diagnostic.verified,
+   reason:diagnostic.verified?"quote_verified_read_only":"quote_contract_mismatch",
+   contract:diagnostic,writeAuthorized:false});
  }
 };

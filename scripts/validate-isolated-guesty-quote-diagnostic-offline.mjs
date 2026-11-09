@@ -29,5 +29,8 @@ assert.equal(incorrect.status,401);
 const src=readFileSync("cloudflare/guesty-quote-diagnostic-isolated.js","utf8");
 assert.doesNotMatch(src,/method:\s*["'](?:POST|PUT|PATCH|DELETE)["']/);
 assert.doesNotMatch(src,/submitGuestyInquiry|reservations-v3\/quote/);
+assert.match(src,/diagnoseQuoteContract/);
+assert.match(src,/method:"GET"/);
+assert.doesNotMatch(src,/JSON.stringify\(raw\)|reply\(raw/);
 assert.doesNotMatch(readFileSync("cloudflare/worker.js","utf8"),/guesty-quote-diagnostic-isolated/);
 console.log("PASS: isolated quote diagnostic remains disabled and never imports into production.");
