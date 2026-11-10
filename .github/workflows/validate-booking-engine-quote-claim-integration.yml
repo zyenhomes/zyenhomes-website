@@ -1,0 +1,17 @@
+name: Validate Booking Engine Quote Claim Integration
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-booking-engine-quote-claim-integration.js"
+      - "scripts/validate-booking-engine-quote-claim-integration-offline.mjs"
+      - ".github/workflows/validate-booking-engine-quote-claim-integration.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-booking-engine-quote-claim-integration-offline.mjs
