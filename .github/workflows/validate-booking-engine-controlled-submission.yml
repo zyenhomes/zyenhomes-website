@@ -1,0 +1,17 @@
+name: Validate Controlled Booking Engine Submission Preflight
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-booking-engine-controlled-submission.js"
+      - "scripts/validate-booking-engine-controlled-submission-offline.mjs"
+      - ".github/workflows/validate-booking-engine-controlled-submission.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-booking-engine-controlled-submission-offline.mjs
