@@ -1,11 +1,12 @@
 // Disabled production inquiry route: authentication preflight, then fail closed.
 // Never executes Guesty POST, D1 claims, quote lookup, or token request.
+import {assessControlledInquirySubmission} from "./guesty-booking-engine-controlled-submission.js";
 import {assessInternalInquiryRequest} from "./guesty-booking-engine-auth-preflight.js";
 import {reviewBookingEngineInquiryClaim} from "./guesty-booking-engine-claim-review.js";
 import {assessInquiryLifecycle} from "./guesty-booking-engine-inquiry-lifecycle.js";
 export const BOOKING_ENGINE_INQUIRY_ROUTE_ENABLED=false;
 export const bookingEngineInquiryDependencies=Object.freeze({
- reviewBookingEngineInquiryClaim,assessInquiryLifecycle
+ reviewBookingEngineInquiryClaim,assessInquiryLifecycle,assessControlledInquirySubmission
 });
 export function handleDisabledBookingEngineInquiry(request,env) {
  if(BOOKING_ENGINE_INQUIRY_ROUTE_ENABLED!==false)
