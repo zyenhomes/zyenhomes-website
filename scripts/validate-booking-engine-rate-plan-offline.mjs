@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import {selectBookingEngineRatePlan as select} from "../cloudflare/guesty-booking-engine-rate-plan.js";
+const quoteId="a".repeat(24),ratePlanId="b".repeat(24),other="c".repeat(24);
+const quote={_id:quoteId,rates:{ratePlans:[{ratePlan:{_id:ratePlanId}}]}};
+const result=select({response:{results:[quote]},quoteId});
+assert.equal(result.verified,true);assert.equal(result.ratePlanId,ratePlanId);
+assert.equal(result.writeAuthorized,false);
+const many={...quote,rates:{ratePlans:[...quote.rates.ratePlans,{ratePlan:{_id:other}}]}};
+assert.equal(select({response:many,quoteId}).reason,"multiple_rate_plans_selection_required");
+assert.equal(select({response:many,quoteId,selectedRatePlanId:other}).ratePlanId,other);
+assert.equal(select({response:many,quoteId,selectedRatePlanId:"d".repeat(24)}).verified,false);
+assert.equal(select({response:{...quote,_id:other},quoteId}).verified,false);
+assert.equal(select({response:{...quote,rates:{ratePlans:[]}},quoteId}).verified,false);
+assert.equal(select({response:{...quote,rates:{ratePlans:[{ratePlan:{_id:"bad"}}]}},quoteId}).verified,false);
+assert.equal(select({response:[quote,quote],quoteId}).verified,false);
+console.log("PASS: ratePlanId must be proven from exact Booking Engine quote, never guessed.");
