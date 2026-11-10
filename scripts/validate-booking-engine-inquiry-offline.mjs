@@ -1,0 +1,20 @@
+import assert from "node:assert/strict";
+import {prepareBookingEngineInquiry as prepare,classifyBookingEngineInquiryResult as classify} from "../cloudflare/guesty-booking-engine-inquiry.js";
+const quoteId="a".repeat(24),ratePlanId="b".repeat(24);
+const input={quoteId,ratePlanId,firstName:" Test ",lastName:" Guest ",email:"test@example.com",phone:"+14165550123"};
+const r=prepare(input);
+assert.equal(r.endpoint,"https://booking.guesty.com/api/reservations/quotes/"+quoteId+"/inquiry");
+assert.equal(r.body.ratePlanId,ratePlanId);assert.equal(r.body.reservedUntil,-1);
+assert.equal(r.body.guest.firstName,"Test");assert.equal(r.body.guest.phone,"+14165550123");
+assert.equal(r.body.ccToken,undefined);assert.equal(r.body.status,undefined);
+assert.equal(r.executable,false);assert.equal(r.writeAuthorized,false);
+for(const bad of [{...input,quoteId:"bad"},{...input,ratePlanId:"bad"},{...input,email:"bad"},{...input,reservedUntil:100}])
+ assert.throws(()=>prepare(bad));
+const ok=classify({status:200,body:{_id:"c".repeat(24),status:"reserved"}});
+assert.equal(ok.state,"needs_reconciliation");assert.equal(ok.canMarkSucceeded,false);
+assert.equal(ok.retryAutomatically,false);
+assert.equal(classify({status:200,body:{status:"reserved"}}).state,"uncertain");
+assert.equal(classify({status:502}).state,"uncertain");
+assert.equal(classify({error:true}).state,"uncertain");
+assert.equal(classify({status:400}).state,"manual_review");
+console.log("PASS: Booking Engine inquiry payload and response classification are offline and fail closed.");
