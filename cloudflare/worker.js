@@ -1,3 +1,4 @@
+import { handleDisabledBookingEngineInquiry } from "./guesty-booking-engine-route.js";
 import { receiveGuestyMessageWebhook } from "./guesty-webhooks.js";
 import { handlePrivateQuoteIdDiagnostic } from "./private-quote-id-diagnostic.js";
 import { fingerprintBookingRequest } from "../scripts/guesty-booking-request-idempotency-offline.mjs";
@@ -11,6 +12,8 @@ let pendingToken = null;
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api/internal/guesty/inquiry") return handleDisabledBookingEngineInquiry(request,env);
 
     if (url.pathname === "/api/internal/quote-id-diagnostic") return handlePrivateQuoteIdDiagnostic(request,env,{tokenProvider:getGuestyToken});
 
