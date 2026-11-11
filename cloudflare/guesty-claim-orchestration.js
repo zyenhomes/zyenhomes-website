@@ -22,7 +22,7 @@ export async function reviewAndClaimInquiry({
  if(claim.claimed!==true)return block(claim.reason);
  return block("claimed_pending_independent_write_approval",{
   state:"claimed",requestId:record.request_id,attemptId,
-  quoteVerified:true,ratePlanVerified:true,claimCommitted:true,
+  quoteVerified:true,ratePlanVerified:true,claimCommitted:true,auditCommitted:true,
   prepared:preflight.prepared
  });
 }
