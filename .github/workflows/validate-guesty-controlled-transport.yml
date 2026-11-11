@@ -1,0 +1,17 @@
+name: Validate Controlled Guesty Inquiry Transport
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-booking-engine-controlled-transport.js"
+      - "scripts/validate-guesty-controlled-transport-offline.mjs"
+      - ".github/workflows/validate-guesty-controlled-transport.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-guesty-controlled-transport-offline.mjs
