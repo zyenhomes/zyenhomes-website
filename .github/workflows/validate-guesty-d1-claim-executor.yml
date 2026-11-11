@@ -1,0 +1,17 @@
+name: Validate Isolated Guesty D1 Claim Executor
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-d1-claim-executor.js"
+      - "scripts/validate-guesty-d1-claim-executor-offline.mjs"
+      - ".github/workflows/validate-guesty-d1-claim-executor.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-guesty-d1-claim-executor-offline.mjs
