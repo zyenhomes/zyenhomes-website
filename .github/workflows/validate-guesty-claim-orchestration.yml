@@ -1,0 +1,17 @@
+name: Validate Guesty Claim Orchestration
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-claim-orchestration.js"
+      - "scripts/validate-guesty-claim-orchestration-offline.mjs"
+      - ".github/workflows/validate-guesty-claim-orchestration.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-guesty-claim-orchestration-offline.mjs
