@@ -1,0 +1,15 @@
+name: Test Gmail OAuth SQLite Storage (Offline)
+on:
+  pull_request:
+    paths:
+      - 'gmail-archive-oauth/migrations/**'
+      - 'scripts/test-gmail-oauth-sqlite.py'
+      - '.github/workflows/test-gmail-oauth-sqlite.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/test-gmail-oauth-sqlite.py

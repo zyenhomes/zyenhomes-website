@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import {requireAdminLoginRateLimit} from "../gmail-archive-oauth/admin-login-rate-limit.js";
+const key="admin-login:fictional-identity";
+let calls=0;
+const allow={limit:async ({key:k})=>{calls++;assert.equal(k,key);return {success:true};}};
+assert.deepEqual(await requireAdminLoginRateLimit({limiter:allow,key}),{allowed:true,status:200,reason:"allowed"});
+assert.equal(calls,1);
+assert.deepEqual(await requireAdminLoginRateLimit({limiter:{limit:async()=>({success:false})},key}),{allowed:false,status:429,reason:"rate_limited"});
+assert.deepEqual(await requireAdminLoginRateLimit({limiter:null,key}),{allowed:false,status:503,reason:"limiter_unavailable"});
+assert.deepEqual(await requireAdminLoginRateLimit({limiter:{limit:async()=>{throw Error("offline");}},key}),{allowed:false,status:503,reason:"limiter_unavailable"});
+assert.deepEqual(await requireAdminLoginRateLimit({limiter:allow,key:"untrusted"}),{allowed:false,status:503,reason:"limiter_unavailable"});
+console.log("PASS: synthetic distributed limiter allow, deny, invalid input and fail-closed behavior.");
+console.log("No production rate limiter binding, Google login, or network access.");

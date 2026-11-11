@@ -1,0 +1,21 @@
+import assert from "node:assert/strict";
+import {exchangeGoogleCode} from "../gmail-archive-oauth/google-token-exchange.js";
+const inputs={code:"fictional-code",verifier:"v".repeat(64),clientId:"fictional-id",clientSecret:"fictional-secret",redirectUri:"https://example.test/oauth/google/callback"};
+let called=false;
+const fetchImpl=async(url,options)=>{
+ called=true;
+ assert.equal(url,"https://oauth2.googleapis.com/token");
+ assert.equal(options.method,"POST");
+ assert.equal(options.body.get("grant_type"),"authorization_code");
+ assert.equal(options.body.get("code_verifier"),inputs.verifier);
+ assert.equal(options.body.get("redirect_uri"),inputs.redirectUri);
+ return {ok:true,json:async()=>({access_token:"fictional-access",id_token:"fictional-id-token",refresh_token:"fictional-refresh",expires_in:3600,scope:"https://www.googleapis.com/auth/gmail.insert"})};
+};
+const result=await exchangeGoogleCode({...inputs,fetchImpl});
+assert.equal(called,true);
+assert.equal(result.refreshToken,"fictional-refresh");
+assert.equal(result.idToken,"fictional-id-token");
+await assert.rejects(()=>exchangeGoogleCode({...inputs,redirectUri:"http://example.test/callback",fetchImpl}));
+await assert.rejects(()=>exchangeGoogleCode({...inputs,fetchImpl:async()=>({ok:false,status:401})}),/HTTP 401/);
+console.log("PASS: synthetic Google token exchange request and error handling");
+console.log("No real OAuth credentials or network calls.");

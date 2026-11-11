@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import {saveEncryptedGoogleToken,loadEncryptedGoogleToken} from "../gmail-archive-oauth/d1-token-storage.js";
+const calls=[];let stored=null;
+const db={prepare(sql){return {bind(...args){calls.push({sql,args});return {async run(){stored={encrypted_refresh_token:args[1],token_key_version:args[2]};},async first(){return stored;}};}};}};
+const envelope={version:1,iv:Array(12).fill(1),ciphertext:Array(32).fill(2)};
+const scope="https://www.googleapis.com/auth/gmail.insert";
+await saveEncryptedGoogleToken(db,{mailbox:"info@zyenhomes.com",encrypted:envelope,scope},1234);
+assert.deepEqual(await loadEncryptedGoogleToken(db),envelope);
+assert.ok(calls[0].sql.includes("ON CONFLICT(mailbox)"));
+assert.ok(!calls[0].sql.includes("fictional-secret"));
+await assert.rejects(()=>saveEncryptedGoogleToken(db,{mailbox:"admin@zyenhomes.com",encrypted:envelope,scope}),/not allowed/);
+await assert.rejects(()=>saveEncryptedGoogleToken(db,{mailbox:"info@zyenhomes.com",encrypted:envelope,scope:"https://mail.google.com/"}),/not allowed/);
+await assert.rejects(()=>saveEncryptedGoogleToken(db,{mailbox:"info@zyenhomes.com",encrypted:{version:1,iv:[],ciphertext:[]},scope}),/Invalid/);
+console.log("PASS: mock D1 encrypted token upsert/load, mailbox and scope restrictions");
+console.log("No production D1, OAuth authorization, or Gmail API access");
