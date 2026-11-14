@@ -1,0 +1,18 @@
+name: Validate Gated Guesty Inquiry Workflow
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-claim-orchestration.js"
+      - "cloudflare/guesty-booking-engine-workflow.js"
+      - "scripts/validate-guesty-gated-workflow-offline.mjs"
+      - ".github/workflows/validate-guesty-gated-workflow.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-guesty-gated-workflow-offline.mjs
