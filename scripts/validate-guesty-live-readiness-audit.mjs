@@ -1,0 +1,17 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+const route=fs.readFileSync("cloudflare/guesty-booking-engine-route.js","utf8");
+const worker=fs.readFileSync("cloudflare/worker.js","utf8");
+const workflow=fs.readFileSync("cloudflare/guesty-booking-engine-workflow.js","utf8");
+const recon=fs.readFileSync("cloudflare/guesty-independent-inquiry-reconciliation.js","utf8");
+const report=fs.readFileSync("docs/guesty-live-readiness-audit.md","utf8");
+assert.match(route,/BOOKING_ENGINE_INQUIRY_ROUTE_ENABLED=false/);
+assert.match(route,/assessInternalInquiryRequest/);
+assert.match(worker,/handleDisabledBookingEngineInquiry/);
+assert.doesNotMatch(worker,/executeControlledInquiryWorkflow/);
+assert.match(workflow,/explicitLiveWriteApproval!==true/);
+assert.match(recon,/canMarkSucceeded:false/);
+assert.match(report,/NOT READY FOR LIVE WRITE/);
+assert.match(report,/Account ownership/);
+assert.match(report,/No automatic retries/);
+console.log("PASS: live-readiness review confirms disabled Worker and documented outstanding gates.");
