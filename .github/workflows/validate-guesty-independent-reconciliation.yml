@@ -1,0 +1,17 @@
+name: Validate Independent Guesty Inquiry Reconciliation
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-independent-inquiry-reconciliation.js"
+      - "scripts/validate-guesty-independent-reconciliation-offline.mjs"
+      - ".github/workflows/validate-guesty-independent-reconciliation.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-guesty-independent-reconciliation-offline.mjs
