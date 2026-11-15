@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import {BOOKING_REQUEST_LISTINGS,lookupBookingRequestListing} from "../cloudflare/booking-request-listings.js";
+assert.equal(Object.keys(BOOKING_REQUEST_LISTINGS).length,9);
+assert.equal(lookupBookingRequestListing("116-tyrolean"),"6914041adf75040043bc8ed8");
+assert.equal(lookupBookingRequestListing("149-tyrolean"),"6abf9b85caf2480012c82479");
+assert.equal(lookupBookingRequestListing("toString"),null);
+assert.equal(lookupBookingRequestListing("unknown"),null);
+for(const id of Object.values(BOOKING_REQUEST_LISTINGS))assert.match(id,/^[a-f0-9]{24}$/i);
+const worker=fs.readFileSync("cloudflare/worker.js","utf8");
+assert.match(worker,/lookupBookingRequestListing\(propertyId\)/);
+assert.doesNotMatch(worker,/const listings=\{/);
+console.log("PASS: shared Guesty listing mapping preserved.");
