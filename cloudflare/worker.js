@@ -1,3 +1,4 @@
+import { lookupBookingRequestListing } from "./booking-request-listings.js";
 import { handleDisabledBookingEngineInquiry } from "./guesty-booking-engine-route.js";
 import { receiveGuestyMessageWebhook } from "./guesty-webhooks.js";
 import { handlePrivateQuoteIdDiagnostic } from "./private-quote-id-diagnostic.js";
@@ -954,20 +955,9 @@ if (url.pathname === "/api/public/quote/149-tyrolean") {
         const raw=await request.text();
         if(raw.length>4096) return reply({success:false,message:"Request too large"},413);
         const b=JSON.parse(raw);
-        const listings={
-          "100-pilsen":"6914041f5fbb6800444aca89",
-          "105-pilsen":"69140406129e4200436cc529",
-          "106-birch-view":"699b704dda533d00151fd63b",
-          "109-plater":"69140412df75040043bc8c0d",
-          "116-tyrolean":"6914041adf75040043bc8ed8",
-          "147-campbell":"691403f14ae1bb0013bf4d92",
-          "149-tyrolean":"6abf9b85caf2480012c82479",
-          "197-arlberg":"6abf956cb58bb9004973e443",
-          "37-snowbridge":"691403d937f0ea0013f72152"
-        };
         const caps={"100-pilsen":16,"105-pilsen":20,"106-birch-view":14,"109-plater":20,"116-tyrolean":20,"147-campbell":12,"149-tyrolean":16,"197-arlberg":20,"37-snowbridge":10};
         const clean=(v,max)=>typeof v==="string"?v.trim().slice(0,max):"";
-        const propertyId=clean(b.propertyId,40),listingId=listings[propertyId];
+        const propertyId=clean(b.propertyId,40),listingId=lookupBookingRequestListing(propertyId);
         const name=clean(b.name,100),email=clean(b.email,150).toLowerCase(),
           phone=clean(b.phone,40),message=clean(b.message||"",1000);
         const checkIn=clean(b.checkIn,10),checkOut=clean(b.checkOut,10),guests=Number(b.guests);
