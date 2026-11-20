@@ -1,0 +1,17 @@
+name: Validate Shared Guesty Mapping Review
+on:
+  pull_request:
+    paths:
+      - "cloudflare/guesty-shared-mapping-review.js"
+      - "scripts/validate-guesty-shared-mapping-review-offline.mjs"
+      - ".github/workflows/validate-guesty-shared-mapping-review.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-guesty-shared-mapping-review-offline.mjs
