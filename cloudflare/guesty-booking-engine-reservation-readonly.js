@@ -15,7 +15,7 @@ export async function verifyBookingEngineReservationReadOnly({
   return deny("invalid_verification_input");
  let response;
  try {
-  response=await transport("https://booking.guesty.com/api/reservations/"+reservationId,{
+  response=await transport("https://booking.guesty.com/api/reservations/"+reservationId+"/details",{
    method:"GET",headers:{Authorization:"Bearer "+token,Accept:"application/json"}
   });
  }catch{return deny("lookup_uncertain");}
