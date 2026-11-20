@@ -27,7 +27,7 @@ assert.equal(unexpected.canMarkSucceeded,false);
 assert.equal(matched.observedStatus,"reserved");
 assert.equal(matched.accountAndStayVerified,true);
 assert.equal(matched.canMarkSucceeded,false);assert.equal(matched.canConfirmInquiry,false);
-assert.equal(matched.canRetrySubmission,false);assert.equal(reads,1);
+assert.equal(matched.canRetrySubmission,false);assert.equal(reads,3);
 for(const change of [{submission:{state:"uncertain"}},
  {submission:{state:"needs_reconciliation",reservationId:"bad"}},
  {accountId:"bad"},{record:{...record,listing_id:"bad"}}]){
