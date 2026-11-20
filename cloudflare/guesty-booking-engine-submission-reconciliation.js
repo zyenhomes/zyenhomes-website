@@ -18,7 +18,17 @@ export async function reviewBookingEngineSubmission({
   token,transport
  });
  if(!result.verified)return block(result.reason,{reservationId:submission.reservationId});
- // Guesty Quick Start Guide: an Only request to book instance creates booking\n // requests with status reserved. This is valid only for that verified instance\n // setting; it is not evidence of Inbox visibility or approval behavior.\n const requestToBookStatusMatched=bookingOption==="only_request_to_book" &&\n  result.status==="reserved";\n return block(requestToBookStatusMatched\n  ?"documented_request_status_matched_manual_workflow_unverified"\n  :"booking_option_or_request_status_unverified",{\n  state:requestToBookStatusMatched\n   ?"documented_request_status_verified" :"identity_verified_status_pending",\n  requestToBookStatusMatched,
+ // Guesty Quick Start Guide: an Only request to book instance creates booking
+ // requests with status reserved. This is valid only for that verified instance
+ // setting; it is not evidence of Inbox visibility or approval behavior.
+ const requestToBookStatusMatched=bookingOption==="only_request_to_book" &&
+  result.status==="reserved";
+ return block(requestToBookStatusMatched
+  ?"documented_request_status_matched_manual_workflow_unverified"
+  :"booking_option_or_request_status_unverified",{
+  state:requestToBookStatusMatched
+   ?"documented_request_status_verified" :"identity_verified_status_pending",
+  requestToBookStatusMatched,
   reservationId:result.reservationId,
   observedStatus:result.status,conversationId:result.conversationId,
   accountAndStayVerified:true
