@@ -9,7 +9,7 @@ const reservation={_id:args.reservationId,accountId:args.accountId,unitTypeId:ar
  status:"reserved",conversationId:id("e")};
 let gets=0;
 const transport=async(url,options)=>{gets++;assert.equal(url,
- "https://booking.guesty.com/api/reservations/"+args.reservationId);
+ "https://booking.guesty.com/api/reservations/"+args.reservationId+"/details");
  assert.equal(options.method,"GET");assert.equal(options.body,undefined);
  return {ok:true,json:async()=>reservation}};
 const result=await verify({...args,transport});
