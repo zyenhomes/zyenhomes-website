@@ -1,0 +1,18 @@
+name: Validate Shared Guesty Listing Map
+on:
+  pull_request:
+    paths:
+      - "cloudflare/booking-request-listings.js"
+      - "cloudflare/worker.js"
+      - "scripts/validate-shared-guesty-listing-map.mjs"
+      - ".github/workflows/validate-shared-guesty-listing-map.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-shared-guesty-listing-map.mjs
