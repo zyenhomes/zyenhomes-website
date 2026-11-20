@@ -13,6 +13,17 @@ const args={record,submission,accountId,ratePlanId,token:"mock_booking_token",
  return {ok:true,json:async()=>reservation}}};
 const matched=await review(args);
 assert.equal(matched.state,"identity_verified_status_pending");
+const requestStatus=await review({...args,bookingOption:"only_request_to_book"});
+assert.equal(requestStatus.state,"documented_request_status_verified");
+assert.equal(requestStatus.requestToBookStatusMatched,true);
+assert.equal(requestStatus.canMarkSucceeded,false);
+assert.equal(requestStatus.canConfirmInquiry,false);
+assert.equal(requestStatus.canRetrySubmission,false);
+const instant=await review({...args,bookingOption:"only_instant_booking"});
+assert.equal(instant.requestToBookStatusMatched,false);
+const unexpected=await review({...args,bookingOption:"only_request_to_book",transport:async()=>({ok:true,json:async()=>({...reservation,status:"confirmed"})})});
+assert.equal(unexpected.requestToBookStatusMatched,false);
+assert.equal(unexpected.canMarkSucceeded,false);
 assert.equal(matched.observedStatus,"reserved");
 assert.equal(matched.accountAndStayVerified,true);
 assert.equal(matched.canMarkSucceeded,false);assert.equal(matched.canConfirmInquiry,false);
