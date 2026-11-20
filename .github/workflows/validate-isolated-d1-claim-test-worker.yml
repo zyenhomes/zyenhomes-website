@@ -1,0 +1,17 @@
+name: Validate Isolated D1 Claim Test Worker
+on:
+  pull_request:
+    paths:
+      - "cloudflare/isolated-d1-claim-test-worker.js"
+      - "scripts/validate-isolated-d1-claim-test-worker.mjs"
+      - ".github/workflows/validate-isolated-d1-claim-test-worker.yml"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/validate-isolated-d1-claim-test-worker.mjs
