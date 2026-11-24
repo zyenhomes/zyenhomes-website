@@ -29,6 +29,7 @@ jobs:
           node scripts/validate-nonblocking-isolated-worker.mjs
           node scripts/validate-nonblocking-live-orchestration.mjs
           node scripts/validate-nonblocking-upload-preflight.mjs
+          node scripts/validate-nonblocking-version-upload.mjs
           node scripts/validate-nonblocking-trusted-candidate.mjs
           node scripts/validate-guesty-d1-claim-executor-offline.mjs
           node scripts/validate-guesty-d1-claim-adapter-offline.mjs
