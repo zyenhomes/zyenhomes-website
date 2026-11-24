@@ -25,6 +25,7 @@ jobs:
           node scripts/validate-nonblocking-submission-candidate.mjs
           node scripts/validate-nonblocking-live-test-candidate.mjs
           node scripts/validate-nonblocking-http-candidate.mjs
+          node scripts/validate-nonblocking-e2e-candidate.mjs
           node scripts/validate-guesty-d1-claim-executor-offline.mjs
           node scripts/validate-guesty-d1-claim-adapter-offline.mjs
           node scripts/validate-guesty-inquiry-submission-adapter-offline.mjs
