@@ -23,3 +23,13 @@ for(const [auth,status,code] of [["Bearer wrong",401,"NOT_AUTHORIZED"],["Bearer 
  const response=await worker.fetch(new Request(base+"/internal/inquiry-test",{method:"POST",headers:{Authorization:auth}}),env);
  assert.equal(response.status,status);assert.equal((await response.json()).code,code);
 }
+
+const {createIsolatedRuntime}=await import("../cloudflare/guesty-nonblocking-runtime-candidate.js");
+const {runIsolatedLiveCandidate}=await import("../cloudflare/guesty-nonblocking-live-orchestration.js");
+const {executeIsolatedInquiry}=await import("../cloudflare/guesty-nonblocking-execution-candidate.js");
+let accesses=0;const forbidden=()=>{accesses++;throw Error("unexpected access")};
+const enabled={GUESTY_ISOLATED_INQUIRY_TEST_ENABLED:"true",get ISOLATED_BOOKING_DB(){return forbidden()}};
+assert.equal(createIsolatedRuntime(enabled,forbidden),null);
+assert.equal((await runIsolatedLiveCandidate({env:enabled,readQuote:forbidden,getToken:forbidden,transport:forbidden})).reason,"execution_disabled");
+assert.equal((await executeIsolatedInquiry({env:enabled,transport:forbidden})).reason,"execution_disabled");
+assert.equal(accesses,0);
