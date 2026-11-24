@@ -3,8 +3,8 @@ export const TARGET="zyenhomes-guesty-auth-test-isolated2";
 export const DB="ca5a1af6-6ad5-4c6c-a4aa-ee75ecd0158e";
 export const FLAGS=Object.freeze({GUESTY_ISOLATED_INQUIRY_TEST_ENABLED:"false",GUESTY_TEST_MODE:"disabled",GUESTY_QUOTE_CREATE_TEST_ENABLED:"false",GUESTY_QUOTE_READONLY_DIAGNOSTIC_ENABLED:"false",GUESTY_OPEN_API_AUTH_DIAGNOSTIC_ENABLED:"false",BOOKING_REQUESTS_ENABLED:"false",GUESTY_WEBHOOKS_ENABLED:"false"});
 const secrets=["GUESTY_OPEN_API_CLIENT_ID","GUESTY_OPEN_API_CLIENT_SECRET","GUESTY_BOOKING_ENGINE_CLIENT_ID","GUESTY_BOOKING_ENGINE_CLIENT_SECRET","GUESTY_QUOTE_DIAGNOSTIC_ACCESS_TOKEN"];
-export function planUpload({worker,bindings,activeVersion,latestVersion}={}){
- if(worker!==TARGET||!activeVersion||activeVersion!==latestVersion||!Array.isArray(bindings))throw Error("baseline_unverified");
+export function planUpload({worker,bindings,activeVersion,latestVersion,approvedLatestVersion=activeVersion}={}){
+ if(worker!==TARGET||!activeVersion||latestVersion!==approvedLatestVersion||!Array.isArray(bindings))throw Error("baseline_unverified");
  if(bindings.some(b=>!["secret_text","plain_text"].includes(b.type)))throw Error("unexpected_resource");
  if(!secrets.every(name=>bindings.some(b=>b.name===name&&b.type==="secret_text")))throw Error("missing_secret");
  return {worker:TARGET,command:["versions","upload","--config","cloudflare/wrangler.nonblocking-isolated-review.toml"],activeVersion,authorized:false};
