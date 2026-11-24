@@ -1,3 +1,4 @@
+import {selectedRatePlan,assertInquiryOnly} from "./guesty-nonblocking-contract.js";
 // Offline-only non-blocking inquiry candidate. No live transport or route.
 import {buildGuestyInquiryRequest} from "../scripts/build-guesty-inquiry-request-offline.mjs";
 export function prepareNonblockingInquiry({guest,quote,record,now=Date.now()}={}){
@@ -7,10 +8,7 @@ export function prepareNonblockingInquiry({guest,quote,record,now=Date.now()}={}
  quote.guestsCount!==record.guests)throw Error("quote_mismatch");
  const expiry=Date.parse(quote.expiresAt);
  if(!Number.isFinite(expiry)||expiry<=now)throw Error("expired_quote");
- const plans=quote.rates?.ratePlans;
- if(!Array.isArray(plans)||plans.length!==1)throw Error("ambiguous_rate_plan");
- const plan=plans[0],ratePlanId=plan?.ratePlan?._id;
- if(typeof ratePlanId!=="string"||!ratePlanId.trim())throw Error("missing_rate_plan");
+ const {plan,id:ratePlanId}=selectedRatePlan(quote,record.approved_rate_plan_id);
  const money=plan.ratePlan?.money??plan.money?.money??plan.money;
  if(!money||money.currency!==record.quote_currency||!Array.isArray(money.invoiceItems)||!money.invoiceItems.length)throw Error("missing_invoice");
  let cents=0;
@@ -22,5 +20,7 @@ export function prepareNonblockingInquiry({guest,quote,record,now=Date.now()}={}
  }
  if(!Number.isSafeInteger(cents)||cents<=0||cents!==record.quote_total_cents)throw Error("price_mismatch");
  const {reservedUntil,...body}=buildGuestyInquiryRequest({...guest,quoteId:quote._id});
- return {body:{...body,ratePlanId,ignoreCalendar:false,ignoreTerms:false,ignoreBlocks:false},writeAuthorized:false};
+ const payload={...body,ratePlanId,ignoreCalendar:false,ignoreTerms:false,ignoreBlocks:false};
+ assertInquiryOnly(payload);
+ return {body:payload,writeAuthorized:false};
 }
