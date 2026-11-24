@@ -4,6 +4,7 @@ const before=["GUESTY_OPEN_API_CLIENT_ID","GUESTY_OPEN_API_CLIENT_SECRET","GUEST
 before.push({name:"OTHER_VAR",type:"plain_text",text:"preserve"});
 const input={worker:TARGET,bindings:before,activeVersion:"version-a",latestVersion:"version-a"};
 assert.equal(planUpload(input).authorized,false);
+assert.equal(planUpload({...input,latestVersion:"version-b",approvedLatestVersion:"version-b"}).authorized,false);
 for(const extra of [{worker:"zyenhomes-booking-api"},{latestVersion:"version-b"},{bindings:before.slice(1)}])assert.throws(()=>planUpload({...input,...extra}));
 const after=[...before,...Object.entries(FLAGS).map(([name,text])=>({name,text,type:"plain_text"})),{name:"ISOLATED_BOOKING_DB",type:"d1",id:DB}];
 assert.equal(verifyCandidate(before,after),true);
