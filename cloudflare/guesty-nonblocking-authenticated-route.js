@@ -1,5 +1,6 @@
 // No live execution in this revision. Authentication is server-side only.
 import {runIsolatedLiveCandidate} from "./guesty-nonblocking-live-orchestration.js";
+import {createIsolatedRuntime} from "./guesty-nonblocking-runtime-candidate.js";
 export const LIVE_EXECUTION_ENABLED=false;
 export async function handleAuthenticatedInquiryTest(request,env){
  const reply=(code,status)=>Response.json({success:false,code},{status,headers:{"Cache-Control":"no-store"}});
@@ -15,7 +16,8 @@ export async function handleAuthenticatedInquiryTest(request,env){
  let diff=0;for(let i=0;i<aa.length;i++)diff|=aa[i]^bb[i];
  if(diff!==0)return reply("NOT_AUTHORIZED",401);
  if(!LIVE_EXECUTION_ENABLED)return reply("LIVE_EXECUTION_DISABLED",403);
- // Runtime dependencies deliberately absent until separately reviewed.
- const result=await runIsolatedLiveCandidate({env});
+ const runtime=createIsolatedRuntime(env,globalThis.fetch.bind(globalThis));
+ if(!runtime)return reply("ISOLATED_RUNTIME_DISABLED",403);
+ const result=await runIsolatedLiveCandidate({env,...runtime});
  return reply(result.reason??"MANUAL_REVIEW",403);
 }
