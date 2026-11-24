@@ -5,6 +5,10 @@ export const EXECUTION_ENABLED=false;
 export async function executeIsolatedInquiry({env,body,token,transport}={}){
  if(!EXECUTION_ENABLED||env?.GUESTY_ISOLATED_INQUIRY_TEST_ENABLED!=="true")
  return {state:"blocked",reason:"execution_disabled",retryAutomatically:false};
+ return executeWithInjectedTransport({body,token,transport});
+}
+// Shared implementation; callers must supply an authorized transport. No default fetch.
+export async function executeWithInjectedTransport({body,token,transport}={}){
  if(body?.status!=="inquiry"||body.ignoreCalendar!==false||body.ignoreTerms!==false||body.ignoreBlocks!==false||
  Object.keys(body).some(k=>!["quoteId","status","ratePlanId","ignoreCalendar","ignoreTerms","ignoreBlocks","guest"].includes(k))||
  !body.guest||Object.keys(body.guest).some(k=>!["firstName","lastName","email","phones"].includes(k))||
