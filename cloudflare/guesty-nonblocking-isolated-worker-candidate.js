@@ -1,5 +1,6 @@
 // Default Worker remains status-only. Local harness must explicitly inject
 // a test database, fixture reader and simulated transport; no real fetch.
+import {handleAuthenticatedInquiryTest} from "./guesty-nonblocking-authenticated-route.js";
 import {runTrustedMock} from "./guesty-nonblocking-trusted-candidate.js";
 export function createLocalMockHarness({db,readQuote,transport,approval,now}={}){
  return async function run(){
@@ -9,14 +10,14 @@ export function createLocalMockHarness({db,readQuote,transport,approval,now}={})
 }
 export const LIVE_EXECUTION_ENABLED=false;
 export default {
- async fetch(request){
+ async fetch(request,env){
  const url=new URL(request.url);
  const headers={"Cache-Control":"no-store","Content-Type":"application/json"};
  if(request.method==="GET"&&url.pathname==="/"){
  return new Response(JSON.stringify({status:"running",mode:"isolated_candidate",liveWritesEnabled:false,databaseWritesEnabled:false}),{headers});
  }
  if(url.pathname==="/internal/inquiry-test"&&request.method==="POST"){
- return new Response(JSON.stringify({success:false,code:"LIVE_TEST_DISABLED"}),{status:403,headers});
+ return handleAuthenticatedInquiryTest(request,env);
  }
  return new Response(JSON.stringify({success:false,code:"ISOLATED_WRITES_DISABLED"}),{status:403,headers});
  }
