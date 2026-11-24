@@ -3,27 +3,54 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: Type VERIFY_UPLOADED_VERSION_READ_ONLY
+        description: Type VERIFY_DISABLED_RUNTIME
         required: true
         type: string
-permissions:
-  contents: read
+permissions: {}
 jobs:
   verify:
-    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'VERIFY_UPLOADED_VERSION_READ_ONLY' }}
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'VERIFY_DISABLED_RUNTIME' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment: guesty-webhook-activation
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: 74f36a96ecec88e131547f0e4c0abe3cd1397472
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Verify existing candidate (GET only)
+      - name: Verify active version and disabled runtime
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
-        run: node scripts/verify-nonblocking-uploaded-version.mjs
+          CF_ACCOUNT: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os,json,re,urllib.request,urllib.error
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs): return None
+          opener=urllib.request.build_opener(NoRedirect())
+          def request(url,method="GET",headers=None):
+              req=urllib.request.Request(url,method=method,headers=headers or {},data=b"" if method=="POST" else None)
+              try:
+                  with opener.open(req,timeout=15) as r: return r.status,json.load(r)
+              except urllib.error.HTTPError as e: return e.code,json.load(e)
+          account=os.environ["CF_ACCOUNT"]
+          assert re.fullmatch(r"[a-fA-F0-9]{32}",account)
+          api="https://api.cloudflare.com/client/v4/accounts/"+account+"/workers/scripts/zyenhomes-guesty-auth-test-isolated2"
+          headers={"Authorization":"Bearer "+os.environ["CF_TOKEN"]}
+          candidate="27eadf90-91a5-4da7-a917-1bc934a2d979"
+          def traffic():
+              status,j=request(api+"/deployments",headers=headers)
+              assert status==200 and j["success"] is True
+              rows=j["result"]
+              if isinstance(rows,dict): rows=rows["deployments"]
+              versions=max(rows,key=lambda x:x["created_on"])["versions"]
+              assert len(versions)==1 and versions[0]["version_id"]==candidate and versions[0]["percentage"]==100
+          traffic()
+          status,j=request(api+"/versions/"+candidate,headers=headers)
+          assert status==200 and j["success"] is True
+          bindings={b["name"]:b for b in j["result"]["resources"]["bindings"]}
+          assert bindings["GUESTY_ISOLATED_INQUIRY_TEST_ENABLED"]["text"]=="false"
+          print("PASS: exact active candidate at 100% and inquiry flag disabled")
+          base="https://zyenhomes-guesty-auth-test-isolated2.brendan-nguyen-90f.workers.dev"
+          assert request(base+"/")== (200,{"status":"running","mode":"isolated_candidate","liveWritesEnabled":False,"databaseWritesEnabled":False})
+          assert request(base+"/internal/inquiry-test")== (403,{"success":False,"code":"ISOLATED_WRITES_DISABLED"})
+          assert request(base+"/internal/inquiry-test","POST")== (403,{"success":False,"code":"LIVE_TEST_DISABLED"})
+          traffic()
+          print("PASS: root status, GET rejection, empty POST rejection, unchanged active traffic")
+          PY
