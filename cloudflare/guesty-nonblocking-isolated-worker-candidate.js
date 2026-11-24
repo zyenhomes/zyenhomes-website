@@ -1,5 +1,12 @@
-// Isolated candidate, deliberately status-only. No imports of live adapters,
-// no fetch, no database binding, no credentials, no request body parsing.
+// Default Worker remains status-only. Local harness must explicitly inject
+// a test database, fixture reader and simulated transport; no real fetch.
+import {runTrustedMock} from "./guesty-nonblocking-trusted-candidate.js";
+export function createLocalMockHarness({db,readQuote,transport,approval,now}={}){
+ return async function run(){
+ if(!db||typeof readQuote!=="function"||typeof transport!=="function"||!approval)return {state:"blocked",writeAuthorized:false};
+ return runTrustedMock({env:{GUESTY_TEST_MODE:"mock",GUESTY_ISOLATED_INQUIRY_TEST_ENABLED:"true",GUESTY_ISOLATED_APPROVAL_JSON:JSON.stringify(approval)},db,readQuote,transport,now,requestId:approval.requestId,attemptId:approval.attemptId,claimToken:approval.claimToken});
+ };
+}
 export default {
  async fetch(request){
  const url=new URL(request.url);
