@@ -1,0 +1,11 @@
+# Candidate for local validation only. Do not deploy.
+name = "zyenhomes-nonblocking-local-candidate"
+main = "guesty-nonblocking-isolated-worker-candidate.js"
+compatibility_date = "2026-10-24"
+workers_dev = false
+preview_urls = false
+[vars]
+GUESTY_ISOLATED_INQUIRY_TEST_ENABLED = "false"
+GUESTY_TEST_MODE = "disabled"
+BOOKING_REQUESTS_ENABLED = "false"
+GUESTY_WEBHOOKS_ENABLED = "false"
