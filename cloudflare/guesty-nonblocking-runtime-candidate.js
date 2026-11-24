@@ -7,7 +7,7 @@ export function createIsolatedRuntime(env,transport){
  if(!db||typeof db.prepare!=="function"||typeof db.batch!=="function"||typeof transport!=="function")return null;
  let tokenPromise;
  async function getToken(){
- tokenPromise??=requestGuestyOpenApiToken({env,transport});
+ tokenPromise??=requestGuestyOpenApiToken({env,transport:(url,options)=>transport(url,{...options,redirect:"error",signal:AbortSignal.timeout(15000)})});
  const result=await tokenPromise;
  if(!result.ok)throw Error("open_api_auth_failed");
  return result.accessToken;
