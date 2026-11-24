@@ -18,4 +18,5 @@ let f=fixture();assert.deepEqual(await uploadOne(f.input),{versionId:"b",deploye
 f=fixture();f.input.approvedVersion="wrong";await assert.rejects(()=>uploadOne(f.input),/approved_baseline_changed/);assert.equal(f.calls(),0);
 f=fixture();f.after.at(-1).id="wrong";await assert.rejects(()=>uploadOne(f.input),/wrong_database/);assert.equal(f.calls(),1);
 f=fixture();let attempts=0;f.input.upload=async()=>{attempts++;throw Error("uncertain")};await assert.rejects(()=>uploadOne(f.input),/uncertain/);assert.equal(attempts,1);
+f=fixture();const original=f.input.read;f.input.approvedLatestVersion="saved";f.input.read=async p=>p==="/versions"?[...(await original(p)),{id:"saved",created_on:"2026-01-01T12:00:00Z"}]:p==="/versions/saved"?original("/versions/a"):original(p);assert.deepEqual(await uploadOne(f.input),{versionId:"b",deployed:false});
 console.log("PASS: simulated version-only upload");
