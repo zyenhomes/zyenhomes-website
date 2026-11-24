@@ -33,3 +33,12 @@ assert.equal(createIsolatedRuntime(enabled,forbidden),null);
 assert.equal((await runIsolatedLiveCandidate({env:enabled,readQuote:forbidden,getToken:forbidden,transport:forbidden})).reason,"execution_disabled");
 assert.equal((await executeIsolatedInquiry({env:enabled,transport:forbidden})).reason,"execution_disabled");
 assert.equal(accesses,0);
+
+const {executeWithInjectedTransport}=await import("../cloudflare/guesty-nonblocking-execution-candidate.js");
+const payload={quoteId:"1234567890abcdef12345678",ratePlanId:"default-rateplan-id",status:"inquiry",ignoreCalendar:false,ignoreTerms:false,ignoreBlocks:false,guest:{firstName:"Test",lastName:"Guest",email:"test@example.invalid",phones:["+14165550100"]}};
+let sent=0;
+const mock=async(url,opts)=>{sent++;assert.equal(url,"https://open-api.guesty.com/v1/reservations-v3/quote");assert.equal(opts.redirect,"error");assert.ok(opts.signal);assert.deepEqual(JSON.parse(opts.body),payload);return {status:200,json:async()=>({_id:"1234567890abcdef12345678"})}};
+assert.equal((await executeWithInjectedTransport({body:payload,token:"mock",transport:mock})).state,"needs_verification");
+for(const extra of [{status:"confirmed"},{reservedUntil:-1},{ignoreCalendar:true}])assert.equal((await executeWithInjectedTransport({body:{...payload,...extra},token:"mock",transport:mock})).state,"blocked");
+assert.equal(sent,1);
+assert.equal((await executeWithInjectedTransport({body:payload,token:"mock",transport:async()=>{throw Error("timeout")}})).state,"uncertain");
