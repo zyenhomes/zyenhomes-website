@@ -9,7 +9,7 @@ on:
 permissions: {}
 jobs:
   verify:
-    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'VERIFY_DISABLED_RUNTIME' }}
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'VERIFY_DISABLED_RUNTIME_V2' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment: guesty-webhook-activation
