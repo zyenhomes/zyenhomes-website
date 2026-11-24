@@ -19,5 +19,5 @@ export async function handleAuthenticatedInquiryTest(request,env){
  const runtime=createIsolatedRuntime(env,globalThis.fetch.bind(globalThis));
  if(!runtime)return reply("ISOLATED_RUNTIME_DISABLED",403);
  const result=await runIsolatedLiveCandidate({env,...runtime});
- return reply(result.reason??"MANUAL_REVIEW",403);
+ return Response.json({success:false,state:result.state,auditRecorded:result.auditRecorded===true,reason:result.reason??null,retryAutomatically:false},{status:result.state==="blocked"?403:202,headers:{"Cache-Control":"no-store"}});
 }
