@@ -28,3 +28,10 @@ assert.equal(absentQuote.results[1].metaChanges,0);
 
 console.log("PASS: local Cloudflare D1 batch returns expected claim and audit result sets.");
 console.log("LIMITATION: this does not establish remote D1 behavior or external Guesty exactly-once delivery.");
+
+const e2e=()=>fetch("http://127.0.0.1:8796/local-e2e",{method:"POST"}).then(r=>r.json());
+const outcomes=await Promise.all([e2e(),e2e()]);
+assert.equal(outcomes.filter(x=>x.result.state==="manual_review"&&x.result.auditRecorded).length,1);
+assert.equal(outcomes.filter(x=>x.result.state==="blocked").length,1);
+assert.equal((await e2e()).audit.outcome,"manual_review");
+console.log("PASS: local D1 consolidated mock workflow");
