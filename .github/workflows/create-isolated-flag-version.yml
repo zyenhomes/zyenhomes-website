@@ -3,40 +3,27 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: Type UPLOAD_ONE_DISABLED_ISOLATED_VERSION to authorize the pinned candidate
+        description: Type DIAGNOSE_ISOLATED_READ_ONLY
         required: true
         type: string
 permissions:
   contents: read
-concurrency:
-  group: nonblocking-isolated-version-upload
-  cancel-in-progress: false
 jobs:
-  upload:
-    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'UPLOAD_ONE_DISABLED_ISOLATED_VERSION' }}
+  diagnose:
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'DIAGNOSE_ISOLATED_READ_ONLY' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     environment: guesty-webhook-activation
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: f90c3ee359e6c23a76e192764a698ca0d6cc637b
+          ref: 080c8ac2e1e6928be7c6280d4818f6d3840775b7
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Offline candidate checks
-        run: |
-          test "$(git rev-parse HEAD)" = f90c3ee359e6c23a76e192764a698ca0d6cc637b
-          node scripts/validate-nonblocking-upload-preflight.mjs
-          node scripts/validate-nonblocking-version-upload.mjs
-      - run: npm install --no-save --ignore-scripts wrangler@4
-      - name: Upload one inactive version only
+      - name: Read-only endpoint diagnostics
         env:
-          TEST_CONFIRMATION: ${{ inputs.confirmation }}
-          APPROVED_COMMIT: f90c3ee359e6c23a76e192764a698ca0d6cc637b
-          APPROVED_ACTIVE_VERSION: 6315c368-e952-474c-a67f-c9de71ca19b6
-          APPROVED_LATEST_VERSION: cc3a7f0d-bf88-44cc-a084-63db65392793
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: node scripts/nonblocking-version-upload.mjs
+        run: node scripts/inspect-nonblocking-isolated-target.mjs
