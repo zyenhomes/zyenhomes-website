@@ -10,8 +10,8 @@ const audit = id => db.prepare("SELECT * FROM guesty_inquiry_sync_attempts WHERE
 function insert(id) {
   db.prepare(`INSERT INTO booking_requests
     (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,quote_total_cents,guesty_quote_id)
-    VALUES (?,?,?,?,?,?,?,?,?,?)`).run(id,"149-tyrolean","Offline Test","test@example.invalid",
-      "+14165550101","2027-01-14","2027-01-18",6,105300,"6adb5d7320cb330ec34a3507");
+    VALUES (?,?,?,?,?,?,?,?,?,?)`).run(id,"149-tyrolean","Offline Test",id+"@example.invalid",
+      "+14165550101","2027-01-14","2027-01-18",6,105300,Buffer.from(id).toString("hex").padEnd(24,"0").slice(0,24));
 }
 // This local reference implementation demonstrates an all-or-nothing claim+audit transaction.
 // It is NOT wired into the Worker; D1 transaction semantics must be verified separately.
