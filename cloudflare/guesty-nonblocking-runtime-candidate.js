@@ -21,5 +21,12 @@ export function createIsolatedRuntime(env,transport){
  if(!q||q._id!==id||q.status!=="valid"||q.accountId!==env.GUESTY_EXPECTED_ACCOUNT_ID||!env.GUESTY_EXPECTED_ACCOUNT_ID||!(Date.parse(q.createdAt)<=Date.now())||!(Date.parse(q.expiresAt)>Date.now()))throw Error("quote_provenance_failed");
  return q;
  }
- return {db,getToken,readQuote,transport};
+ async function readReservation(id){
+ if(!/^[a-f0-9]{24}$/i.test(id))throw Error("invalid_reservation_id");
+ const token=await getToken();
+ const r=await transport("https://open-api.guesty.com/v1/reservations/"+id,{method:"GET",redirect:"error",signal:AbortSignal.timeout(15000),headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
+ if(!r.ok)throw Error("reservation_read_failed");
+ return r.json();
+ }
+ return {db,getToken,readQuote,readReservation,transport};
 }
