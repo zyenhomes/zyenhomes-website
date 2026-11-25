@@ -17,7 +17,7 @@ try {
     (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,
      guests,quote_total_cents,guesty_quote_id)
     VALUES (?,?,?,?,?,?,?,?,?,?)`);
-  const add = (id, quote) => insert.run(id, "149-tyrolean", "Test Guest", "test@example.invalid",
+  const add = (id, quote, email="test@example.invalid") => insert.run(id, "149-tyrolean", "Test Guest", email,
     "+14165550101", "2027-01-14", "2027-01-18", 6, 105300, quote);
   const get = id => db.prepare("SELECT * FROM booking_requests WHERE request_id=?").get(id);
   const claim = (token,id) => db.prepare(CLAIM_SQL).get(token,id);
@@ -43,7 +43,11 @@ try {
   assert.equal(claim("claim-d","request-b"), undefined, "missing quote cannot be claimed");
   assert.equal(get("request-b").guesty_sync_status,"pending");
 
-  add("request-c","6adb5d7320cb330ec34a3507");
+  add("request-duplicate","6adb5d7320cb330ec34a3507");
+  assert.equal(claim("claim-dup","request-duplicate"),undefined);
+  add("request-newquote","aaaaaaaaaaaaaaaaaaaaaaaa");
+  assert.equal(claim("claim-new","request-newquote"),undefined);
+  add("request-c","bbbbbbbbbbbbbbbbbbbbbbbb","other@example.invalid");
   assert.equal(claim("claim-e","request-c")?.request_id,"request-c");
   assert.equal(db.prepare(MARK_SUCCESS_SQL).run("6adb5d7320cb330ec34a3507","request-c","wrong").changes,0);
   assert.equal(db.prepare(MARK_SUCCESS_SQL).run("6adb5d7320cb330ec34a3507","request-c","claim-e").changes,1);
