@@ -4,22 +4,22 @@ import {lookupBookingRequestListing} from "./booking-request-listings.js";
 import {prepareNonblockingInquiry} from "./guesty-nonblocking-inquiry-candidate.js";
 import {executeInquiryClaimWithAudit} from "./guesty-d1-claim-executor.js";
 import {recordNonblockingOutcome} from "./guesty-nonblocking-outcome-candidate.js";
-export async function runIsolatedLiveCandidate({env,db,readQuote,getToken,transport}={}){
+export async function runIsolatedLiveCandidate({env,db,readQuote,readReservation,getToken,transport}={}){
  const stop=reason=>({state:"blocked",reason,retryAutomatically:false});
  if(!EXECUTION_ENABLED||env?.GUESTY_ISOLATED_INQUIRY_TEST_ENABLED!=="true")return stop("execution_disabled");
- return runOrchestration({env,db,readQuote,getToken,transport,send:executeIsolatedInquiry});
+ return runOrchestration({env,db,readQuote,readReservation,getToken,transport,send:executeIsolatedInquiry});
 }
 // Dependency-injected testable core; production route retains hard gate.
-export async function runOrchestration({env,db,readQuote,getToken,transport,send,clock=Date.now}={}){
+export async function runOrchestration({env,db,readQuote,readReservation,getToken,transport,send,clock=Date.now}={}){
  const stop=reason=>({state:"blocked",reason,retryAutomatically:false});
  if(typeof send!=="function")return stop("missing_sender");
  let a;try{a=JSON.parse(env.GUESTY_ISOLATED_APPROVAL_JSON)}catch{return stop("invalid_approval")}
  if(!a?.requestId||!a.attemptId||!a.claimToken||!a.quoteId||!(Date.parse(a.expiresAt)>clock()))return stop("approval_invalid");
- let record,prepared,token,quoteExpiry;
+ let record,prepared,token,quoteExpiry,listing;
  try{
  record=await db.prepare("SELECT * FROM booking_requests WHERE request_id=?").bind(a.requestId).first();
  if(record?.request_id!==a.requestId||record.guesty_quote_id!==a.quoteId)return stop("record_mismatch");
- const listing=lookupBookingRequestListing(record.property_id);
+ listing=lookupBookingRequestListing(record.property_id);
  const quote=await readQuote(a.quoteId);
  quoteExpiry=Date.parse(quote?.expiresAt);
  if(!listing||quote?.unitTypeId!==listing)return stop("listing_mismatch");
@@ -32,7 +32,14 @@ export async function runOrchestration({env,db,readQuote,getToken,transport,send
  const claim=await executeInquiryClaimWithAudit({db,ids:{requestId:a.requestId,attemptId:a.attemptId,claimToken:a.claimToken},authorization:{approvedForDatabaseClaim:true,approvedRequestId:a.requestId,approvedAttemptId:a.attemptId}});
  if(!claim.claimed)return stop(claim.reason);
  let result;
- try{result=clock()>=Math.min(Date.parse(a.expiresAt),quoteExpiry)?{state:"manual_review",reference:null}:await send({env,body:prepared.body,token,transport});}catch{result={state:"uncertain",reference:null};}
+ try{result=clock()>=Math.min(Date.parse(a.expiresAt),quoteExpiry)?{state:"manual_review",reference:null}:await send({env,body:prepared.body,token,transport,expectedUnitTypeId:listing});}catch{result={state:"uncertain",reference:null};}
+ if(result?.state==="needs_verification"){
+ try{
+ const r=await readReservation(result.reference);
+ const matched=r?._id===result.reference&&r.status==="inquiry"&&r.quoteId===a.quoteId&&r.listingId===listing&&!!env.GUESTY_EXPECTED_ACCOUNT_ID&&r.accountId===env.GUESTY_EXPECTED_ACCOUNT_ID&&r.checkInDateLocalized===record.check_in&&r.checkOutDateLocalized===record.check_out&&r.guestsCount===record.guests;
+ result={...result,state:"manual_review",reconciled:matched};
+ }catch{result={...result,state:"manual_review",reconciled:false};}
+ }
  const audit=await recordNonblockingOutcome({db,requestId:a.requestId,attemptId:a.attemptId,claimToken:a.claimToken,result});
- return {state:audit.recorded?audit.outcome:"manual_review",auditRecorded:audit.recorded,retryAutomatically:false};
+ return {state:audit.recorded?audit.outcome:"manual_review",auditRecorded:audit.recorded,reconciled:result?.reconciled===true,retryAutomatically:false};
 }
