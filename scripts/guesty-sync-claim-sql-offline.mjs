@@ -10,6 +10,12 @@ WHERE request_id = ?
   AND guesty_sync_status = 'pending'
   AND guesty_sync_claim_token IS NULL
   AND guesty_quote_id IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM booking_requests AS prior
+    WHERE prior.request_id <> booking_requests.request_id
+    AND prior.guesty_sync_claim_token IS NOT NULL
+    AND (prior.guesty_quote_id = booking_requests.guesty_quote_id OR
+      (prior.property_id = booking_requests.property_id AND prior.check_in = booking_requests.check_in
+       AND prior.check_out = booking_requests.check_out AND lower(trim(prior.guest_email)) = lower(trim(booking_requests.guest_email)))))
 RETURNING request_id, guesty_sync_claim_token
 `.trim();
 
