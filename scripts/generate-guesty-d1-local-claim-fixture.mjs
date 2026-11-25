@@ -6,7 +6,7 @@ import { CLAIM_SQL, RECORD_ATTEMPT_SQL, MARK_UNCERTAIN_SQL } from "./guesty-sync
 const q = id => "'" + id + "'";
 const insert = id => `INSERT INTO booking_requests
 (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,quote_total_cents,guesty_quote_id)
-VALUES (${q(id)},'149-tyrolean','Local Test','test@example.invalid','+14165550101','2027-01-14','2027-01-18',6,105300,'6adb5d7320cb330ec34a3507');`;
+VALUES (${q(id)},'149-tyrolean','Local Test',${q(id+'@example.invalid')},'+14165550101','2027-01-14','2027-01-18',6,105300,${q(Buffer.from(id).toString('hex').padEnd(24,'0'))});`;
 // Convert only the known templates, without accepting user input.
 const claimSql = (token,id) => CLAIM_SQL.replace("guesty_sync_claim_token = ?",`guesty_sync_claim_token = ${q(token)}`)
   .replace("WHERE request_id = ?",`WHERE request_id = ${q(id)}`);
