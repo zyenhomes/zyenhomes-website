@@ -17,4 +17,13 @@ for(const expiry of [20000,30000]){
  assert.equal((await run(f.input)).state,"manual_review");assert.deepEqual(f.counts(),{sends:0,audits:["manual_review"]});
 }
 f=fixture();f.input.send=async()=>{throw Error("unexpected")};assert.equal((await run(f.input)).state,"uncertain");assert.deepEqual(f.counts(),{sends:0,audits:["uncertain"]});
+f=fixture();
+const reservationId="abcdef1234567890abcdef12";
+f.input.env.GUESTY_EXPECTED_ACCOUNT_ID="mock-account";
+f.input.transport=async()=>({status:200,json:async()=>({reservationId,status:"inquiry",quoteId:f.quote._id,unitTypeId:f.quote.unitTypeId})});
+f.input.readReservation=async id=>({_id:id,status:"inquiry",quoteId:f.quote._id,listingId:f.quote.unitTypeId,accountId:"mock-account",checkInDateLocalized:f.quote.checkInDateLocalized,checkOutDateLocalized:f.quote.checkOutDateLocalized,guestsCount:6});
+assert.equal((await run(f.input)).reconciled,true);
+f=fixture();f.input.transport=async()=>({status:200,json:async()=>({reservationId,status:"confirmed",quoteId:f.quote._id,unitTypeId:f.quote.unitTypeId})});
+f.input.readReservation=async()=>{throw Error("must not reconcile confirmed response")};
+assert.equal((await run(f.input)).reconciled,false);
 console.log("PASS: shared live orchestration offline");
