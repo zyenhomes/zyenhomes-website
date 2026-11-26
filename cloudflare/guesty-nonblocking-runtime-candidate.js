@@ -24,9 +24,19 @@ export function createIsolatedRuntime(env,transport){
  async function readReservation(id){
  if(!/^[a-f0-9]{24}$/i.test(id))throw Error("invalid_reservation_id");
  const token=await getToken();
- const r=await transport("https://open-api.guesty.com/v1/reservations/"+id,{method:"GET",redirect:"error",signal:AbortSignal.timeout(15000),headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
+ const url = "https://open-api.guesty.com/v1/reservations-v3?reservationIds[]=" + encodeURIComponent(id);
+const r = await transport(url,{method:"GET",redirect:"error",signal:AbortSignal.timeout(15000),headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
  if(!r.ok)throw Error("reservation_read_failed");
- return r.json();
+ const raw = await r.json();
+const records = Array.isArray(raw) ? raw : raw?.results;
+if (!Array.isArray(records) || records.length !== 1) {
+  throw Error("reservation_response_invalid");
+}
+const reservation = records[0];
+if (reservation?._id !== id) {
+  throw Error("reservation_identity_mismatch");
+}
+return reservation;
  }
  return {db,getToken,readQuote,readReservation,transport};
 }
