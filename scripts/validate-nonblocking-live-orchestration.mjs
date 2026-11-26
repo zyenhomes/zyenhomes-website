@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {runOrchestration as run} from "../cloudflare/guesty-nonblocking-live-orchestration.js";
 import {executeWithInjectedTransport as send} from "../cloudflare/guesty-nonblocking-execution-candidate.js";
+import {parseV3Reservation} from "../cloudflare/guesty-nonblocking-runtime-candidate.js";
 function fixture(){
  const requestId="request-001",attemptId="attempt-001",claimToken="claim-001",id="1234567890abcdef12345678";
  let now=0,claimed=false,sends=0,audits=[];
@@ -98,3 +99,52 @@ for (const mismatch of [
 
 console.log("PASS: V3 reservation mismatch safety tests");
 console.log("PASS: shared live orchestration offline");
+const parserId = "1234567890abcdef12345678";
+const parserRecord = {
+  _id: parserId,
+  status: "inquiry",
+  stay: [{
+    unitTypeId: "6914041adf75040043bc8ed8",
+    checkInDateLocalized: "2027-01-18",
+    checkOutDateLocalized: "2027-01-20",
+    guestsCount: 6
+  }]
+};
+
+assert.deepEqual(
+  parseV3Reservation([parserRecord], parserId),
+  parserRecord
+);
+
+for (const invalid of [
+  [],
+  [parserRecord, parserRecord],
+  null,
+  undefined,
+  {},
+  {results: [parserRecord]},
+  "invalid response"
+]) {
+  assert.throws(
+    () => parseV3Reservation(invalid, parserId),
+    /reservation_response_invalid/
+  );
+}
+
+for (const invalid of [
+  [null],
+  [{}],
+  [{_id: "abcdef1234567890abcdef12"}]
+]) {
+  assert.throws(
+    () => parseV3Reservation(invalid, parserId),
+    /reservation_identity_mismatch/
+  );
+}
+
+assert.throws(
+  () => parseV3Reservation([parserRecord], "invalid"),
+  /invalid_reservation_id/
+);
+
+console.log("PASS: independent Guesty V3 reservation parser tests");
