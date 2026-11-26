@@ -21,9 +21,80 @@ f=fixture();
 const reservationId="abcdef1234567890abcdef12";
 f.input.env.GUESTY_EXPECTED_ACCOUNT_ID="mock-account";
 f.input.transport=async()=>({status:200,json:async()=>({reservationId,status:"inquiry",quoteId:f.quote._id,unitTypeId:f.quote.unitTypeId})});
-f.input.readReservation=async id=>({_id:id,status:"inquiry",quoteId:f.quote._id,listingId:f.quote.unitTypeId,accountId:"mock-account",checkInDateLocalized:f.quote.checkInDateLocalized,checkOutDateLocalized:f.quote.checkOutDateLocalized,guestsCount:6});
+f.input.readReservation=async id=>({
+  _id:id,
+  status:"inquiry",
+  quoteId:f.quote._id,
+  accountId:"mock-account",
+  stay:[{
+    unitTypeId:f.quote.unitTypeId,
+    checkInDateLocalized:f.quote.checkInDateLocalized,
+    checkOutDateLocalized:f.quote.checkOutDateLocalized,
+    guestsCount:6
+  }]
+});
 assert.equal((await run(f.input)).reconciled,true);
 f=fixture();f.input.transport=async()=>({status:200,json:async()=>({reservationId,status:"confirmed",quoteId:f.quote._id,unitTypeId:f.quote.unitTypeId})});
 f.input.readReservation=async()=>{throw Error("must not reconcile confirmed response")};
 assert.equal((await run(f.input)).reconciled,false);
+for (const mismatch of [
+  "reservationId",
+  "status",
+  "quoteId",
+  "accountId",
+  "unitTypeId",
+  "checkIn",
+  "checkOut",
+  "guestsCount",
+  "multipleStays",
+  "missingStay"
+]) {
+  f = fixture();
+  f.input.env.GUESTY_EXPECTED_ACCOUNT_ID = "mock-account";
+
+  f.input.transport = async () => ({
+    status: 200,
+    json: async () => ({
+      reservationId,
+      status: "inquiry",
+      quoteId: f.quote._id,
+      unitTypeId: f.quote.unitTypeId
+    })
+  });
+
+  f.input.readReservation = async id => {
+    const r = {
+      _id: id,
+      status: "inquiry",
+      quoteId: f.quote._id,
+      accountId: "mock-account",
+      stay: [{
+        unitTypeId: f.quote.unitTypeId,
+        checkInDateLocalized: f.quote.checkInDateLocalized,
+        checkOutDateLocalized: f.quote.checkOutDateLocalized,
+        guestsCount: 6
+      }]
+    };
+
+    if (mismatch === "reservationId") r._id = "wrong";
+    if (mismatch === "status") r.status = "confirmed";
+    if (mismatch === "quoteId") r.quoteId = "wrong";
+    if (mismatch === "accountId") r.accountId = "wrong";
+    if (mismatch === "unitTypeId") r.stay[0].unitTypeId = "wrong";
+    if (mismatch === "checkIn") r.stay[0].checkInDateLocalized = "2027-01-19";
+    if (mismatch === "checkOut") r.stay[0].checkOutDateLocalized = "2027-01-21";
+    if (mismatch === "guestsCount") r.stay[0].guestsCount = 8;
+    if (mismatch === "multipleStays") r.stay.push({...r.stay[0]});
+    if (mismatch === "missingStay") delete r.stay;
+
+    return r;
+  };
+
+  const result = await run(f.input);
+  assert.equal(result.reconciled, false, mismatch);
+  assert.equal(result.state, "manual_review", mismatch);
+  assert.equal(result.retryAutomatically, false, mismatch);
+}
+
+console.log("PASS: V3 reservation mismatch safety tests");
 console.log("PASS: shared live orchestration offline");
