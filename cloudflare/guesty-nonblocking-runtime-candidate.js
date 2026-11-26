@@ -22,13 +22,8 @@ export function createIsolatedRuntime(env,transport){
  return q;
  }
  async function readReservation(id){
- if(!/^[a-f0-9]{24}$/i.test(id))throw Error("invalid_reservation_id");
- const token=await getToken();
- const url = "https://open-api.guesty.com/v1/reservations-v3?reservationIds=" + encodeURIComponent(id) + "&includePaymentsTemplate=false&mergeAccommodationFarePriceComponents=false&applyGuestFacingMerges=false";
-const r = await transport(url,{method:"GET",redirect:"error",signal:AbortSignal.timeout(15000),headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
- if(!r.ok)throw Error("reservation_read_failed");
- return parseV3Reservation(await r.json(), id);
- }
+  return retrieveV3Reservation({id,getToken,transport});
+}
  return {db,getToken,readQuote,readReservation,transport};
 }
 export function parseV3Reservation(raw, id) {
@@ -47,4 +42,35 @@ export function parseV3Reservation(raw, id) {
   }
 
   return reservation;
+}
+export async function retrieveV3Reservation({id,getToken,transport}) {
+  if (typeof id !== "string" || !/^[a-f0-9]{24}$/i.test(id)) {
+    throw Error("invalid_reservation_id");
+  }
+
+  const token = await getToken();
+
+  if (typeof token !== "string" || !token.trim()) {
+    throw Error("invalid_access_token");
+  }
+
+  const url = "https://open-api.guesty.com/v1/reservations-v3?reservationIds=" +
+    encodeURIComponent(id) +
+    "&includePaymentsTemplate=false&mergeAccommodationFarePriceComponents=false&applyGuestFacingMerges=false";
+
+  const r = await transport(url,{
+    method:"GET",
+    redirect:"error",
+    signal:AbortSignal.timeout(15000),
+    headers:{
+      Authorization:"Bearer "+token,
+      Accept:"application/json"
+    }
+  });
+
+  if (!r.ok) {
+    throw Error("reservation_read_failed");
+  }
+
+  return parseV3Reservation(await r.json(),id);
 }
