@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {runOrchestration as run} from "../cloudflare/guesty-nonblocking-live-orchestration.js";
 import {executeWithInjectedTransport as send} from "../cloudflare/guesty-nonblocking-execution-candidate.js";
-import {parseV3Reservation} from "../cloudflare/guesty-nonblocking-runtime-candidate.js";
+import {parseV3Reservation,retrieveV3Reservation} from "../cloudflare/guesty-nonblocking-runtime-candidate.js";
 function fixture(){
  const requestId="request-001",attemptId="attempt-001",claimToken="claim-001",id="1234567890abcdef12345678";
  let now=0,claimed=false,sends=0,audits=[];
@@ -148,3 +148,97 @@ assert.throws(
 );
 
 console.log("PASS: independent Guesty V3 reservation parser tests");
+const httpInput = {
+  id: parserId,
+  getToken: async () => "mock-token",
+  transport: async (url, options) => {
+    assert.equal(
+      url,
+      "https://open-api.guesty.com/v1/reservations-v3?reservationIds=" +
+      parserId +
+      "&includePaymentsTemplate=false&mergeAccommodationFarePriceComponents=false&applyGuestFacingMerges=false"
+    );
+
+    assert.equal(options.method, "GET");
+    assert.equal(options.redirect, "error");
+    assert.equal(options.headers.Authorization, "Bearer mock-token");
+    assert.equal(options.headers.Accept, "application/json");
+    assert.ok(options.signal instanceof AbortSignal);
+    assert.equal(options.signal.aborted, false);
+    assert.equal(options.body, undefined);
+
+    return {
+      ok: true,
+      json: async () => [parserRecord]
+    };
+  }
+};
+
+assert.deepEqual(
+  await retrieveV3Reservation(httpInput),
+  parserRecord
+);
+
+const forbiddenCall = async () => {
+  assert.fail("Unexpected external call");
+};
+
+await assert.rejects(
+  () => retrieveV3Reservation({
+    ...httpInput,
+    id: "invalid",
+    getToken: forbiddenCall,
+    transport: forbiddenCall
+  }),
+  /invalid_reservation_id/
+);
+
+for (const token of ["", " ", null, undefined, 123]) {
+  await assert.rejects(
+    () => retrieveV3Reservation({
+      ...httpInput,
+      getToken: async () => token,
+      transport: forbiddenCall
+    }),
+    /invalid_access_token/
+  );
+}
+
+for (const status of [401, 403, 404, 429, 500]) {
+  await assert.rejects(
+    () => retrieveV3Reservation({
+      ...httpInput,
+      transport: async () => ({
+        ok: false,
+        status,
+        json: forbiddenCall
+      })
+    }),
+    /reservation_read_failed/
+  );
+}
+
+await assert.rejects(
+  () => retrieveV3Reservation({
+    ...httpInput,
+    transport: async () => {
+      throw Error("network_failure");
+    }
+  }),
+  /network_failure/
+);
+
+await assert.rejects(
+  () => retrieveV3Reservation({
+    ...httpInput,
+    transport: async () => ({
+      ok: true,
+      json: async () => {
+        throw SyntaxError("invalid_json");
+      }
+    })
+  }),
+  /invalid_json/
+);
+
+console.log("PASS: Guesty V3 HTTP retrieval safety tests");
