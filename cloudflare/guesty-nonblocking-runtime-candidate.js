@@ -27,16 +27,24 @@ export function createIsolatedRuntime(env,transport){
  const url = "https://open-api.guesty.com/v1/reservations-v3?reservationIds=" + encodeURIComponent(id) + "&includePaymentsTemplate=false&mergeAccommodationFarePriceComponents=false&applyGuestFacingMerges=false";
 const r = await transport(url,{method:"GET",redirect:"error",signal:AbortSignal.timeout(15000),headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
  if(!r.ok)throw Error("reservation_read_failed");
- const raw = await r.json();
-const records = Array.isArray(raw) ? raw : raw?.results;
-if (!Array.isArray(records) || records.length !== 1) {
-  throw Error("reservation_response_invalid");
-}
-const reservation = records[0];
-if (reservation?._id !== id) {
-  throw Error("reservation_identity_mismatch");
-}
-return reservation;
+ return parseV3Reservation(await r.json(), id);
  }
  return {db,getToken,readQuote,readReservation,transport};
+}
+export function parseV3Reservation(raw, id) {
+  if (!/^[a-f0-9]{24}$/i.test(id)) {
+    throw Error("invalid_reservation_id");
+  }
+
+  if (!Array.isArray(raw) || raw.length !== 1) {
+    throw Error("reservation_response_invalid");
+  }
+
+  const reservation = raw[0];
+
+  if (reservation?._id !== id) {
+    throw Error("reservation_identity_mismatch");
+  }
+
+  return reservation;
 }
