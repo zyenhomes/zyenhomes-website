@@ -36,7 +36,21 @@ export async function runOrchestration({env,db,readQuote,readReservation,getToke
  if(result?.state==="needs_verification"){
  try{
  const r=await readReservation(result.reference);
- const matched=r?._id===result.reference&&r.status==="inquiry"&&r.quoteId===a.quoteId&&r.listingId===listing&&!!env.GUESTY_EXPECTED_ACCOUNT_ID&&r.accountId===env.GUESTY_EXPECTED_ACCOUNT_ID&&r.checkInDateLocalized===record.check_in&&r.checkOutDateLocalized===record.check_out&&r.guestsCount===record.guests;
+ const stay = Array.isArray(r?.stay) && r.stay.length === 1
+  ? r.stay[0]
+  : null;
+
+const matched =
+  r?._id === result.reference &&
+  r.status === "inquiry" &&
+  r.quoteId === a.quoteId &&
+  !!env.GUESTY_EXPECTED_ACCOUNT_ID &&
+  r.accountId === env.GUESTY_EXPECTED_ACCOUNT_ID &&
+  stay !== null &&
+  stay?.unitTypeId === listing &&
+  stay?.checkInDateLocalized === record.check_in &&
+  stay?.checkOutDateLocalized === record.check_out &&
+  stay?.guestsCount === record.guests;
  result={...result,state:"manual_review",reconciled:matched};
  }catch{result={...result,state:"manual_review",reconciled:false};}
  }
