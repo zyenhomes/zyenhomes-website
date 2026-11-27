@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-                description: "VERIFY_DISABLED_RUNTIME_V2 or UPLOAD_ONE_DISABLED_ISOLATED_VERSION followed by the approved commit SHA"
+        description: "VERIFY_DISABLED_RUNTIME_V2 or UPLOAD_ONE_DISABLED_ISOLATED_VERSION followed by the approved commit SHA"
         required: true
         type: string
 permissions: {}
