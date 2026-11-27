@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: "VERIFY_DISABLED_RUNTIME_V2, VERIFY_UPLOADED_ISOLATED_VERSION, or DEPLOY_ONE_DISABLED_ISOLATED_VERSION followed by the approved commit SHA"
+        description: "VERIFY_DISABLED_RUNTIME_V2, VERIFY_UPLOADED_ISOLATED_VERSION, RESTORE_DISABLED_ISOLATED_RUNTIME, or DEPLOY_ONE_DISABLED_ISOLATED_VERSION followed by the approved commit SHA"
         required: true
         type: string
 permissions: {}
@@ -274,4 +274,132 @@ jobs:
           console.log("PASS: isolated runtime running");
           console.log("PASS: live and database writes disabled");
           console.log("PASS: inquiry route rejects GET requests");
+          JS
+  restore_disabled:
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'RESTORE_DISABLED_ISOLATED_RUNTIME' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: guesty-webhook-activation
+    permissions:
+      contents: read
+    concurrency:
+      group: zyenhomes-nonblocking-isolated-deployment
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pinned Wrangler
+        run: npm install --no-save --no-package-lock wrangler@4.168.0
+
+      - name: Verify recovery version safety
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import {FLAGS,DB,TARGET} from "./scripts/nonblocking-upload-preflight.mjs";
+
+          const version="2bf8a5a4-256f-4a90-bfb7-ca287200f4ff";
+          const account=process.env.CLOUDFLARE_ACCOUNT_ID;
+          const token=process.env.CLOUDFLARE_API_TOKEN;
+
+          assert.match(account,/^[a-f0-9]{32}$/i);
+          assert.ok(token);
+
+          const url="https://api.cloudflare.com/client/v4/accounts/"+account+"/workers/scripts/"+TARGET+"/versions/"+version;
+
+          const response=await fetch(url,{
+            method:"GET",
+            redirect:"error",
+            signal:AbortSignal.timeout(15000),
+            headers:{Authorization:"Bearer "+token}
+          });
+
+          assert.ok(response.ok);
+          const payload=await response.json();
+          assert.equal(payload.success,true);
+          assert.equal(payload.result.id,version);
+
+          const bindings=payload.result.resources.bindings;
+          const databases=bindings.filter(b=>b.type==="d1");
+
+          assert.equal(databases.length,1);
+          assert.equal(databases[0].name,"ISOLATED_BOOKING_DB");
+          assert.equal(databases[0].id,DB);
+
+          for(const [name,value] of Object.entries(FLAGS)){
+            const binding=bindings.find(b=>b.name===name);
+            assert.equal(binding?.type,"plain_text");
+            assert.equal(binding?.text,value);
+          }
+
+          console.log("PASS: recovery version safety verified");
+          JS
+      - name: Restore known disabled isolated version
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          ./node_modules/.bin/wrangler versions deploy \
+            2bf8a5a4-256f-4a90-bfb7-ca287200f4ff@100% \
+            --name zyenhomes-guesty-auth-test-isolated2 \
+            --config cloudflare/wrangler.nonblocking-isolated-review.toml \
+            --yes
+      - name: Verify disabled runtime restored
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import {TARGET} from "./scripts/nonblocking-upload-preflight.mjs";
+
+          const version="2bf8a5a4-256f-4a90-bfb7-ca287200f4ff";
+          const account=process.env.CLOUDFLARE_ACCOUNT_ID;
+          const token=process.env.CLOUDFLARE_API_TOKEN;
+
+          assert.match(account,/^[a-f0-9]{32}$/i);
+          assert.ok(token);
+
+          const url="https://api.cloudflare.com/client/v4/accounts/"+account+"/workers/scripts/"+TARGET+"/deployments";
+
+          const response=await fetch(url,{
+            method:"GET",
+            redirect:"error",
+            signal:AbortSignal.timeout(15000),
+            headers:{Authorization:"Bearer "+token}
+          });
+
+          assert.ok(response.ok);
+          const payload=await response.json();
+          assert.equal(payload.success,true);
+
+          const rows=Array.isArray(payload.result)?payload.result:payload.result.deployments;
+          const latest=[...rows].sort((a,b)=>Date.parse(b.created_on)-Date.parse(a.created_on))[0];
+
+          assert.equal(latest.versions.length,1);
+          assert.equal(latest.versions[0].version_id,version);
+          assert.equal(latest.versions[0].percentage,100);
+
+          const base="https://zyenhomes-guesty-auth-test-isolated2.brendan-nguyen-90f.workers.dev";
+          const root=await fetch(base+"/",{
+            redirect:"error",
+            signal:AbortSignal.timeout(15000)
+          });
+
+          assert.equal(root.status,200);
+          const status=await root.json();
+          assert.equal(status.mode,"isolated_candidate");
+          assert.equal(status.liveWritesEnabled,false);
+          assert.equal(status.databaseWritesEnabled,false);
+
+          console.log("PASS: disabled recovery version restored at 100%");
+          console.log("PASS: live and database writes disabled");
           JS
