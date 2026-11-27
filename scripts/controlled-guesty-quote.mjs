@@ -58,3 +58,41 @@ export function validateControlledQuote(raw,now=Date.now()){
     totalCents
   });
 }
+export async function createControlledQuote({
+  token,transport,now=Date.now
+}={}){
+  if(typeof token!=="string"||!token.trim()||
+     typeof transport!=="function")
+    throw Error("missing_quote_transport");
+
+  const booking=TEST_BOOKING;
+
+  const response=await transport(
+    "https://open-api.guesty.com/v1/quotes?includePaymentsTemplate=false&mergeAccommodationFarePriceComponents=false&applyGuestFacingMerges=false",
+    {
+      method:"POST",
+      redirect:"error",
+      signal:AbortSignal.timeout(15000),
+      headers:{
+        Authorization:"Bearer "+token,
+        Accept:"application/json",
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        listingId:booking.listingId,
+        checkInDateLocalized:booking.checkIn,
+        checkOutDateLocalized:booking.checkOut,
+        guestsCount:booking.guests,
+        source:"manual",
+        ignoreCalendar:false,
+        ignoreTerms:false,
+        ignoreBlocks:false
+      })
+    }
+  );
+
+  if(!response?.ok)
+    throw Error("quote_request_failed");
+
+  return validateControlledQuote(await response.json(),now());
+}
