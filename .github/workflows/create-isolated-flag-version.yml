@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: "VERIFY_DISABLED_RUNTIME_V2, VERIFY_UPLOADED_ISOLATED_VERSION, or UPLOAD_ONE_DISABLED_ISOLATED_VERSION followed by the approved commit SHA"
+        description: "VERIFY_DISABLED_RUNTIME_V2, VERIFY_UPLOADED_ISOLATED_VERSION, or DEPLOY_ONE_DISABLED_ISOLATED_VERSION followed by the approved commit SHA"
         required: true
         type: string
 permissions: {}
@@ -130,3 +130,148 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
         run: node scripts/verify-nonblocking-uploaded-version.mjs
+  deploy_isolated:
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && github.run_attempt == '1' && startsWith(inputs.confirmation, 'DEPLOY_ONE_DISABLED_ISOLATED_VERSION ') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: guesty-webhook-activation
+    permissions:
+      contents: read
+    concurrency:
+      group: zyenhomes-nonblocking-isolated-deployment
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verify explicit deployment approval
+        env:
+          APPROVAL: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          test "$APPROVAL" = "DEPLOY_ONE_DISABLED_ISOLATED_VERSION $(git rev-parse HEAD)"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Offline safety regression tests
+        run: |
+          node scripts/validate-nonblocking-isolated-worker.mjs
+          node scripts/validate-nonblocking-upload-preflight.mjs
+          node scripts/validate-nonblocking-version-upload.mjs
+
+      - name: Install pinned Wrangler
+        run: npm install --no-save --no-package-lock wrangler@4.168.0
+
+      - name: Verify candidate before deployment
+        env:
+          APPROVED_CANDIDATE_VERSION: 2bf8a5a4-256f-4a90-bfb7-ca287200f4ff
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: node scripts/verify-nonblocking-uploaded-version.mjs
+
+      - name: Deploy exact existing isolated candidate
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          ./node_modules/.bin/wrangler versions deploy \
+            2bf8a5a4-256f-4a90-bfb7-ca287200f4ff@100% \
+            --name zyenhomes-guesty-auth-test-isolated2 \
+            --config cloudflare/wrangler.nonblocking-isolated-review.toml \
+            --yes
+      - name: Verify exact deployment and disabled safety flags
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import {FLAGS,DB,TARGET} from "./scripts/nonblocking-upload-preflight.mjs";
+
+          const candidate="2bf8a5a4-256f-4a90-bfb7-ca287200f4ff";
+          const rollback="27eadf90-91a5-4da7-a917-1bc934a2d979";
+          const account=process.env.CLOUDFLARE_ACCOUNT_ID;
+          const token=process.env.CLOUDFLARE_API_TOKEN;
+          assert.match(account,/^[a-f0-9]{32}$/i);
+          assert.ok(token);
+
+          const root="https://api.cloudflare.com/client/v4/accounts/"+account+"/workers/scripts/"+TARGET;
+
+          async function get(path){
+            const r=await fetch(root+path,{
+              method:"GET",
+              redirect:"error",
+              signal:AbortSignal.timeout(15000),
+              headers:{Authorization:"Bearer "+token}
+            });
+            assert.ok(r.ok);
+            const j=await r.json();
+            assert.equal(j.success,true);
+            return j.result;
+          }
+
+          const d=await get("/deployments");
+          const rows=Array.isArray(d)?d:d.deployments;
+          const latest=[...rows].sort((a,b)=>Date.parse(b.created_on)-Date.parse(a.created_on))[0];
+
+          assert.equal(latest.versions.length,1);
+          assert.equal(latest.versions[0].version_id,candidate);
+          assert.equal(latest.versions[0].percentage,100);
+
+          const version=await get("/versions/"+candidate);
+          const bindings=version.resources.bindings;
+          const databases=bindings.filter(b=>b.type==="d1");
+
+          assert.equal(databases.length,1);
+          assert.equal(databases[0].name,"ISOLATED_BOOKING_DB");
+          assert.equal(databases[0].id,DB);
+
+          for(const [name,value] of Object.entries(FLAGS)){
+            const binding=bindings.find(b=>b.name===name);
+            assert.equal(binding?.type,"plain_text");
+            assert.equal(binding?.text,value);
+          }
+
+          const previous=await get("/versions/"+rollback);
+          assert.equal(previous.id,rollback);
+
+          console.log("PASS: exact isolated candidate at 100%");
+          console.log("PASS: isolated database and disabled safety flags");
+          console.log("PASS: rollback version retained");
+          JS
+      - name: Verify disabled runtime
+        run: |
+          node --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+
+          const base="https://zyenhomes-guesty-auth-test-isolated2.brendan-nguyen-90f.workers.dev";
+
+          const root=await fetch(base+"/",{
+            method:"GET",
+            redirect:"error",
+            signal:AbortSignal.timeout(15000)
+          });
+
+          assert.equal(root.status,200);
+          const status=await root.json();
+
+          assert.equal(status.mode,"isolated_candidate");
+          assert.equal(status.liveWritesEnabled,false);
+          assert.equal(status.databaseWritesEnabled,false);
+
+          const blocked=await fetch(base+"/internal/inquiry-test",{
+            method:"GET",
+            redirect:"error",
+            signal:AbortSignal.timeout(15000)
+          });
+
+          assert.equal(blocked.status,403);
+          assert.equal((await blocked.json()).code,"ISOLATED_WRITES_DISABLED");
+
+          console.log("PASS: isolated runtime running");
+          console.log("PASS: live and database writes disabled");
+          console.log("PASS: inquiry route rejects GET requests");
+          JS
