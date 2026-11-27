@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: Type VERIFY_DISABLED_RUNTIME_V2
+                description: "VERIFY_DISABLED_RUNTIME_V2 or UPLOAD_ONE_DISABLED_ISOLATED_VERSION followed by the approved commit SHA"
         required: true
         type: string
 permissions: {}
@@ -65,3 +65,46 @@ jobs:
           traffic()
           print("PASS: root status, GET rejection, empty POST rejection, unchanged active traffic")
           PY
+  upload:
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && github.run_attempt == '1' && startsWith(inputs.confirmation, 'UPLOAD_ONE_DISABLED_ISOLATED_VERSION ') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: guesty-webhook-activation
+    permissions:
+      contents: read
+    concurrency:
+      group: zyenhomes-nonblocking-isolated-upload
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verify explicit commit approval
+        env:
+          APPROVAL: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          test "$APPROVAL" = "UPLOAD_ONE_DISABLED_ISOLATED_VERSION $(git rev-parse HEAD)"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Offline regression tests
+        run: |
+          node scripts/validate-nonblocking-upload-preflight.mjs
+          node scripts/validate-nonblocking-version-upload.mjs
+
+      - name: Install pinned Wrangler
+        run: npm install --no-save --no-package-lock wrangler@4.168.0
+
+      - name: Upload exactly one disabled isolated version
+        env:
+          TEST_CONFIRMATION: UPLOAD_ONE_DISABLED_ISOLATED_VERSION
+          APPROVED_COMMIT: ${{ github.sha }}
+          APPROVED_ACTIVE_VERSION: 27eadf90-91a5-4da7-a917-1bc934a2d979
+          APPROVED_LATEST_VERSION: 27eadf90-91a5-4da7-a917-1bc934a2d979
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: node scripts/nonblocking-version-upload.mjs
