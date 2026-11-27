@@ -18,6 +18,59 @@ for(const expiry of [20000,30000]){
  assert.equal((await run(f.input)).state,"manual_review");assert.deepEqual(f.counts(),{sends:0,audits:["manual_review"]});
 }
 f=fixture();f.input.send=async()=>{throw Error("unexpected")};assert.equal((await run(f.input)).state,"uncertain");assert.deepEqual(f.counts(),{sends:0,audits:["uncertain"]});
+// Verify no second submission after an uncertain outcome.
+f=fixture();
+let sendAttempts=0;
+f.input.send=async()=>{
+  sendAttempts++;
+  throw Error("simulated_timeout");
+};
+assert.equal((await run(f.input)).state,"uncertain");
+assert.equal((await run(f.input)).state,"blocked");
+assert.equal(sendAttempts,1);
+
+// Verify concurrent requests permit only one submission.
+f=fixture();
+const concurrent=await Promise.all([
+  run(f.input),
+  run(f.input)
+]);
+assert.equal(concurrent.filter(r=>r.state==="blocked").length,1);
+assert.equal(f.counts().sends,1);
+
+// Verify expired authorization prevents submission.
+f=fixture();
+f.advance(30000);
+assert.equal((await run(f.input)).state,"blocked");
+assert.equal(f.counts().sends,0);
+
+// Verify invalid authorization prevents submission.
+f=fixture();
+f.input.env.GUESTY_ISOLATED_APPROVAL_JSON="invalid";
+assert.equal((await run(f.input)).state,"blocked");
+assert.equal(f.counts().sends,0);
+
+// Verify outcome recording failure does not permit retry.
+f=fixture();
+const originalPrepare=f.input.db.prepare;
+f.input.db.prepare=function(sql){
+  const statement=originalPrepare.call(this,sql);
+  if(!sql.trim().startsWith("UPDATE"))return statement;
+  return {
+    bind(){
+      return {
+        run:async()=>{throw Error("simulated_audit_failure");}
+      };
+    }
+  };
+};
+const failedAudit=await run(f.input);
+assert.equal(failedAudit.auditRecorded,false);
+assert.equal((await run(f.input)).state,"blocked");
+assert.equal(f.counts().sends,1);
+
+console.log("PASS: single-use authorization and no-retry safety tests");
+
 f=fixture();
 const reservationId="abcdef1234567890abcdef12";
 f.input.env.GUESTY_EXPECTED_ACCOUNT_ID="mock-account";
