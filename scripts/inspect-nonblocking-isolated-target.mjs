@@ -2,7 +2,8 @@
 import {pathToFileURL} from "node:url";
 const worker="/workers/scripts/zyenhomes-guesty-auth-test-isolated2";
 const db="ca5a1af6-6ad5-4c6c-a4aa-ee75ecd0158e";
-const active="6315c368-e952-474c-a67f-c9de71ca19b6",saved="cc3a7f0d-bf88-44cc-a084-63db65392793";
+const active="27eadf90-91a5-4da7-a917-1bc934a2d979";
+const saved=active;
 export async function diagnose({account,token,transport=fetch,report=console.log}){
  if(!/^[a-f0-9]{32}$/i.test(account??"")||!token)throw Error("missing_configuration");
  let failed=false;
