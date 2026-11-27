@@ -1,5 +1,9 @@
 import {verifyCandidate,DB,TARGET} from "./nonblocking-upload-preflight.mjs";
-const active="6315c368-e952-474c-a67f-c9de71ca19b6",saved="cc3a7f0d-bf88-44cc-a084-63db65392793",candidate="27eadf90-91a5-4da7-a917-1bc934a2d979";
+const active="27eadf90-91a5-4da7-a917-1bc934a2d979";
+const saved=active;
+const candidate=process.env.APPROVED_CANDIDATE_VERSION;
+
+if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(candidate??"")||candidate===active||candidate===saved)throw Error("invalid_candidate_version");
 const account=process.env.CLOUDFLARE_ACCOUNT_ID,token=process.env.CLOUDFLARE_API_TOKEN;
 if(!/^[a-f0-9]{32}$/i.test(account??"")||!token)throw Error("missing_configuration");
 const root="https://api.cloudflare.com/client/v4/accounts/"+account;
