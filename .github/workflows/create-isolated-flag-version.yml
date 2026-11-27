@@ -497,32 +497,35 @@ jobs:
 
 
       - name: Validate controlled quote safety offline
-        run: node scripts/validate-controlled-guesty-quote-offline.mjs
+        run: |
+          node scripts/validate-controlled-guesty-quote-offline.mjs
+          node scripts/validate-controlled-guesty-quote-claim-offline.mjs
 
       - name: Create one controlled Guesty quote
         env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
           GUESTY_OPEN_API_AUTH_ENABLED: "true"
           GUESTY_OPEN_API_CLIENT_ID: ${{ secrets.GUESTY_OPEN_API_CLIENT_ID }}
           GUESTY_OPEN_API_CLIENT_SECRET: ${{ secrets.GUESTY_OPEN_API_CLIENT_SECRET }}
         run: |
           node --experimental-default-type=module <<'JS'
           import {requestGuestyOpenApiToken} from "./cloudflare/guesty-open-api-auth.js";
-          import {createControlledQuote} from "./scripts/controlled-guesty-quote.mjs";
+          import {createIsolatedQuoteStore,runClaimedControlledQuote} from "./scripts/controlled-guesty-quote-claim.mjs";
 
-          const auth=await requestGuestyOpenApiToken({
-            env:process.env,
-            transport:(url,options)=>fetch(url,{
-              ...options,
-              redirect:"error",
-              signal:AbortSignal.timeout(15000)
-            })
+          const store=await createIsolatedQuoteStore({
+            account:process.env.CLOUDFLARE_ACCOUNT_ID,
+            token:process.env.CLOUDFLARE_API_TOKEN,
+            transport:fetch
           });
-
-          if(!auth.ok)
-            throw Error("Guesty authentication failed: "+auth.reason);
-
-          const quote=await createControlledQuote({
-            token:auth.accessToken,
+          const quote=await runClaimedControlledQuote({
+            store,runId:process.env.GITHUB_RUN_ID,commitSha:process.env.GITHUB_SHA,
+            authenticate:()=>requestGuestyOpenApiToken({
+              env:process.env,
+              transport:(url,options)=>fetch(url,{
+                ...options,redirect:"error",signal:AbortSignal.timeout(15000)
+              })
+            }),
             transport:fetch
           });
 

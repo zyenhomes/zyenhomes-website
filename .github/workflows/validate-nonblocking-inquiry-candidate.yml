@@ -6,6 +6,10 @@ on:
       - 'scripts/validate-nonblocking-*.mjs'
       - 'scripts/controlled-guesty-quote.mjs'
       - 'scripts/validate-controlled-guesty-quote-offline.mjs'
+      - 'scripts/controlled-guesty-quote-claim.mjs'
+      - 'scripts/validate-controlled-guesty-quote-claim-offline.mjs'
+      - 'cloudflare/isolated-migrations/0001_controlled_quote_attempt.sql'
+      - '.github/workflows/create-isolated-flag-version.yml'
       - '.github/workflows/validate-nonblocking-inquiry-candidate.yml'
 permissions:
   contents: read
@@ -37,3 +41,4 @@ jobs:
           node scripts/validate-guesty-d1-claim-adapter-offline.mjs
           node scripts/validate-guesty-inquiry-submission-adapter-offline.mjs
           node scripts/validate-controlled-guesty-quote-offline.mjs
+          node scripts/validate-controlled-guesty-quote-claim-offline.mjs
