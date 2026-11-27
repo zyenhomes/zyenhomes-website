@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: "VERIFY_DISABLED_RUNTIME_V2, VERIFY_UPLOADED_ISOLATED_VERSION, RESTORE_DISABLED_ISOLATED_RUNTIME, or DEPLOY_ONE_DISABLED_ISOLATED_VERSION followed by the approved commit SHA"
+        description: "VERIFY_GUESTY_ACCOUNT_IDENTITY, VERIFY_DISABLED_RUNTIME_V2, VERIFY_UPLOADED_ISOLATED_VERSION, RESTORE_DISABLED_ISOLATED_RUNTIME, or DEPLOY_ONE_DISABLED_ISOLATED_VERSION followed by the approved commit SHA"
         required: true
         type: string
 permissions: {}
@@ -402,4 +402,70 @@ jobs:
 
           console.log("PASS: disabled recovery version restored at 100%");
           console.log("PASS: live and database writes disabled");
+          JS
+  verify_guesty_identity:
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'VERIFY_GUESTY_ACCOUNT_IDENTITY' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: guesty-webhook-activation
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify Guesty listing and account identity
+        env:
+          GUESTY_OPEN_API_AUTH_ENABLED: "true"
+          GUESTY_OPEN_API_CLIENT_ID: ${{ secrets.GUESTY_OPEN_API_CLIENT_ID }}
+          GUESTY_OPEN_API_CLIENT_SECRET: ${{ secrets.GUESTY_OPEN_API_CLIENT_SECRET }}
+        run: |
+          node --experimental-default-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import {requestGuestyOpenApiToken} from "./cloudflare/guesty-open-api-auth.js";
+
+          const auth=await requestGuestyOpenApiToken({
+            env:process.env,
+            transport:(url,options)=>fetch(url,{
+              ...options,
+              redirect:"error",
+              signal:AbortSignal.timeout(15000)
+            })
+          });
+
+          if(!auth.ok)throw Error("Guesty authentication failed: "+auth.reason);
+
+          const listingId="6abf9b85caf2480012c82479";
+
+          const response=await fetch(
+            "https://open-api.guesty.com/v1/listings?ids="+listingId+"&fields=_id%20accountId",
+            {
+              method:"GET",
+              redirect:"error",
+              signal:AbortSignal.timeout(15000),
+              headers:{
+                Authorization:"Bearer "+auth.accessToken,
+                Accept:"application/json"
+              }
+            }
+          );
+
+          if(!response.ok)throw Error("Listing retrieval failed: HTTP "+response.status);
+
+          const payload=await response.json();
+          assert.ok(Array.isArray(payload.results));
+          assert.equal(payload.results.length,1);
+          const listing=payload.results[0];
+
+          assert.equal(listing._id,listingId);
+          assert.match(listing.accountId,/^[a-f0-9]{24}$/i);
+
+          console.log("PASS: exact Guesty listing verified");
+          console.log("Listing ID: "+listingId);
+          console.log("Guesty account ID: "+listing.accountId);
           JS
