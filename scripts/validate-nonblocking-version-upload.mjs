@@ -19,4 +19,39 @@ f=fixture();f.input.approvedVersion="wrong";await assert.rejects(()=>uploadOne(f
 f=fixture();f.after.at(-1).id="wrong";await assert.rejects(()=>uploadOne(f.input),/wrong_database/);assert.equal(f.calls(),1);
 f=fixture();let attempts=0;f.input.upload=async()=>{attempts++;throw Error("uncertain")};await assert.rejects(()=>uploadOne(f.input),/uncertain/);assert.equal(attempts,1);
 f=fixture();const original=f.input.read;f.input.approvedLatestVersion="saved";f.input.read=async p=>p==="/versions"?[...(await original(p)),{id:"saved",created_on:"2026-01-01T12:00:00Z"}]:p==="/versions/saved"?original("/versions/a"):original(p);assert.deepEqual(await uploadOne(f.input),{versionId:"b",deployed:false});
+const isolatedDb={name:"ISOLATED_BOOKING_DB",type:"d1",id:DB};
+
+f=fixture();
+let readBaseline=f.input.read;
+f.input.read=async p=>{
+ const result=await readBaseline(p);
+ if(p==="/versions/a"){
+  return {resources:{bindings:[...result.resources.bindings,isolatedDb]}};
+ }
+ return result;
+};
+assert.deepEqual(await uploadOne(f.input),{versionId:"b",deployed:false});
+assert.equal(f.calls(),1);
+
+for(const invalid of [
+ [{...isolatedDb,id:"wrong"}],
+ [{...isolatedDb,name:"WRONG_DB"}],
+ [isolatedDb,{name:"EXTRA_DB",type:"d1",id:DB}],
+ [isolatedDb,isolatedDb]
+]){
+ f=fixture();
+ const read=f.input.read;
+ f.input.read=async p=>{
+  const result=await read(p);
+  if(p==="/versions/a"){
+   return {resources:{bindings:[...result.resources.bindings,...invalid]}};
+  }
+  return result;
+ };
+ await assert.rejects(()=>uploadOne(f.input));
+ assert.equal(f.calls(),0);
+}
+
+console.log("PASS: existing D1 baseline upload safety tests");
+
 console.log("PASS: simulated version-only upload");
