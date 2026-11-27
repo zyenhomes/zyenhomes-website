@@ -15,11 +15,27 @@ export async function runOrchestration({env,db,readQuote,readReservation,getToke
  if(typeof send!=="function")return stop("missing_sender");
  let a;try{a=JSON.parse(env.GUESTY_ISOLATED_APPROVAL_JSON)}catch{return stop("invalid_approval")}
  if(!a?.requestId||!a.attemptId||!a.claimToken||!a.quoteId||!(Date.parse(a.expiresAt)>clock()))return stop("approval_invalid");
+  const issuedAt=Date.parse(a.issuedAt);
+ const expiresAt=Date.parse(a.expiresAt);
+ const currentTime=clock();
+
+ if(!Number.isFinite(issuedAt)||
+    !Number.isFinite(expiresAt)||
+    issuedAt>currentTime||
+    expiresAt<=currentTime||
+    expiresAt<=issuedAt||
+    expiresAt-issuedAt>300000)
+   return stop("approval_window_invalid");
  let record,prepared,token,quoteExpiry,listing;
  try{
  record=await db.prepare("SELECT * FROM booking_requests WHERE request_id=?").bind(a.requestId).first();
  if(record?.request_id!==a.requestId||record.guesty_quote_id!==a.quoteId)return stop("record_mismatch");
- listing=lookupBookingRequestListing(record.property_id);
+  if(record.property_id!==a.propertyId||
+    record.check_in!==a.checkIn||
+    record.check_out!==a.checkOut||
+    record.guests!==a.guests)
+   return stop("approved_booking_mismatch");
+  listing=lookupBookingRequestListing(record.property_id);
  const quote=await readQuote(a.quoteId);
  quoteExpiry=Date.parse(quote?.expiresAt);
  if(!listing||quote?.unitTypeId!==listing)return stop("listing_mismatch");
