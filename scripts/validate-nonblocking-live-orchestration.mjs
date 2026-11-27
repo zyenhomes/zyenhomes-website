@@ -8,7 +8,7 @@ function fixture(){
  const record={request_id:requestId,property_id:"116-tyrolean",guesty_quote_id:id,guest_name:"Test Guest",guest_email:"test@example.invalid",guest_phone:"+14165550100",check_in:"2027-01-18",check_out:"2027-01-20",guests:6,quote_currency:"CAD",quote_total_cents:10000};
  const quote={status:"valid",_id:id,unitTypeId:"6914041adf75040043bc8ed8",checkInDateLocalized:record.check_in,checkOutDateLocalized:record.check_out,guestsCount:6,expiresAt:new Date(20000).toISOString(),rates:{ratePlans:[{ratePlan:{_id:"default-rateplan-id",money:{currency:"CAD",invoiceItems:[{amount:100}]}}}]}};
  const db={prepare(sql){return {bind(...args){return {first:async()=>record,run:async()=>{audits.push(args[0]);return {success:true,meta:{changes:1}}}}}}},async batch(){if(claimed)return [{success:true,results:[]},{success:true,meta:{changes:0}}];claimed=true;return [{success:true,results:[{request_id:requestId,guesty_sync_claim_token:claimToken}]},{success:true,meta:{changes:1}}]}};
- const input={env:{GUESTY_ISOLATED_APPROVAL_JSON:JSON.stringify({requestId,attemptId,claimToken,quoteId:id,expiresAt:new Date(30000).toISOString()})},db,readQuote:async()=>quote,getToken:async()=>"mock-token",clock:()=>now,send,transport:async(url,opts)=>{sends++;assert.equal(JSON.parse(opts.body).status,"inquiry");return {status:200,json:async()=>({_id:id})}}};
+ const input={env:{GUESTY_ISOLATED_APPROVAL_JSON:JSON.stringify({requestId,attemptId,claimToken,quoteId:id,issuedAt:new Date(0).toISOString(),expiresAt:new Date(30000).toISOString(),propertyId:record.property_id,checkIn:record.check_in,checkOut:record.check_out,guests:record.guests})},db,readQuote:async()=>quote,getToken:async()=>"mock-token",clock:()=>now,send,transport:async(url,opts)=>{sends++;assert.equal(JSON.parse(opts.body).status,"inquiry");return {status:200,json:async()=>({_id:id})}}};
  return {input,quote,counts:()=>({sends,audits}),advance:n=>{now=n}};
 }
 let f=fixture();assert.equal((await run(f.input)).state,"manual_review");assert.equal((await run(f.input)).state,"blocked");assert.deepEqual(f.counts(),{sends:1,audits:["manual_review"]});
@@ -70,6 +70,29 @@ assert.equal((await run(f.input)).state,"blocked");
 assert.equal(f.counts().sends,1);
 
 console.log("PASS: single-use authorization and no-retry safety tests");
+// Verify strict authorization window and booking identity.
+for(const [field,value] of [
+ ["issuedAt",undefined],
+ ["issuedAt","invalid"],
+ ["issuedAt",new Date(1000).toISOString()],
+ ["expiresAt",new Date(301000).toISOString()],
+ ["propertyId","wrong-property"],
+ ["checkIn","2027-01-19"],
+ ["checkOut","2027-01-21"],
+ ["guests",8]
+]){
+ f=fixture();
+ const approval=JSON.parse(f.input.env.GUESTY_ISOLATED_APPROVAL_JSON);
+ approval[field]=value;
+ f.input.env.GUESTY_ISOLATED_APPROVAL_JSON=JSON.stringify(approval);
+
+ const result=await run(f.input);
+ assert.equal(result.state,"blocked",field);
+ assert.equal(f.counts().sends,0,field);
+ assert.equal(f.counts().audits.length,0,field);
+}
+
+console.log("PASS: strict authorization window and booking identity tests");
 
 f=fixture();
 const reservationId="abcdef1234567890abcdef12";
