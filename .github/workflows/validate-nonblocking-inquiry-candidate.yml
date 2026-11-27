@@ -4,6 +4,8 @@ on:
     paths:
       - 'cloudflare/guesty-nonblocking-*.js'
       - 'scripts/validate-nonblocking-*.mjs'
+      - 'scripts/controlled-guesty-quote.mjs'
+      - 'scripts/validate-controlled-guesty-quote-offline.mjs'
       - '.github/workflows/validate-nonblocking-inquiry-candidate.yml'
 permissions:
   contents: read
@@ -34,3 +36,4 @@ jobs:
           node scripts/validate-guesty-d1-claim-executor-offline.mjs
           node scripts/validate-guesty-d1-claim-adapter-offline.mjs
           node scripts/validate-guesty-inquiry-submission-adapter-offline.mjs
+          node scripts/validate-controlled-guesty-quote-offline.mjs
