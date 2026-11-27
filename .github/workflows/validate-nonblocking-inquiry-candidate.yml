@@ -1,0 +1,44 @@
+name: Validate nonblocking inquiry candidate (offline)
+on:
+  pull_request:
+    paths:
+      - 'cloudflare/guesty-nonblocking-*.js'
+      - 'scripts/validate-nonblocking-*.mjs'
+      - 'scripts/controlled-guesty-quote.mjs'
+      - 'scripts/validate-controlled-guesty-quote-offline.mjs'
+      - 'scripts/controlled-guesty-quote-claim.mjs'
+      - 'scripts/validate-controlled-guesty-quote-claim-offline.mjs'
+      - 'cloudflare/isolated-migrations/0001_controlled_quote_attempt.sql'
+      - '.github/workflows/create-isolated-flag-version.yml'
+      - '.github/workflows/validate-nonblocking-inquiry-candidate.yml'
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Candidate validation
+        run: |
+          node scripts/validate-nonblocking-inquiry-candidate.mjs
+          node scripts/validate-nonblocking-response-candidate.mjs
+          node scripts/validate-nonblocking-submission-candidate.mjs
+          node scripts/validate-nonblocking-live-test-candidate.mjs
+          node scripts/validate-nonblocking-http-candidate.mjs
+          node scripts/validate-nonblocking-e2e-candidate.mjs
+          node scripts/validate-nonblocking-isolated-worker.mjs
+          node scripts/validate-nonblocking-live-orchestration.mjs
+          node scripts/validate-nonblocking-upload-preflight.mjs
+          node scripts/validate-nonblocking-version-upload.mjs
+          node scripts/validate-nonblocking-trusted-candidate.mjs
+          node scripts/validate-guesty-d1-claim-executor-offline.mjs
+          node scripts/validate-guesty-d1-claim-adapter-offline.mjs
+          node scripts/validate-guesty-inquiry-submission-adapter-offline.mjs
+          node scripts/validate-controlled-guesty-quote-offline.mjs
+          node scripts/validate-controlled-guesty-quote-claim-offline.mjs

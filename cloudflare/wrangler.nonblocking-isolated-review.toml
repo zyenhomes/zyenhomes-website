@@ -1,0 +1,19 @@
+# Review only. Do not deploy without explicit approval and remote binding verification.
+name = "zyenhomes-guesty-auth-test-isolated2"
+main = "guesty-nonblocking-isolated-worker-candidate.js"
+compatibility_date = "2026-10-24"
+workers_dev = true
+preview_urls = false
+keep_vars = true
+[[d1_databases]]
+binding = "ISOLATED_BOOKING_DB"
+database_name = "zyenhomes-booking-test"
+database_id = "ca5a1af6-6ad5-4c6c-a4aa-ee75ecd0158e"
+[vars]
+GUESTY_ISOLATED_INQUIRY_TEST_ENABLED = "false"
+GUESTY_TEST_MODE = "disabled"
+GUESTY_QUOTE_CREATE_TEST_ENABLED = "false"
+GUESTY_QUOTE_READONLY_DIAGNOSTIC_ENABLED = "false"
+GUESTY_OPEN_API_AUTH_DIAGNOSTIC_ENABLED = "false"
+BOOKING_REQUESTS_ENABLED = "false"
+GUESTY_WEBHOOKS_ENABLED = "false"

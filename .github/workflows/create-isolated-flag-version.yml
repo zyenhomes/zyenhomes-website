@@ -3,29 +3,538 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: Type CREATE_ONE_ISOLATED_FLAG_VERSION to authorize one undeployed test Worker version
+        description: "VERIFY_GUESTY_ACCOUNT_IDENTITY, VERIFY_DISABLED_RUNTIME_V2, VERIFY_UPLOADED_ISOLATED_VERSION, RESTORE_DISABLED_ISOLATED_RUNTIME, or DEPLOY_ONE_DISABLED_ISOLATED_VERSION followed by the approved commit SHA"
         required: true
         type: string
-permissions:
-  contents: read
-concurrency:
-  group: zyenhomes-isolated-flag-version
-  cancel-in-progress: false
+permissions: {}
 jobs:
-  create:
-    if: ${{ inputs.confirmation == 'CREATE_ONE_ISOLATED_FLAG_VERSION' }}
+  verify:
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'VERIFY_DISABLED_RUNTIME_V2' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: guesty-webhook-activation
+    steps:
+      - name: Verify active version and disabled runtime
+        env:
+          CF_ACCOUNT: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os,json,re,urllib.request,urllib.error
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kwargs): return None
+          opener=urllib.request.build_opener(NoRedirect())
+          def request(url,method="GET",headers=None):
+              label=("Cloudflare API" if headers else "Worker")+" "+method+" "+url.rsplit("/",1)[-1]
+              req=urllib.request.Request(url,method=method,headers={"User-Agent":"ZyenHomes-Runtime-Smoke/1.0","Accept":"application/json",**(headers or {})},data=b"" if method=="POST" else None)
+              try:
+                  response=opener.open(req,timeout=15)
+              except urllib.error.HTTPError as e:
+                  response=e
+              with response as r:
+                  status=r.code
+                  kind=r.headers.get_content_type()
+                  raw=r.read(65537)
+                  print(f"{label}: HTTP {status}; content type {kind}; bytes {len(raw)}",flush=True)
+                  if len(raw)>65536: raise SystemExit("Response too large")
+                  try: payload=json.loads(raw)
+                  except (ValueError,UnicodeError): raise SystemExit("Non-JSON response; stopping safely")
+                  return status,payload
+          account=os.environ["CF_ACCOUNT"]
+          assert re.fullmatch(r"[a-fA-F0-9]{32}",account)
+          api="https://api.cloudflare.com/client/v4/accounts/"+account+"/workers/scripts/zyenhomes-guesty-auth-test-isolated2"
+          headers={"Authorization":"Bearer "+os.environ["CF_TOKEN"]}
+          candidate="27eadf90-91a5-4da7-a917-1bc934a2d979"
+          def traffic():
+              status,j=request(api+"/deployments",headers=headers)
+              assert status==200 and j["success"] is True
+              rows=j["result"]
+              if isinstance(rows,dict): rows=rows["deployments"]
+              versions=max(rows,key=lambda x:x["created_on"])["versions"]
+              assert len(versions)==1 and versions[0]["version_id"]==candidate and versions[0]["percentage"]==100
+          traffic()
+          status,j=request(api+"/versions/"+candidate,headers=headers)
+          assert status==200 and j["success"] is True
+          bindings={b["name"]:b for b in j["result"]["resources"]["bindings"]}
+          assert bindings["GUESTY_ISOLATED_INQUIRY_TEST_ENABLED"]["text"]=="false"
+          print("PASS: exact active candidate at 100% and inquiry flag disabled")
+          base="https://zyenhomes-guesty-auth-test-isolated2.brendan-nguyen-90f.workers.dev"
+          assert request(base+"/")== (200,{"status":"running","mode":"isolated_candidate","liveWritesEnabled":False,"databaseWritesEnabled":False})
+          assert request(base+"/internal/inquiry-test")== (403,{"success":False,"code":"ISOLATED_WRITES_DISABLED"})
+          assert request(base+"/internal/inquiry-test","POST")== (403,{"success":False,"code":"LIVE_TEST_DISABLED"})
+          traffic()
+          print("PASS: root status, GET rejection, empty POST rejection, unchanged active traffic")
+          PY
+  upload:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: guesty-webhook-activation
+    permissions:
+      contents: read
+    concurrency:
+      group: zyenhomes-nonblocking-isolated-upload
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verify explicit commit approval
+        env:
+          APPROVAL: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          test "$APPROVAL" = "UPLOAD_ONE_DISABLED_ISOLATED_VERSION $(git rev-parse HEAD)"
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --no-save wrangler@4
-      - name: Create one isolated undeployed test version
+
+      - name: Offline regression tests
+        run: |
+          node scripts/validate-nonblocking-upload-preflight.mjs
+          node scripts/validate-nonblocking-version-upload.mjs
+
+      - name: Install pinned Wrangler
+        run: npm install --no-save --no-package-lock wrangler@4.168.0
+
+      - name: Upload exactly one disabled isolated version
         env:
-          TEST_CONFIRMATION: ${{ inputs.confirmation }}
+          TEST_CONFIRMATION: UPLOAD_ONE_DISABLED_ISOLATED_VERSION
+          APPROVED_COMMIT: ${{ github.sha }}
+          APPROVED_ACTIVE_VERSION: 27eadf90-91a5-4da7-a917-1bc934a2d979
+          APPROVED_LATEST_VERSION: 27eadf90-91a5-4da7-a917-1bc934a2d979
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: node scripts/create-isolated-flag-version.mjs
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: node scripts/nonblocking-version-upload.mjs
+  verify_uploaded:
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'VERIFY_UPLOADED_ISOLATED_VERSION' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: guesty-webhook-activation
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify uploaded candidate without deployment
+        env:
+          APPROVED_CANDIDATE_VERSION: 2bf8a5a4-256f-4a90-bfb7-ca287200f4ff
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: node scripts/verify-nonblocking-uploaded-version.mjs
+  deploy_isolated:
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && github.run_attempt == '1' && startsWith(inputs.confirmation, 'DEPLOY_ONE_DISABLED_ISOLATED_VERSION ') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: guesty-webhook-activation
+    permissions:
+      contents: read
+    concurrency:
+      group: zyenhomes-nonblocking-isolated-deployment
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verify explicit deployment approval
+        env:
+          APPROVAL: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          test "$APPROVAL" = "DEPLOY_ONE_DISABLED_ISOLATED_VERSION $(git rev-parse HEAD)"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Offline safety regression tests
+        run: |
+          node scripts/validate-nonblocking-isolated-worker.mjs
+          node scripts/validate-nonblocking-upload-preflight.mjs
+          node scripts/validate-nonblocking-version-upload.mjs
+
+      - name: Install pinned Wrangler
+        run: npm install --no-save --no-package-lock wrangler@4.168.0
+
+      - name: Verify candidate before deployment
+        env:
+          APPROVED_CANDIDATE_VERSION: 2bf8a5a4-256f-4a90-bfb7-ca287200f4ff
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: node scripts/verify-nonblocking-uploaded-version.mjs
+
+      - name: Deploy exact existing isolated candidate
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          ./node_modules/.bin/wrangler versions deploy \
+            2bf8a5a4-256f-4a90-bfb7-ca287200f4ff@100% \
+            --name zyenhomes-guesty-auth-test-isolated2 \
+            --config cloudflare/wrangler.nonblocking-isolated-review.toml \
+            --yes
+      - name: Verify exact deployment and disabled safety flags
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import {FLAGS,DB,TARGET} from "./scripts/nonblocking-upload-preflight.mjs";
+
+          const candidate="2bf8a5a4-256f-4a90-bfb7-ca287200f4ff";
+          const rollback="27eadf90-91a5-4da7-a917-1bc934a2d979";
+          const account=process.env.CLOUDFLARE_ACCOUNT_ID;
+          const token=process.env.CLOUDFLARE_API_TOKEN;
+          assert.match(account,/^[a-f0-9]{32}$/i);
+          assert.ok(token);
+
+          const root="https://api.cloudflare.com/client/v4/accounts/"+account+"/workers/scripts/"+TARGET;
+
+          async function get(path){
+            const r=await fetch(root+path,{
+              method:"GET",
+              redirect:"error",
+              signal:AbortSignal.timeout(15000),
+              headers:{Authorization:"Bearer "+token}
+            });
+            assert.ok(r.ok);
+            const j=await r.json();
+            assert.equal(j.success,true);
+            return j.result;
+          }
+
+          const d=await get("/deployments");
+          const rows=Array.isArray(d)?d:d.deployments;
+          const latest=[...rows].sort((a,b)=>Date.parse(b.created_on)-Date.parse(a.created_on))[0];
+
+          assert.equal(latest.versions.length,1);
+          assert.equal(latest.versions[0].version_id,candidate);
+          assert.equal(latest.versions[0].percentage,100);
+
+          const version=await get("/versions/"+candidate);
+          const bindings=version.resources.bindings;
+          const databases=bindings.filter(b=>b.type==="d1");
+
+          assert.equal(databases.length,1);
+          assert.equal(databases[0].name,"ISOLATED_BOOKING_DB");
+          assert.equal(databases[0].id,DB);
+
+          for(const [name,value] of Object.entries(FLAGS)){
+            const binding=bindings.find(b=>b.name===name);
+            assert.equal(binding?.type,"plain_text");
+            assert.equal(binding?.text,value);
+          }
+
+          const previous=await get("/versions/"+rollback);
+          assert.equal(previous.id,rollback);
+
+          console.log("PASS: exact isolated candidate at 100%");
+          console.log("PASS: isolated database and disabled safety flags");
+          console.log("PASS: rollback version retained");
+          JS
+      - name: Verify disabled runtime
+        run: |
+          node --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+
+          const base="https://zyenhomes-guesty-auth-test-isolated2.brendan-nguyen-90f.workers.dev";
+
+          const root=await fetch(base+"/",{
+            method:"GET",
+            redirect:"error",
+            signal:AbortSignal.timeout(15000)
+          });
+
+          assert.equal(root.status,200);
+          const status=await root.json();
+
+          assert.equal(status.mode,"isolated_candidate");
+          assert.equal(status.liveWritesEnabled,false);
+          assert.equal(status.databaseWritesEnabled,false);
+
+          const blocked=await fetch(base+"/internal/inquiry-test",{
+            method:"GET",
+            redirect:"error",
+            signal:AbortSignal.timeout(15000)
+          });
+
+          assert.equal(blocked.status,403);
+          assert.equal((await blocked.json()).code,"ISOLATED_WRITES_DISABLED");
+
+          console.log("PASS: isolated runtime running");
+          console.log("PASS: live and database writes disabled");
+          console.log("PASS: inquiry route rejects GET requests");
+          JS
+  restore_disabled:
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'RESTORE_DISABLED_ISOLATED_RUNTIME' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: guesty-webhook-activation
+    permissions:
+      contents: read
+    concurrency:
+      group: zyenhomes-nonblocking-isolated-deployment
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pinned Wrangler
+        run: npm install --no-save --no-package-lock wrangler@4.168.0
+
+      - name: Verify recovery version safety
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import {FLAGS,DB,TARGET} from "./scripts/nonblocking-upload-preflight.mjs";
+
+          const version="2bf8a5a4-256f-4a90-bfb7-ca287200f4ff";
+          const account=process.env.CLOUDFLARE_ACCOUNT_ID;
+          const token=process.env.CLOUDFLARE_API_TOKEN;
+
+          assert.match(account,/^[a-f0-9]{32}$/i);
+          assert.ok(token);
+
+          const url="https://api.cloudflare.com/client/v4/accounts/"+account+"/workers/scripts/"+TARGET+"/versions/"+version;
+
+          const response=await fetch(url,{
+            method:"GET",
+            redirect:"error",
+            signal:AbortSignal.timeout(15000),
+            headers:{Authorization:"Bearer "+token}
+          });
+
+          assert.ok(response.ok);
+          const payload=await response.json();
+          assert.equal(payload.success,true);
+          assert.equal(payload.result.id,version);
+
+          const bindings=payload.result.resources.bindings;
+          const databases=bindings.filter(b=>b.type==="d1");
+
+          assert.equal(databases.length,1);
+          assert.equal(databases[0].name,"ISOLATED_BOOKING_DB");
+          assert.equal(databases[0].id,DB);
+
+          for(const [name,value] of Object.entries(FLAGS)){
+            const binding=bindings.find(b=>b.name===name);
+            assert.equal(binding?.type,"plain_text");
+            assert.equal(binding?.text,value);
+          }
+
+          console.log("PASS: recovery version safety verified");
+          JS
+      - name: Restore known disabled isolated version
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          ./node_modules/.bin/wrangler versions deploy \
+            2bf8a5a4-256f-4a90-bfb7-ca287200f4ff@100% \
+            --name zyenhomes-guesty-auth-test-isolated2 \
+            --config cloudflare/wrangler.nonblocking-isolated-review.toml \
+            --yes
+      - name: Verify disabled runtime restored
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import {TARGET} from "./scripts/nonblocking-upload-preflight.mjs";
+
+          const version="2bf8a5a4-256f-4a90-bfb7-ca287200f4ff";
+          const account=process.env.CLOUDFLARE_ACCOUNT_ID;
+          const token=process.env.CLOUDFLARE_API_TOKEN;
+
+          assert.match(account,/^[a-f0-9]{32}$/i);
+          assert.ok(token);
+
+          const url="https://api.cloudflare.com/client/v4/accounts/"+account+"/workers/scripts/"+TARGET+"/deployments";
+
+          const response=await fetch(url,{
+            method:"GET",
+            redirect:"error",
+            signal:AbortSignal.timeout(15000),
+            headers:{Authorization:"Bearer "+token}
+          });
+
+          assert.ok(response.ok);
+          const payload=await response.json();
+          assert.equal(payload.success,true);
+
+          const rows=Array.isArray(payload.result)?payload.result:payload.result.deployments;
+          const latest=[...rows].sort((a,b)=>Date.parse(b.created_on)-Date.parse(a.created_on))[0];
+
+          assert.equal(latest.versions.length,1);
+          assert.equal(latest.versions[0].version_id,version);
+          assert.equal(latest.versions[0].percentage,100);
+
+          const base="https://zyenhomes-guesty-auth-test-isolated2.brendan-nguyen-90f.workers.dev";
+          const root=await fetch(base+"/",{
+            redirect:"error",
+            signal:AbortSignal.timeout(15000)
+          });
+
+          assert.equal(root.status,200);
+          const status=await root.json();
+          assert.equal(status.mode,"isolated_candidate");
+          assert.equal(status.liveWritesEnabled,false);
+          assert.equal(status.databaseWritesEnabled,false);
+
+          console.log("PASS: disabled recovery version restored at 100%");
+          console.log("PASS: live and database writes disabled");
+          JS
+  verify_guesty_identity:
+    if: ${{ github.ref == 'refs/heads/fast-track/nonblocking-inquiry' && inputs.confirmation == 'VERIFY_GUESTY_ACCOUNT_IDENTITY' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: guesty-webhook-activation
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify Guesty listing and account identity
+        env:
+          GUESTY_OPEN_API_AUTH_ENABLED: "true"
+          GUESTY_OPEN_API_CLIENT_ID: ${{ secrets.GUESTY_OPEN_API_CLIENT_ID }}
+          GUESTY_OPEN_API_CLIENT_SECRET: ${{ secrets.GUESTY_OPEN_API_CLIENT_SECRET }}
+        run: |
+          node --experimental-default-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import {requestGuestyOpenApiToken} from "./cloudflare/guesty-open-api-auth.js";
+
+          const auth=await requestGuestyOpenApiToken({
+            env:process.env,
+            transport:(url,options)=>fetch(url,{
+              ...options,
+              redirect:"error",
+              signal:AbortSignal.timeout(15000)
+            })
+          });
+
+          if(!auth.ok)throw Error("Guesty authentication failed: "+auth.reason);
+
+          const listingId="6abf9b85caf2480012c82479";
+
+          const response=await fetch(
+            "https://open-api.guesty.com/v1/listings?ids="+listingId+"&fields=_id%20accountId",
+            {
+              method:"GET",
+              redirect:"error",
+              signal:AbortSignal.timeout(15000),
+              headers:{
+                Authorization:"Bearer "+auth.accessToken,
+                Accept:"application/json"
+              }
+            }
+          );
+
+          if(!response.ok)throw Error("Listing retrieval failed: HTTP "+response.status);
+
+          const payload=await response.json();
+          assert.ok(Array.isArray(payload.results));
+          assert.equal(payload.results.length,1);
+          const listing=payload.results[0];
+
+          assert.equal(listing._id,listingId);
+          assert.match(listing.accountId,/^[a-f0-9]{24}$/i);
+
+          console.log("PASS: exact Guesty listing verified");
+          console.log("Listing ID: "+listingId);
+          console.log("Guesty account ID: "+listing.accountId);
+          JS
+  create_controlled_quote:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: guesty-webhook-activation
+    permissions:
+      contents: read
+    concurrency:
+      group: zyenhomes-controlled-quote
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify explicit quote approval
+        env:
+          APPROVAL: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          test "$APPROVAL" = "CREATE_ONE_CONTROLLED_GUESTY_QUOTE $(git rev-parse HEAD)"
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+
+
+      - name: Validate controlled quote safety offline
+        run: |
+          node scripts/validate-controlled-guesty-quote-offline.mjs
+          node scripts/validate-controlled-guesty-quote-claim-offline.mjs
+
+      - name: Create one controlled Guesty quote
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ISOLATED_UPLOAD_TOKEN }}
+          GUESTY_OPEN_API_AUTH_ENABLED: "true"
+          GUESTY_OPEN_API_CLIENT_ID: ${{ secrets.GUESTY_OPEN_API_CLIENT_ID }}
+          GUESTY_OPEN_API_CLIENT_SECRET: ${{ secrets.GUESTY_OPEN_API_CLIENT_SECRET }}
+        run: |
+          node --experimental-default-type=module <<'JS'
+          import {requestGuestyOpenApiToken} from "./cloudflare/guesty-open-api-auth.js";
+          import {createIsolatedQuoteStore,runClaimedControlledQuote} from "./scripts/controlled-guesty-quote-claim.mjs";
+
+          const store=await createIsolatedQuoteStore({
+            account:process.env.CLOUDFLARE_ACCOUNT_ID,
+            token:process.env.CLOUDFLARE_API_TOKEN,
+            transport:fetch
+          });
+          const quote=await runClaimedControlledQuote({
+            store,runId:process.env.GITHUB_RUN_ID,commitSha:process.env.GITHUB_SHA,
+            authenticate:()=>requestGuestyOpenApiToken({
+              env:process.env,
+              transport:(url,options)=>fetch(url,{
+                ...options,redirect:"error",signal:AbortSignal.timeout(15000)
+              })
+            }),
+            transport:fetch
+          });
+
+          console.log("PASS: controlled quote identity and pricing verified");
+          console.log("Quote ID: "+quote.quoteId);
+          console.log("Expires: "+quote.expiresAt);
+          console.log("Rate plan ID: "+quote.ratePlanId);
+          console.log("Currency: "+quote.currency);
+          console.log("Total cents: "+quote.totalCents);
+          console.log("Total CAD: "+(quote.totalCents/100).toFixed(2));
+          JS
+

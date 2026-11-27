@@ -12,10 +12,10 @@ try {
     "cloudflare/migrations/0004_guesty_inquiry_sync_claims.sql"
   ]) db.exec(readFileSync(file,"utf8"));
 
-  const add = (id,quote="6adb5d7320cb330ec34a3507") => db.prepare(`
+  const add = (id,quote=Buffer.from(id).toString("hex").padEnd(24,"0").slice(0,24)) => db.prepare(`
     INSERT INTO booking_requests
     (request_id,property_id,guest_name,guest_email,guest_phone,check_in,check_out,guests,quote_total_cents,guesty_quote_id)
-    VALUES (?,?,?,?,?,?,?,?,?,?)`).run(id,"149-tyrolean","Local Test","test@example.invalid",
+    VALUES (?,?,?,?,?,?,?,?,?,?)`).run(id,"149-tyrolean","Local Test",id+"@example.invalid",
       "+14165550101","2027-01-14","2027-01-18",6,105300,quote);
   const row = id => db.prepare("SELECT * FROM booking_requests WHERE request_id=?").get(id);
   const audits = id => db.prepare("SELECT * FROM guesty_inquiry_sync_attempts WHERE request_id=?").all(id);
