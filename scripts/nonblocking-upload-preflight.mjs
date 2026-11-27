@@ -5,7 +5,11 @@ export const FLAGS=Object.freeze({GUESTY_ISOLATED_INQUIRY_TEST_ENABLED:"false",G
 const secrets=["GUESTY_OPEN_API_CLIENT_ID","GUESTY_OPEN_API_CLIENT_SECRET","GUESTY_BOOKING_ENGINE_CLIENT_ID","GUESTY_BOOKING_ENGINE_CLIENT_SECRET","GUESTY_QUOTE_DIAGNOSTIC_ACCESS_TOKEN"];
 export function planUpload({worker,bindings,activeVersion,latestVersion,approvedLatestVersion=activeVersion}={}){
  if(worker!==TARGET||!activeVersion||latestVersion!==approvedLatestVersion||!Array.isArray(bindings))throw Error("baseline_unverified");
- if(bindings.some(b=>!["secret_text","plain_text"].includes(b.type)))throw Error("unexpected_resource");
+  if(bindings.some(b=>!["secret_text","plain_text","d1"].includes(b.type)))throw Error("unexpected_resource");
+ if(new Set(bindings.map(b=>b.name)).size!==bindings.length)throw Error("duplicate_binding");
+ const databases=bindings.filter(b=>b.type==="d1");
+ if(databases.length>1||databases.some(b=>b.name!=="ISOLATED_BOOKING_DB"||b.id!==DB))throw Error("wrong_database");
+ if(bindings.some(b=>b.name==="ISOLATED_BOOKING_DB"&&b.type!=="d1"))throw Error("wrong_database");
  if(!secrets.every(name=>bindings.some(b=>b.name===name&&b.type==="secret_text")))throw Error("missing_secret");
  return {worker:TARGET,command:["versions","upload","--config","cloudflare/wrangler.nonblocking-isolated-review.toml"],activeVersion,authorized:false};
 }
