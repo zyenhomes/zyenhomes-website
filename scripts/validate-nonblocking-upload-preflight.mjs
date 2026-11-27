@@ -9,4 +9,22 @@ for(const extra of [{worker:"zyenhomes-booking-api"},{latestVersion:"version-b"}
 const after=[...before,...Object.entries(FLAGS).map(([name,text])=>({name,text,type:"plain_text"})),{name:"ISOLATED_BOOKING_DB",type:"d1",id:DB}];
 assert.equal(verifyCandidate(before,after),true);
 for(const mutate of [a=>a.shift(),a=>a.at(-1).id="wrong",a=>a.push({name:"EXTRA_DB",type:"d1",id:DB}),a=>a.find(b=>b.name==="OTHER_VAR").text="changed",a=>a.find(b=>b.name==="GUESTY_TEST_MODE").text="live"]){const a=structuredClone(after);mutate(a);assert.throws(()=>verifyCandidate(before,a));}
+const isolatedDb={name:"ISOLATED_BOOKING_DB",type:"d1",id:DB};
+const existing=[...before,isolatedDb];
+
+assert.equal(planUpload({...input,bindings:existing}).authorized,false);
+assert.equal(verifyCandidate(existing,after),true);
+
+for(const invalid of [
+ [...before,{...isolatedDb,id:"wrong"}],
+ [...before,{...isolatedDb,name:"WRONG_DB"}],
+ [...existing,{name:"EXTRA_DB",type:"d1",id:DB}],
+ [...existing,isolatedDb],
+ [...before,{name:"ISOLATED_BOOKING_DB",type:"plain_text",text:DB}]
+]){
+ assert.throws(()=>planUpload({...input,bindings:invalid}));
+}
+
+console.log("PASS: existing isolated D1 binding safety tests");
+
 console.log("PASS: offline upload preflight and binding verification");
