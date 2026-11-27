@@ -21,6 +21,7 @@ export async function uploadOne({read,upload,approvedVersion,approvedLatestVersi
  const signature=b=>JSON.stringify(b.filter(x=>x.type==="secret_text").map(x=>x.name).sort());
  if(signature(bindings)!==signature(latestBindings))throw Error("credential_baseline_mismatch");
  const plan=planUpload({worker:TARGET,bindings,activeVersion:before.active,latestVersion:before.latest,approvedLatestVersion});
+  planUpload({worker:TARGET,bindings:latestBindings,activeVersion:before.active,latestVersion:before.latest,approvedLatestVersion});
  await upload(plan.command);
  const after=await snapshot();
  if(after.fingerprint!==before.fingerprint)throw Error("deployment_changed");
@@ -36,7 +37,8 @@ export async function uploadOne({read,upload,approvedVersion,approvedLatestVersi
 if(process.argv[1]&&import.meta.url===new URL("file://"+process.argv[1]).href){
  if(process.env.TEST_CONFIRMATION!=="UPLOAD_ONE_DISABLED_ISOLATED_VERSION")throw Error("approval_required");
  const account=process.env.CLOUDFLARE_ACCOUNT_ID,token=process.env.CLOUDFLARE_API_TOKEN,approvedVersion=process.env.APPROVED_ACTIVE_VERSION,approvedLatestVersion=process.env.APPROVED_LATEST_VERSION;
- if(!/^[a-f0-9]{32}$/i.test(account??"")||!token||!approvedVersion||!approvedLatestVersion||!approvedVersion.startsWith("6315c368")||!approvedLatestVersion.startsWith("cc3a7f0d"))throw Error("missing_configuration");
+  const approvedBaseline="27eadf90-91a5-4da7-a917-1bc934a2d979";
+ if(!/^[a-f0-9]{32}$/i.test(account??"")||!token||approvedVersion!==approvedBaseline||approvedLatestVersion!==approvedBaseline)throw Error("missing_configuration");
  const sha=spawnSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).stdout?.trim();
  if(!/^[a-f0-9]{40}$/.test(sha??"")||sha!==process.env.APPROVED_COMMIT)throw Error("commit_not_approved");
  const config=readFileSync("cloudflare/wrangler.nonblocking-isolated-review.toml","utf8");
